@@ -38,7 +38,7 @@ param.mean = param.mean(:);
 %% Now calculate something just a little different in frequency
 fov = 5;
 p = harmonicP;
-p.freq = 5.001;   % Could loop on this to show log likelihood decline
+p.freq = 5.02;   % Could loop on this to show log likelihood decline
 scene = sceneCreate('harmonic',p);
 scene = sceneSet(scene,'fov',fov);
 

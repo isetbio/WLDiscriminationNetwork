@@ -34,15 +34,15 @@ function logLikelihood =  ieLogLikelihood(samples, param, varargin)
 %{
 % This is about as good as it gets.  The samples each hit the mean
 clear param
-param.mean = 1:10;
-samples    = 1:10;
-ieLogLikelihood(samples,param)
+param.mean = 1:10;   % Signal known exactly
+samples    = 1:10;   % Sample measurements
+ieLogLikelihood(samples,param)  % The likelihood of observing this sample
 %}
 %{
 % Notice the LogLikelihood is much smaller if we flip the means
 clear param
-param.mean = 1:10;
-samples    = fliplr(1:10);
+param.mean = 1:10;          % Signal known exactly
+samples    = fliplr(1:10);  % The sample
 ieLogLikelihood(samples,param)
 %}
 %{

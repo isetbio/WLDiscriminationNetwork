@@ -1,5 +1,8 @@
 function accuracy =  PoissonMLE(sample,sampleLabels, isoRate_c0, isoRate_c1)
-% The script to calculate Poisson MLE and find if stimulus is present or not.
+% Calculate Poisson maximum likelihood estimate (MLE)
+%
+% Brief dand find if stimulus is present or not.
+%
 % Inputs: 
 % sample    - the coneMosaic absorption used to be classified
 % isoRate_c0, isoRate_c1  - the mean isomerization rate (distribution) 

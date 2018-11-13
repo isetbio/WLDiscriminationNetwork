@@ -10,8 +10,8 @@ import pickle
 from scipy.stats import lognorm
 import torchvision.models as models
 
-from src.data.mat_data import getMatData, matDataLoader
-from src.models.simple_net import RobustNet
+from .src.data.mat_data import getMatData, matDataLoader
+from .src.models.simple_net import RobustNet
 
 
 def test():

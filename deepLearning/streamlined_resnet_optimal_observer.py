@@ -13,14 +13,14 @@ import pickle
 from scipy.stats import lognorm
 import torchvision.models as models
 
-from deepLearning.src.data.mat_data import getMatData, matDataLoader
+from deepLearning.src.data.mat_data import getMatData, getH5Data
 
 # relevant variables
 test_interval = 2
 batchSize = 128
 pathMat = "/black/localhome/reith/Desktop/projects/WLDiscriminationNetwork/deepLearning/data/mat_files/5_samplesPerClass_freq_1-2-3-4-5-6-7-8-9_contrast_0_005.h5"
 
-data, labels, meanData, meanDataLabels = getMatData(pathMat, shuffle=True)
+data, labels, meanData, meanDataLabels = getH5Data(pathMat, shuffle=True)
 # data = torch.from_numpy(data).type(torch.float32)
 # pickle.dump([data, labels, dataNoNoise], open('mat1PercentNoNoiseData.p', 'wb'))
 # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))

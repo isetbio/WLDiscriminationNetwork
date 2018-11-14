@@ -30,11 +30,11 @@ def test(batchSize, testData, testLabels, Net, dimIn):
 
 
 def train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn):
+    bestTestAcc = 0
     for epoch in range(epochs):
         epochAcc = []
         lossArr = []
         logCount = 0
-        bestTestAcc = 0
         for batch_idx, (data, target) in enumerate(matDataLoader(trainData, trainLabels, batchSize, shuffle=True)):
             data, target = Variable(data), Variable(target)
             data, target = data.cuda(), target.cuda()

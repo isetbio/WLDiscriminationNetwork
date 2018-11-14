@@ -29,35 +29,42 @@ data, labels, meanData, meanDataLabels = getMatData(pathMat, shuffle=True)
 dimIn = data[0].shape[1]
 dimOut = len(meanData)
 labels = torch.from_numpy(labels.astype(np.long))
+data = torch.from_numpy(data).type(torch.float32)
 testData = data[:int(len(data)*0.2)]
 testLabels = labels[:int(len(data)*0.2)]
 trainData = data[int(len(data)*0.2):]
 trainLabels = labels[int(len(data)*0.2):]
 
 accOptimal = getOptimalObserverAccuracy(testData, testLabels, meanData)
-print(accOptimal)
+print(f"Optimal observer accuracy is {accOptimal*100:.2f}%")
 
 Net = GrayResnet18(dimOut, dropout=0.8)
 Net.cuda()
-print(Net)
+# print(Net)
 # Net.load_state_dict(torch.load('trained_RobustNet_denoised.torch'))
 criterion = nn.NLLLoss()
-
+bestTestAcc = 0
 
 # Train the network
 epochs = 50
 learning_rate = 0.001
 optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
-Net, bestTestAcc = train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+Net, bestTestAccStep = train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+bestTestAcc = max(bestTestAcc, bestTestAccStep)
+
 print(f"Best accuracy to date is {bestTestAcc*100:.2f} percent")
+
 # Train the network more
 epochs = 50
 learning_rate = 0.0001
 optimizer = optim.Adam(Net.parameters(), lr=learning_rate, amsgrad=True)
 
-Net, bestTestAcc = train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
-print(f"Best accuracy is {bestTestAcc*100:.2f} percent")
+Net, bestTestAccStep = train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+bestTestAcc = max(bestTestAcc, bestTestAccStep)
+
+print(f"Best ResNet accuracy is {bestTestAcc*100:.2f}%")
+print(f"Optimal observer accuracy is {accOptimal*100:.2f}%")
 
 
 # torch.save(Net.state_dict(), "trained_ResNet_with_noise.torch")

@@ -28,15 +28,16 @@
 
 % Values to set
 outputFolder = '/black/localhome/reith/Desktop/projects/WLDiscriminationNetwork/deepLearning/data/mat_files';
-numSamples = 25;
+numSamples = 2000;
 frequencies = [1 2 3 4 5 6 7 8 9];
-% contrastValues = [0.00125 0.0025 0.005 0.0075 0.009 0.01 0.012 0.015 0.02 0.03 0.04 0.08 0.16];
-contrastValues = 0.01;
+contrastValues = [0.005 0.0075  0.01 0.0125 0.015 0.02 0.03 0.04 0.08 0.16 0.32];
 
 % This creates the resulting datasets
-for i = 1:length(contrastValues)
+parfor i = 1:length(contrastValues)
+    fprintf('starting at %s\n', datetime('now'))
     contrast = contrastValues(i);
     fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s',numSamples, join(string(frequencies),'-'), strrep(num2str(contrast), '.', '_'));
     disp(fileName);
     CreateConeAbsorptionSignalNoiseDataset_function(frequencies, contrast, numSamples, fileName, outputFolder)
+    fprintf('ending at %s\n', datetime('now'))
 end

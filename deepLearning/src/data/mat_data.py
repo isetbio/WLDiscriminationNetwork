@@ -2,24 +2,18 @@ import scipy.io as sio
 import numpy as np
 import torch
 
-def getMatData(pathMat, shuffle=False, extraNoise=False):
+def getMatData(pathMat, shuffle=False):
     matData = sio.loadmat(pathMat)
-    if extraNoise:
-        dataNoise = np.transpose(matData['imgNoiseNoStimulus'], (2, 0, 1))
-        dataSignal = np.transpose(matData['imgNoiseStimulus'], (2, 0, 1))
-    else:
-        dataNoise = np.transpose(matData['imgNoNoiseNoStimulus'], (2, 0, 1))
-        dataSignal = np.transpose(matData['imgNoNoiseStimulus'], (2, 0, 1))
-    labelNoise = np.zeros(dataNoise.shape[0])
-    labelSignal = np.ones(dataSignal.shape[0])
-    data = np.concatenate([dataNoise, dataSignal])
-    labels = np.concatenate([labelNoise, labelSignal])
+    data = np.transpose(matData['imgNoise'], (2, 0, 1))
+    labels = matData['imgNoiseLabels'].squeeze()
+    meanData = np.transpose(matData['meanImg'], (2, 0, 1))
+    meanDataLabels = matData['meanImgLabels'].squeeze()
     if shuffle:
         np.random.seed(42)
         selector = np.random.permutation(labels.shape[0])
         data = data[selector]
         labels = labels[selector]
-    return data, labels
+    return data, labels, meanData, meanDataLabels
 
 
 def matDataLoader(data, labels, batchSize, shuffle=True):

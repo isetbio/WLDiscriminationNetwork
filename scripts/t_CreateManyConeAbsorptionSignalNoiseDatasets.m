@@ -28,7 +28,7 @@
 
 % Values to set
 outputFolder = '/black/localhome/reith/Desktop/projects/WLDiscriminationNetwork/deepLearning/data/mat_files';
-numSamples = 2000;
+numSamples = 5;
 frequencies = [1 2 3 4 5 6 7 8 9];
 contrastValues = [0.005 0.0075  0.01 0.0125 0.015 0.02 0.03 0.04 0.08 0.16 0.32];
 

@@ -1,13 +1,14 @@
-import scipy.io as sio
+import h5py
 import numpy as np
 import torch
 
 def getMatData(pathMat, shuffle=False):
-    matData = sio.loadmat(pathMat)
-    data = np.transpose(matData['imgNoise'], (2, 0, 1))
-    labels = matData['imgNoiseLabels'].squeeze()
-    meanData = np.transpose(matData['meanImg'], (2, 0, 1))
-    meanDataLabels = matData['meanImgLabels'].squeeze()
+    h5Data = h5py.File(pathMat)
+    h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
+    data = h5Dict['imgNoise']
+    labels = h5Dict['imgNoiseLabels']
+    meanData = h5Dict['meanImg']
+    meanDataLabels = h5Dict['meanImgLabels']
     if shuffle:
         np.random.seed(42)
         selector = np.random.permutation(labels.shape[0])

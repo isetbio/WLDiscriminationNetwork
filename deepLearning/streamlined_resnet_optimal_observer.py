@@ -18,7 +18,7 @@ from deepLearning.src.data.mat_data import getMatData, matDataLoader
 # relevant variables
 test_interval = 2
 batchSize = 128
-pathMat = "data/mat_files/25_samplesPerClass_freq_1-2-3-4-5-6-7-8-9_contrast_0_01_11-13-18_15_28.mat"
+pathMat = "/black/localhome/reith/Desktop/projects/WLDiscriminationNetwork/deepLearning/data/mat_files/5_samplesPerClass_freq_1-2-3-4-5-6-7-8-9_contrast_0_005.h5"
 
 data, labels, meanData, meanDataLabels = getMatData(pathMat, shuffle=True)
 # data = torch.from_numpy(data).type(torch.float32)

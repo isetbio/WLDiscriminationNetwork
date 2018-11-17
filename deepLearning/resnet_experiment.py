@@ -22,7 +22,7 @@ def test():
         data, target = Variable(data), Variable(target)
         data, target = data.cuda(), target.cuda()
         # data = data.view(-1, dimIn)
-        data = data.view(-1, 1, 224, 224)
+        data = data.view(-1, 1, dimIn, dimIn)
         Net.eval()
         net_out = Net(data)
         prediction = net_out.max(1)[1]
@@ -46,7 +46,7 @@ def train():
             data, target = Variable(data), Variable(target)
             data, target = data.cuda(), target.cuda()
             # data = data.view(-1, dimIn)
-            data = data.view(-1, 1, 224, 224)
+            data = data.view(-1, 1, dimIn, dimIn)
             optimizer.zero_grad()
             Net.train()
             net_out = Net(data)
@@ -66,7 +66,6 @@ def train():
 
 
 # relevant variables
-dimIn = 249*249
 dimOut = 2
 learning_rate = 0.001
 epochs = 50
@@ -79,7 +78,7 @@ pathMat = "data/processed/freq_8_contrast_001_sample.mat"
 # data = torch.from_numpy(data).type(torch.float32)
 # pickle.dump([data, labels], open('mat1PercentNoNoiseData.p', 'wb'))
 data, labels = pickle.load(open("mat1PercentData.p", 'rb'))
-dimIn = data[0].shape[1]**2
+dimIn = data[0].shape[1]
 # denoise data!
 # dataStd = data.std()
 # dataMean = data.mean()

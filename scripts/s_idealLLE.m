@@ -14,6 +14,7 @@ p = harmonicP;
 p.freq = 5;
 scene = sceneCreate('harmonic',p);
 scene = sceneSet(scene,'fov',fov);
+ieAddObject(scene); sensorWindow;
 
 oi = oiCreate;
 oi = oiCompute(oi,scene);
@@ -30,7 +31,7 @@ sensorIdeal = sensorSet(sensorIdeal,'exp time',eTime);
 % This is the part where we calculate the true mean.
 sensorIdeal = sensorCompute(sensorIdeal,oi);
 sensorIdeal = sensorSet(sensorIdeal,'name','ideal');
-ieAddObject(sensorIdeal); sensorWindow;
+% ieAddObject(sensorIdeal); sensorWindow;
 
 param.mean = sensorGet(sensorIdeal,'electrons');
 param.mean = param.mean(:);

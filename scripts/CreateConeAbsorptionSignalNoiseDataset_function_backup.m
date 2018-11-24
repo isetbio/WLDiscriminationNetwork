@@ -87,7 +87,8 @@ for cc = 1:length(scanContrast)
             
             % Default
             oi = oiCreate('wvf human');
-            
+            test = oiCreate('human', 'harmonic', 'blend', stimWeights, ...
+                'testParameters', hparams, 'sceneParameters', sparams);
             %% Create the OIS
             
             ois = oisCreate('harmonic', 'blend', stimWeights, ...

@@ -1,4 +1,4 @@
-from scipy.stats import poisson
+from scipy.stats import poisson, norm
 import scipy.io as sio
 import numpy as np
 
@@ -32,6 +32,34 @@ def getOptimalObserverAccuracy(testData, testLabels, meanData):
         allAccuracies.append(prediction == label)
         # print(f"prediction: {prediction}, label is {label}.")
     return np.mean(allAccuracies)
+
+def getOptimalObserverHitFalsealarm(testData, testLabels, meanData):
+    hits = []
+    falseAlarms = []
+    allAccuracies = []
+    for datum, label in zip(testData, testLabels):
+        llVals = []
+        for meanDatum in meanData:
+            llVals.append(poisson.logpmf(datum, meanDatum).sum())
+        prediction = np.argmax(llVals)
+        if label == 1: # signal
+            hits.append(label == prediction)
+        else:
+            falseAlarms.append(label != prediction)
+        if label != prediction:
+            # print("test")
+            pass
+        allAccuracies.append(prediction == label)
+    d = norm.ppf(np.mean(hits))-norm.ppf(np.mean(falseAlarms))
+    return d
+
+def calculateDiscriminabilityIndex(meanData):
+    alpha = meanData[0]
+    beta = meanData[1]
+    d = np.sum((beta-alpha) * np.log(beta/alpha)) / np.sqrt(0.5*np.sum(((alpha+beta) * np.log(beta/alpha)**2)))
+    # 8.474092465767908
+    return d
+
 
 
 if __name__ == '__main__':

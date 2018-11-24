@@ -1,8 +1,9 @@
 from torch.autograd import Variable
 import numpy as np
+import torch
 
 
-from deepLearning.src.data.mat_data import matDataLoader
+from deepLearning.src.data.mat_data import poissonNoiseLoader, matDataLoader
 
 
 def test(batchSize, testData, testLabels, Net, dimIn):
@@ -14,7 +15,7 @@ def test(batchSize, testData, testLabels, Net, dimIn):
         data, target = data.cuda(), target.cuda()
         # data = data.view(-1, dimIn)
         data = data.view(-1, 1, dimIn, dimIn)
-        Net.eval()
+        # Net.eval()
         net_out = Net(data)
         prediction = net_out.max(1)[1]
         selector = (prediction != target).cpu().numpy().astype(np.bool)
@@ -41,7 +42,40 @@ def train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, 
             # data = data.view(-1, dimIn)
             data = data.view(-1, 1, dimIn, dimIn)
             optimizer.zero_grad()
-            Net.train()
+            # Net.train()
+            net_out = Net(data)
+            prediction = net_out.max(1)[1]
+            loss = criterion(net_out, target)
+            loss.backward()
+            optimizer.step()
+            currAcc = (prediction == target).cpu().numpy()
+            epochAcc.extend(list(currAcc))
+            lossArr.append(loss.data.item())
+            if logCount % 10 == 0:
+                print(f"Train epoch: {epoch} and batch number {logCount}, loss is {np.mean(lossArr)}, accuracy is {np.mean(epochAcc)}")
+            logCount += 1
+        print(f"Train epoch: {epoch}, loss is {np.mean(lossArr)}, accuracy is {np.mean(epochAcc)}")
+        if epoch % test_interval == 0:
+            testAcc = test(batchSize, testData, testLabels, Net, dimIn)
+            if testAcc > bestTestAcc:
+                bestTestAcc = testAcc
+    return Net, bestTestAcc
+
+def trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn):
+    bestTestAcc = 0
+    meanData = torch.from_numpy(meanData).type(torch.float32).cuda()
+    for epoch in range(epochs):
+        epochAcc = []
+        lossArr = []
+        logCount = 0
+        print(f"One epoch simulates {numSamplesEpoch} samples.")
+        for batch_idx in range(int(np.round(numSamplesEpoch/batchSize))):
+            data, target = poissonNoiseLoader(meanData, batchSize, numpyData=False)
+            data, target = data.cuda(), target.cuda()
+            # data = data.view(-1, dimIn)
+            data = data.view(-1, 1, dimIn, dimIn)
+            optimizer.zero_grad()
+            # Net.train()
             net_out = Net(data)
             prediction = net_out.max(1)[1]
             loss = criterion(net_out, target)

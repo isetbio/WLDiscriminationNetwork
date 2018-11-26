@@ -53,34 +53,34 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None):
     # Test the network
     # testAcc = test(batchSize, testData, testLabels, Net, dimIn)
     # Train the network
-    epochs = 4
+    epochs = 5
     learning_rate = 0.001
     optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
     testLabels = torch.from_numpy(testLabels.astype(np.long))
     testData = torch.from_numpy(testData).type(torch.float32)
-    Net, bestTestAccStep = trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
-    bestTestAcc = max(bestTestAcc, bestTestAccStep)
+    Net, testAcc = trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+    # bestTestAcc = max(bestTestAcc, bestTestAccStep)
 
     print(f"Best accuracy to date is {bestTestAcc*100:.2f} percent")
 
     # Train the network more
-    epochs = 4
+    epochs = 5
     learning_rate = 0.0001
     optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
-    Net, bestTestAccStep = trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
-    bestTestAcc = max(bestTestAcc, bestTestAccStep)
+    Net, testAcc = trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+    # bestTestAcc = max(bestTestAcc, bestTestAccStep)
 
     # Train the network more
-    epochs = 4
+    epochs = 5
     learning_rate = 0.00001
     optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
-    Net, bestTestAccStep = trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
-    bestTestAcc = max(bestTestAcc, bestTestAccStep)
+    Net, testAcc = trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+    # bestTestAcc = max(bestTestAcc, bestTestAccStep)
 
 
-    print(f"Best ResNet accuracy is {bestTestAcc*100:.2f}%")
+    print(f"ResNet accuracy is {testAcc*100:.2f}%")
     print(f"Optimal observer accuracy is {accOptimal*100:.2f}%")
     print(f"Optimal observer d index is {d2}")
     print(f"Theoretical d index is {d1}")
@@ -98,7 +98,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None):
         if not file_exists:
             writer.writeheader()  # file doesn't exist yet, write a header
 
-        writer.writerow({'ResNet_accuracy': bestTestAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': dataContrast[0].astype(np.float32)})
+        writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': dataContrast[0].astype(np.float32)})
     print(f'Wrote results to {resultCSV}')
     print("done!")
     sys.stdout = sys.stdout.revert()

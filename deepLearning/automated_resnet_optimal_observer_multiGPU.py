@@ -17,7 +17,6 @@ def matFileGen(pathMatDir):
 pathGen = matFileGen(pathMatDir)
 Procs = {}
 while True:
-
     try:
         if Procs == {}:
             for device in deviceIDs:
@@ -37,6 +36,8 @@ while True:
         break
 
     time.sleep(5)
+
+
 for proc in Procs.values():
     proc.join()
 

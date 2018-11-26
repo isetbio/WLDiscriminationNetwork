@@ -36,6 +36,7 @@ def train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, 
         epochAcc = []
         lossArr = []
         logCount = 0
+        testAcc = 0
         for batch_idx, (data, target) in enumerate(matDataLoader(trainData, trainLabels, batchSize, shuffle=True)):
             data, target = Variable(data), Variable(target)
             data, target = data.cuda(), target.cuda()
@@ -59,7 +60,7 @@ def train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, 
             testAcc = test(batchSize, testData, testLabels, Net, dimIn)
             if testAcc > bestTestAcc:
                 bestTestAcc = testAcc
-    return Net, bestTestAcc
+    return Net, testAcc
 
 def trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn):
     bestTestAcc = 0
@@ -68,6 +69,7 @@ def trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLab
         epochAcc = []
         lossArr = []
         logCount = 0
+        testAcc = 0
         print(f"One epoch simulates {numSamplesEpoch} samples.")
         for batch_idx in range(int(np.round(numSamplesEpoch/batchSize))):
             data, target = poissonNoiseLoader(meanData, batchSize, numpyData=False)
@@ -92,4 +94,4 @@ def trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLab
             testAcc = test(batchSize, testData, testLabels, Net, dimIn)
             if testAcc > bestTestAcc:
                 bestTestAcc = testAcc
-    return Net, bestTestAcc
+    return Net, testAcc

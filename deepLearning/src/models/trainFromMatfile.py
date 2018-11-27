@@ -10,12 +10,16 @@ import numpy as np
 import sys
 import os
 import csv
+import time
+import datetime
 
 
-def autoTrain_Resnet_optimalObserver(pathMat, device=None):
+def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None):
     # relevant variables
+    startTime = time.time()
+    print(device, pathMat)
     if device is not None:
-        torch.cuda.device(device)
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(device)
     test_interval = 2
     batchSize = 128
     numSamplesEpoch = 10000
@@ -87,7 +91,8 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None):
 
     torch.save(Net.state_dict(), os.path.join(outPath, f"resNet_weights_{fileName}.torch"))
     print("saved resNet weights to", f"resNet_weights_{fileName}.torch")
-
+    if lock is not None:
+        lock.acquire()
     resultCSV = os.path.join(outPath, "results.csv")
     file_exists = os.path.isfile(resultCSV)
 
@@ -100,5 +105,9 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None):
 
         writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': dataContrast[0].astype(np.float32)})
     print(f'Wrote results to {resultCSV}')
-    print("done!")
+    if lock is not None:
+        lock.release()
+    endTime = time.time()
+
+    print(f"done! It took {str(datetime.timedelta(seconds=endTime-startTime))} hours:min:seconds")
     sys.stdout = sys.stdout.revert()

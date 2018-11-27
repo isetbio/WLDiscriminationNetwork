@@ -21,7 +21,7 @@ from deepLearning.src.data.mat_data import getMatData, getH5Data, getH5MeanData,
 test_interval = 2
 batchSize = 128
 numSamplesEpoch = 10000
-pathMat = "/black/localhome/reith/Desktop/projects/WLDiscriminationNetwork/deepLearning/data/mat_files/10_samplesPerClass_freq_1_contrast_0_0002.h5"
+pathMat = "/black/localhome/reith/Desktop/projects/WLDiscriminationNetwork/deepLearning/data/experiment_shift_contrasts/5_samplesPerClass_freq_1_contrast_0_10_shift_1_00_pi_per_300000.h5"
 
 meanData, meanDataLabels = getH5MeanData(pathMat)
 # data = torch.from_numpy(data).type(torch.float32)

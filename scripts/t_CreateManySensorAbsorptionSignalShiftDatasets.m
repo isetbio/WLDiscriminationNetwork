@@ -27,13 +27,13 @@
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
 % Values to set
-outputFolder = '/black/localhome/reith/Desktop/projects/WLDiscriminationNetwork/deepLearning/data/experiment_freq_1_log_contrasts200';
+outputFolder = '/black/localhome/reith/Desktop/projects/WLDiscriminationNetwork/deepLearning/data/experiment_shift_contrasts_100';
 numSamples = 5;
 frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
-contrastValues = logspace(-9, -5.6, 20);
+contrastValues = 0.1;
 contrastFreqPairs = [];
-
+shiftValues = logspace(-4, 2.5, 100);
 
 for i = 1:length(contrastValues)
     for j = 1:length(frequencies)       
@@ -44,11 +44,12 @@ for i = 1:length(contrastValues)
 end
 
 % This creates the resulting datasets
-for i = 1:length(contrastValues)
+for i = 1:length(shiftValues)
     fprintf('starting at %s\n', datetime('now'))
-    contrast = contrastValues(i);
-    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_oo_%s',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.12f", contrast), '.', '_'));
+    contrast = contrastValues;
+    shiftValue = shiftValues(i);
+    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_shift_%s_pi_per_3000',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.2f", contrast), '.', '_'), strrep(sprintf("%.6f", shiftValue), '.', '_'));
     disp(fileName);
-    CreateSensorAbsorptionSignalNoiseDataset_function(frequencies, contrast, numSamples, fileName, outputFolder)
+    CreateSensorAbsorptionSignalShiftDataset_function(frequencies, contrast, shiftValue, numSamples, fileName, outputFolder)
     fprintf('ending at %s\n', datetime('now'))
 end

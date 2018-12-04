@@ -5,8 +5,8 @@ import multiprocessing as mp
 import time
 
 deviceIDs = GPUtil.getAvailable(order = 'first', limit = 10, maxLoad = 0.1, maxMemory = 0.1, excludeID=[], excludeUUID=[])
-pathMatDir = "/share/wandell/data/reith/matlabData/shift_contrast200/"
-
+pathMatDir = "/share/wandell/data/reith/matlabData/shift_contrast50/"
+print(deviceIDs)
 def matFileGen(pathMatDir):
     matFiles = glob(f'{pathMatDir}*.h5')
     matFiles.sort()

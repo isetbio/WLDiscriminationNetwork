@@ -32,14 +32,21 @@ def getH5Data(pathMat, shuffle=False):
     return data, labels, meanData, meanDataLabels
 
 
-def getH5MeanData(pathMat, includeContrast=False):
+def getH5MeanData(pathMat, includeContrast=False, includeShift=False):
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
     noNoiseData = h5Dict['noNoiseImg']
     noNoiseLabels = h5Dict['noNoiseImgFreq']
-    dataContrast = h5Dict['noNoiseImgContrast']
-    if includeContrast:
+    if includeShift and includeShift:
+        dataContrast = h5Dict['noNoiseImgContrast']
+        dataShift = h5Dict['noNoiseImgPhase']
+        return noNoiseData, noNoiseLabels, dataContrast, dataShift
+    elif includeContrast:
+        dataContrast = h5Dict['noNoiseImgContrast']
         return noNoiseData, noNoiseLabels, dataContrast
+    elif includeShift:
+        dataShift = h5Dict['noNoiseImgPhase']
+        return noNoiseData, noNoiseLabels, dataShift
     else:
         return noNoiseData, noNoiseLabels
 

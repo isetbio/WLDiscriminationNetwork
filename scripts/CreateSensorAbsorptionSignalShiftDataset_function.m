@@ -53,7 +53,9 @@ for cc = 1:length(scanContrast)
         end
         for sh = 0:length(shiftValues)
             if sh >= 1
-                p.ph = originalPhase + shiftValues(sh)*(pi/300000);
+                p.ph = originalPhase + shiftValues(sh)*(pi/3000);
+                disp(originalPhase);
+                disp(p.ph);
             else
                 p.ph = originalPhase;
             end

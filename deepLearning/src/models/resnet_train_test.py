@@ -6,9 +6,11 @@ import torch
 from deepLearning.src.data.mat_data import poissonNoiseLoader, matDataLoader
 
 
-def test(batchSize, testData, testLabels, Net, dimIn):
+def test(batchSize, testData, testLabels, Net, dimIn, includePredictionLabels=False):
     allAccuracy =[]
     allWrongs = []
+    predictions = []
+    labels = []
     for batch_idx, (data, target) in enumerate(matDataLoader(testData, testLabels, batchSize, shuffle=False)):
         data_temp = np.copy(data)
         data, target = Variable(data), Variable(target)
@@ -26,12 +28,18 @@ def test(batchSize, testData, testLabels, Net, dimIn):
             print(target.cpu().numpy()[testAcc==0])
         allAccuracy.extend(testAcc)
         allWrongs.extend(wrongs)
+        predictions.extend(prediction)
+        labels.extend(target)
     print(f"Test accuracy is {np.mean(allAccuracy)}")
-    return np.mean(allAccuracy)
+    if includePredictionLabels:
+        return np.mean(allAccuracy), np.stack((predictions, testLabels)).T
+    else:
+        return np.mean(allAccuracy)
 
 
 def train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn):
     bestTestAcc = 0
+    testAcc = 0
     for epoch in range(epochs):
         epochAcc = []
         lossArr = []
@@ -64,6 +72,7 @@ def train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, 
 
 def trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn):
     bestTestAcc = 0
+    testAcc = 0
     meanData = torch.from_numpy(meanData).type(torch.float32).cuda()
     for epoch in range(epochs):
         epochAcc = []

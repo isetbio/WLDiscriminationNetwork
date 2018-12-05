@@ -27,13 +27,13 @@
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
 % Values to set
-outputFolder = '/share/wandell/data/reith/matlabData/shift_contrast100/';
+outputFolder = '/share/wandell/data/reith/matlabData/shift_contrast33/';
 numSamples = 2;
 frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = 0.1;
 contrastFreqPairs = [];
-shiftValues = logspace(-3.5, 2.5, 100);
+shiftValues = logspace(-3.5, 2.5, 33);
 
 for i = 1:length(contrastValues)
     for j = 1:length(frequencies)       
@@ -44,12 +44,10 @@ for i = 1:length(contrastValues)
 end
 
 % This creates the resulting datasets
-for i = 1:length(shiftValues)
-    fprintf('starting at %s\n', datetime('now'))
-    contrast = contrastValues;
-    shiftValue = shiftValues(i);
-    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_shift_%s_pi_per_3000_oo',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.2f", contrast), '.', '_'), strrep(sprintf("%.9f", shiftValue), '.', '_'));
-    disp(fileName);
-    CreateSensorAbsorptionSignalShiftDataset_function(frequencies, contrast, shiftValue, numSamples, fileName, outputFolder)
-    fprintf('ending at %s\n', datetime('now'))
-end
+fprintf('starting at %s\n', datetime('now'))
+contrast = contrastValues;
+shiftValue = shiftValues;
+fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_shift_%s_pi_per_3000',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.2f", contrast), '.', '_'), 'x');
+disp(fileName);
+CreateSensorAbsorptionSignalShiftDataset_function(frequencies, contrast, shiftValue, numSamples, fileName, outputFolder)
+fprintf('ending at %s\n', datetime('now'))

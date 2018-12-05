@@ -78,7 +78,7 @@ for cc = 1:length(scanContrast)
                     noNoiseImg(:,:,sh+1) = sensorGet(sensor, 'electrons');
                     noNoiseImgFreq(1+sh) = p.freq;
                     noNoiseImgContrast(1+sh) = p.contrast;
-                    noNoiseImgPhase(1+sh) = p.ph;
+                    noNoiseImgPhase(1+sh) = p.ph-originalPhase;
                     sensor = sensorSet(sensor,'noise flag',1);
                 end
 
@@ -104,7 +104,7 @@ if(saveFlag)
         'noNoiseImg', noNoiseImg, ...
         'noNoiseImgFreq', noNoiseImgFreq, ...
         'noNoiseImgContrast', noNoiseImgContrast, ...
-        'noNoiseImgPhase', noNoiseImgPhase);
+        'noNoiseImgPhase', sprintfc('%.15f', noNoiseImgPhase));
         
 %     save(sprintf('%s.mat',saveName),...
 %         'imgNoise',...

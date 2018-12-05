@@ -1,6 +1,7 @@
 from scipy.stats import poisson, norm
 import scipy.io as sio
 import numpy as np
+import multiprocessing
 
 
 def getPoissonAccuracy(dataSignal, dataNoSignal, pureSignal, pureNoSignal):
@@ -22,21 +23,73 @@ def getPoissonAccuracy(dataSignal, dataNoSignal, pureSignal, pureNoSignal):
     return np.mean(allAccuracies)
 
 
-def getOptimalObserverAccuracy(testData, testLabels, meanData):
+def parallel_apply_along_axis(func1d, axis, arr, *args):
+    """
+    Like numpy.apply_along_axis(), but takes advantage of multiple
+    cores.
+    """
+    # Effective axis where apply_along_axis() will be applied by each
+    # worker (any non-zero axis number would work, so as to allow the use
+    # of `np.array_split()`, which is only done on axis 0):
+    effective_axis = 1 if axis == 0 else axis
+    if effective_axis != axis:
+        arr = arr.swapaxes(axis, effective_axis)
+
+    # Chunks for the mapping (only a few chunks):
+    chunks = [(func1d, effective_axis, sub_arr, *args)
+              for sub_arr in np.array_split(arr, multiprocessing.cpu_count()//2)]
+
+    pool = multiprocessing.Pool()
+    individual_results = pool.starmap(np.apply_along_axis, chunks)
+    # Freeing the workers:
+    pool.close()
+    pool.join()
+
+    return np.concatenate(individual_results)
+
+
+def getOptimalObserverPrediction(datum, meanData):
+    llVals = []
+    for meanDatum in meanData:
+        llVals.append(poisson.logpmf(datum, meanDatum).sum())
+    prediction = np.argmax(llVals)
+    return prediction
+
+
+def getOptimalObserverAccuracy_parallel(testData, testLabels, meanData, returnPredictionLabel=False):
+    testData = testData.reshape(testData.shape[0], -1)
+    meanData = meanData.reshape(meanData.shape[0], -1)
+    predictions = parallel_apply_along_axis(getOptimalObserverPrediction, 1, testData, meanData)
+    allAccuracies = np.mean(predictions == testLabels)
+    predictionLabel = np.stack((predictions, testLabels)).T
+    if returnPredictionLabel:
+        return np.mean(allAccuracies), predictionLabel
+    else:
+        return np.mean(allAccuracies)
+
+
+def getOptimalObserverAccuracy(testData, testLabels, meanData, returnPredictionLabel=False):
     allAccuracies = []
+    predictionLabel = np.empty((0,2))
     for datum, label in zip(testData, testLabels):
         llVals = []
         for meanDatum in meanData:
             llVals.append(poisson.logpmf(datum, meanDatum).sum())
         prediction = np.argmax(llVals)
         allAccuracies.append(prediction == label)
+        predictionLabel = np.append(predictionLabel, [[prediction, label]], axis=0)
         # print(f"prediction: {prediction}, label is {label}.")
-    return np.mean(allAccuracies)
+    if returnPredictionLabel:
+        return np.mean(allAccuracies), predictionLabel
+    else:
+        return np.mean(allAccuracies)
 
 def getOptimalObserverHitFalsealarm(testData, testLabels, meanData):
     hits = []
     falseAlarms = []
     allAccuracies = []
+    if len(meanData) > 2:
+        return 0
     for datum, label in zip(testData, testLabels):
         llVals = []
         for meanDatum in meanData:
@@ -54,6 +107,8 @@ def getOptimalObserverHitFalsealarm(testData, testLabels, meanData):
     return d
 
 def calculateDiscriminabilityIndex(meanData):
+    if len(meanData) > 2:
+        return 0
     alpha = meanData[0]
     beta = meanData[1]
     d = np.sum((beta-alpha) * np.log(beta/alpha)) / np.sqrt(0.5*np.sum(((alpha+beta) * np.log(beta/alpha)**2)))

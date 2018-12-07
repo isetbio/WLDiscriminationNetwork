@@ -36,10 +36,11 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))
     # Image.fromarray(data[4]*(255/20)).show()
 
-    testDataFull, testLabelsFull = poissonNoiseLoader(meanData, size=5000, numpyData=True)
+    testDataFull, testLabelsFull = poissonNoiseLoader(meanData, size=20000, numpyData=True)
     if len(meanData) > 2:
         accOptimal, optimalOPredictionLabel = getOptimalObserverAccuracy_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
         pickle.dump(optimalOPredictionLabel, open(os.path.join(outPath, "optimalOpredictionLabel.p"), 'wb'))
+        pickle.dump(dataShift, open(os.path.join(outPath, "shiftLabels.p"), 'wb'))
     else:
         accOptimal = getOptimalObserverAccuracy(testDataFull, testLabelsFull, meanData)
     print(f"Optimal observer accuracy on all data is {accOptimal*100:.2f}%")
@@ -93,9 +94,10 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
         torch.save(Net.state_dict(), os.path.join(outPath, f"resNet_weights_{fileName}.torch"))
         print("saved resNet weights to", f"resNet_weights_{fileName}.torch")
-
+        testLabelsFull = torch.from_numpy(testLabelsFull.astype(np.long))
+        testDataFull = torch.from_numpy(testDataFull).type(torch.float32)
         testAcc, nnPredictionLabels = test(batchSize, testDataFull, testLabelsFull, Net, dimIn, includePredictionLabels=True)
-        pickle.dump(nnPredictionLabels, open(os.path.join(outPath, "nnPredictionLabels.p", 'wb')))
+        pickle.dump(nnPredictionLabels, open(os.path.join(outPath, "nnPredictionLabels.p"), 'wb'))
     else:
         testAcc = 0.5
 

@@ -27,13 +27,14 @@
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
 % Values to set
-outputFolder = '/share/wandell/data/reith/matlabData/shift_contrast33/';
+outputFolder = '/share/wandell/data/reith/matlabData/shift_freq4_contrast20/';
+status = mkdir(outputFolder);
 numSamples = 2;
-frequencies = 1;
+frequencies = 4;
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = 0.1;
 contrastFreqPairs = [];
-shiftValues = logspace(-3.5, 2.5, 33);
+shiftValues = logspace(-2.5, 2, 20);
 
 for i = 1:length(contrastValues)
     for j = 1:length(frequencies)       

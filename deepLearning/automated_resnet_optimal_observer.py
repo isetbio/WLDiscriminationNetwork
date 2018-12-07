@@ -3,7 +3,7 @@ from glob import glob
 import time
 import datetime
 
-pathMatDir = '/share/wandell/data/reith/matlabData/shift_contrast33/'
+pathMatDir = '/share/wandell/data/reith/matlabData/shift_freq4_contrast20/'
 
 matFiles = glob(f'{pathMatDir}*.h5')
 matFiles.sort()

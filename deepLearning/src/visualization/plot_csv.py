@@ -48,8 +48,8 @@ if __name__ == '__main__':
     shift_values = shift_values[sort_indices]
     originalPhase = 1.570796326794896558
     shift_values = shift_values - originalPhase
-    degrees = shift_values*1500
-    seconds = degrees/3600
+    degrees = shift_values*1500/360
+    seconds = degrees*3600
     optimal_observer_accuracy = optimal_observer_accuracy[sort_indices]
     fig = plt.figure()
     ax = plt.axes()

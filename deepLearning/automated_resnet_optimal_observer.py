@@ -3,7 +3,7 @@ from glob import glob
 import time
 import datetime
 
-pathMatDir = '/share/wandell/data/reith/matlabData/shift_freq4_contrast20/'
+pathMatDir = '/share/wandell/data/reith/matlabData/circle_image_rad_4_v4/'
 
 matFiles = glob(f'{pathMatDir}*.h5')
 matFiles.sort()
@@ -14,7 +14,7 @@ for matFile in matFiles:
         autoTrain_Resnet_optimalObserver(matFile, train_nn=False, includeShift=True)
     else:
         print(matFile)
-        autoTrain_Resnet_optimalObserver(matFile, train_nn=True, includeShift=True)
+        autoTrain_Resnet_optimalObserver(matFile, train_nn=True, includeShift=False)
 
 
 programEnd = time.time()

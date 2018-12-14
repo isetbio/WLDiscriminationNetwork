@@ -45,8 +45,8 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 
-archivePath = '/share/wandell/data/reith/matlabData/shift_freq4_contrast20/'
-sLabelsPath = os.path.join(archivePath, 'shiftLabels.p')
+archivePath = '/share/wandell/data/reith/matlabData/circle_image_rad_4_v2/'
+sLabelsPath = os.path.join(archivePath, 'contrastLabels.p')
 shiftLabels = pickle.load(open(sLabelsPath, "rb")).astype(np.float)
 seconds = shiftLabels*1500/360*3600
 
@@ -64,8 +64,10 @@ fig.set_size_inches(12,12)
 fig.savefig(os.path.join(archivePath, 'ooConfusionMatrix.png'), dpi=200)
 nnPicklePath =  os.path.join(archivePath, 'nnPredictionLabels.p')
 nnPredictionLabel = pickle.load(open(nnPicklePath, 'rb'))
-nnPredictions = nnPredictionLabel[:,0]
-nnLabels = nnPredictionLabel[:,1]
+nnPredictions = nnPredictionLabel[:,0].astype(np.int)
+nnLabels = nnPredictionLabel[:,1].astype(np.int)
+
+
 print(f'Neural Network accuracy is {np.mean(nnPredictions==nnLabels)*100}%')
 
 cnf_matrix = confusion_matrix(nnLabels, nnPredictions)

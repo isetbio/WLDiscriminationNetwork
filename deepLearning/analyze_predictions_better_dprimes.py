@@ -29,7 +29,7 @@ def plot_confusion_matrix(cm, classes,
     plt.title(title)
     plt.colorbar()
     tick_marks = np.arange(len(classes))
-    classes = [round(c, 2) for c in classes]
+    classes = [round(c, 6) for c in classes]
     plt.xticks(tick_marks, classes, rotation=90)
     plt.yticks(tick_marks, classes)
 
@@ -45,10 +45,11 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 
-archivePath = '/share/wandell/data/reith/matlabData/shift_freq4_contrast20/'
-sLabelsPath = os.path.join(archivePath, 'shiftLabels.p')
+archivePath = '/share/wandell/data/reith/matlabData/circle_image_rad_4_v4'
+archive_name = os.path.basename(archivePath)
+sLabelsPath = os.path.join(archivePath, 'contrastLabels.p')
 shiftLabels = pickle.load(open(sLabelsPath, "rb")).astype(np.float)
-seconds = shiftLabels*1500/360*3600
+seconds = shiftLabels # *1500/360*3600
 
 ooPicklePath =  os.path.join(archivePath, 'optimalOpredictionLabel.p')
 ooPredictionLabel = pickle.load(open(ooPicklePath, 'rb'))
@@ -61,11 +62,11 @@ plt.figure()
 plot_confusion_matrix(cnf_matrix, seconds, title="Optimal observer confusion matrix")
 fig = plt.gcf()
 fig.set_size_inches(12,12)
-fig.savefig(os.path.join(archivePath, 'ooConfusionMatrix.png'), dpi=200)
+fig.savefig(os.path.join(archivePath, f'ooConfusionMatrix_{archive_name}.png'), dpi=200)
 nnPicklePath =  os.path.join(archivePath, 'nnPredictionLabels.p')
 nnPredictionLabel = pickle.load(open(nnPicklePath, 'rb'))
-nnPredictions = nnPredictionLabel[:,0]
-nnLabels = nnPredictionLabel[:,1]
+nnPredictions = nnPredictionLabel[:,0].astype(np.int)
+nnLabels = nnPredictionLabel[:,1].astype(np.int)
 print(f'Neural Network accuracy is {np.mean(nnPredictions==nnLabels)*100}%')
 
 cnf_matrix = confusion_matrix(nnLabels, nnPredictions)
@@ -74,7 +75,7 @@ plt.figure()
 plot_confusion_matrix(cnf_matrix, seconds, title='Neural network confusion matrix')
 fig = plt.gcf()
 fig.set_size_inches(12,12)
-fig.savefig(os.path.join(archivePath, 'nnConfusionMatrix.png'), dpi=200)
+fig.savefig(os.path.join(archivePath, f'nnConfusionMatrix_{archive_name}.png'), dpi=200)
 print(f'Accuracy is {np.mean(nnPredictions==nnLabels)*100}%')
 nnD = []
 ooD = []
@@ -98,9 +99,11 @@ for i in classes:
 
 plt.figure()
 plt.xscale('log')
-plt.xlabel('Signal shift in sec steps')
-plt.ylabel('Accuracy')
-plt.title('Freq 4 (signal/signal+shift) accuracy for various shift values')
+plt.xlabel('contrast values')
+plt.ylabel('d prime')
+plt.title(f'd_prime values for {archive_name}')
+nnD = np.array(nnD)
+ooD = np.array(ooD)
 goodValsnnD = np.where(~(np.isnan(nnD) | np.isinf(nnD)))[0]
 goodValsooD = np.where(~(np.isnan(ooD) | np.isinf(ooD)))[0]
 plt.plot(seconds[goodValsnnD], nnD[goodValsnnD], label="neural network")
@@ -108,5 +111,5 @@ plt.plot(seconds[goodValsooD], ooD[goodValsooD], label="optimal observer")
 plt.legend()
 fig = plt.gcf()
 fig.set_size_inches(6,6)
-fig.savefig(os.path.join(archivePath, 'new_dPrimeCurves.png'), dpi=200)
+fig.savefig(os.path.join(archivePath, f'dPrimeCurves_{archive_name}.png'), dpi=200)
 # plt.show()

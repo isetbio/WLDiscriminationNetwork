@@ -44,72 +44,73 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
     plt.tight_layout()
 
+folderPath = '/share/wandell/data/reith/circles_experiment/'
+archivePaths = [os.path.join(folderPath, f) for f in os.listdir(folderPath)]
+for archivePath in archivePaths:
+    archive_name = os.path.basename(archivePath)
+    sLabelsPath = os.path.join(archivePath, 'contrastLabels.p')
+    shiftLabels = pickle.load(open(sLabelsPath, "rb")).astype(np.float)
+    seconds = shiftLabels # *1500/360*3600
 
-archivePath = '/share/wandell/data/reith/matlabData/circle_image_rad_4_v4'
-archive_name = os.path.basename(archivePath)
-sLabelsPath = os.path.join(archivePath, 'contrastLabels.p')
-shiftLabels = pickle.load(open(sLabelsPath, "rb")).astype(np.float)
-seconds = shiftLabels # *1500/360*3600
+    ooPicklePath =  os.path.join(archivePath, 'optimalOpredictionLabel.p')
+    ooPredictionLabel = pickle.load(open(ooPicklePath, 'rb'))
+    ooPredictions = ooPredictionLabel[:,0]
+    ooLabels = ooPredictionLabel[:,1]
+    print(f'Optimal Observer accuracy is {np.mean(ooPredictions==ooLabels)*100}%')
+    cnf_matrix = confusion_matrix(ooLabels, ooPredictions)
+    classes = np.unique(ooLabels)
+    plt.figure()
+    plot_confusion_matrix(cnf_matrix, seconds, title="Optimal observer confusion matrix")
+    fig = plt.gcf()
+    fig.set_size_inches(12,12)
+    fig.savefig(os.path.join(archivePath, f'ooConfusionMatrix_{archive_name}.png'), dpi=200)
+    nnPicklePath =  os.path.join(archivePath, 'nnPredictionLabels.p')
+    nnPredictionLabel = pickle.load(open(nnPicklePath, 'rb'))
+    nnPredictions = nnPredictionLabel[:,0].astype(np.int)
+    nnLabels = nnPredictionLabel[:,1].astype(np.int)
+    print(f'Neural Network accuracy is {np.mean(nnPredictions==nnLabels)*100}%')
 
-ooPicklePath =  os.path.join(archivePath, 'optimalOpredictionLabel.p')
-ooPredictionLabel = pickle.load(open(ooPicklePath, 'rb'))
-ooPredictions = ooPredictionLabel[:,0]
-ooLabels = ooPredictionLabel[:,1]
-print(f'Optimal Observer accuracy is {np.mean(ooPredictions==ooLabels)*100}%')
-cnf_matrix = confusion_matrix(ooLabels, ooPredictions)
-classes = np.unique(ooLabels)
-plt.figure()
-plot_confusion_matrix(cnf_matrix, seconds, title="Optimal observer confusion matrix")
-fig = plt.gcf()
-fig.set_size_inches(12,12)
-fig.savefig(os.path.join(archivePath, f'ooConfusionMatrix_{archive_name}.png'), dpi=200)
-nnPicklePath =  os.path.join(archivePath, 'nnPredictionLabels.p')
-nnPredictionLabel = pickle.load(open(nnPicklePath, 'rb'))
-nnPredictions = nnPredictionLabel[:,0].astype(np.int)
-nnLabels = nnPredictionLabel[:,1].astype(np.int)
-print(f'Neural Network accuracy is {np.mean(nnPredictions==nnLabels)*100}%')
+    cnf_matrix = confusion_matrix(nnLabels, nnPredictions)
+    classes = np.unique(nnLabels)
+    plt.figure()
+    plot_confusion_matrix(cnf_matrix, seconds, title='Neural network confusion matrix')
+    fig = plt.gcf()
+    fig.set_size_inches(12,12)
+    fig.savefig(os.path.join(archivePath, f'nnConfusionMatrix_{archive_name}.png'), dpi=200)
+    print(f'Accuracy is {np.mean(nnPredictions==nnLabels)*100}%')
+    nnD = []
+    ooD = []
+    print("Results neural network:\n")
+    for i in classes:
+        selector = np.where(nnPredictions==i)[0]
+        hit = np.sum(nnLabels[selector] == i)/np.sum(nnLabels == i)
+        false_alarm = np.sum(nnLabels[selector] != i)/np.sum(nnLabels != i)
+        d = norm.ppf(hit)-norm.ppf(false_alarm)
+        print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {false_alarm*100:.2f}%. N is {len(selector)}")
+        nnD.append(d)
 
-cnf_matrix = confusion_matrix(nnLabels, nnPredictions)
-classes = np.unique(nnLabels)
-plt.figure()
-plot_confusion_matrix(cnf_matrix, seconds, title='Neural network confusion matrix')
-fig = plt.gcf()
-fig.set_size_inches(12,12)
-fig.savefig(os.path.join(archivePath, f'nnConfusionMatrix_{archive_name}.png'), dpi=200)
-print(f'Accuracy is {np.mean(nnPredictions==nnLabels)*100}%')
-nnD = []
-ooD = []
-print("Results neural network:\n")
-for i in classes:
-    selector = np.where(nnPredictions==i)[0]
-    hit = np.sum(nnLabels[selector] == i)/np.sum(nnLabels == i)
-    false_alarm = np.sum(nnLabels[selector] != i)/np.sum(nnLabels != i)
-    d = norm.ppf(hit)-norm.ppf(false_alarm)
-    print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {false_alarm*100:.2f}%. N is {len(selector)}")
-    nnD.append(d)
+    print("Results optimal observer:\n")
+    for i in classes:
+        selector = np.where(ooPredictions==i)[0]
+        hit = np.sum(nnLabels[selector] == i)/np.sum(nnLabels == i)
+        false_alarm = np.sum(nnLabels[selector] != i)/np.sum(nnLabels != i)
+        d = norm.ppf(hit)-norm.ppf(false_alarm)
+        print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {false_alarm*100:.2f}%. N is {len(selector)}")
+        ooD.append(d)
 
-print("Results optimal observer:\n")
-for i in classes:
-    selector = np.where(ooPredictions==i)[0]
-    hit = np.sum(nnLabels[selector] == i)/np.sum(nnLabels == i)
-    false_alarm = np.sum(nnLabels[selector] != i)/np.sum(nnLabels != i)
-    d = norm.ppf(hit)-norm.ppf(false_alarm)
-    print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {false_alarm*100:.2f}%. N is {len(selector)}")
-    ooD.append(d)
-
-plt.figure()
-plt.xscale('log')
-plt.xlabel('contrast values')
-plt.ylabel('d prime')
-plt.title(f'd_prime values for {archive_name}')
-nnD = np.array(nnD)
-ooD = np.array(ooD)
-goodValsnnD = np.where(~(np.isnan(nnD) | np.isinf(nnD)))[0]
-goodValsooD = np.where(~(np.isnan(ooD) | np.isinf(ooD)))[0]
-plt.plot(seconds[goodValsnnD], nnD[goodValsnnD], label="neural network")
-plt.plot(seconds[goodValsooD], ooD[goodValsooD], label="optimal observer")
-plt.legend()
-fig = plt.gcf()
-fig.set_size_inches(6,6)
-fig.savefig(os.path.join(archivePath, f'dPrimeCurves_{archive_name}.png'), dpi=200)
-# plt.show()
+    plt.figure()
+    plt.xscale('log')
+    plt.xlabel('contrast values')
+    plt.ylabel('d prime')
+    plt.title(f'd_prime values for {archive_name}')
+    nnD = np.array(nnD)
+    ooD = np.array(ooD)
+    goodValsnnD = np.where(~(np.isnan(nnD) | np.isinf(nnD)))[0]
+    goodValsooD = np.where(~(np.isnan(ooD) | np.isinf(ooD)))[0]
+    plt.plot(seconds[goodValsnnD], nnD[goodValsnnD], label="neural network")
+    plt.plot(seconds[goodValsooD], ooD[goodValsooD], label="optimal observer")
+    plt.legend()
+    fig = plt.gcf()
+    fig.set_size_inches(6,6)
+    fig.savefig(os.path.join(archivePath, f'dPrimeCurves_{archive_name}.png'), dpi=200)
+    # plt.show()

@@ -27,13 +27,14 @@
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
 % Values to set
-outputFolder = '/share/wandell/data/reith/matlabData/harmonic_shift_experiment/';
+outDirBase = '/share/wandell/data/reith/frequencies_experiment/';
+status = mkdir(outputFolder);
 numSamples = 2;
-frequencies = 1;
+frequencies = linspace(1,20,20);
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = 0.1;
 contrastFreqPairs = [];
-shiftValues = logspace(-3.5, 2.5, 100);
+shiftValues = logspace(-2.5, 2, 20);
 
 for i = 1:length(contrastValues)
     for j = 1:length(frequencies)       
@@ -43,13 +44,16 @@ for i = 1:length(contrastValues)
     end
 end
 
-% This creates the resulting datasets
-for i = 1:length(shiftValues)
+for f = 1:length(frequencies)
+    freq = frequencies(f);
+    % This creates the resulting datasets
     fprintf('starting at %s\n', datetime('now'))
     contrast = contrastValues;
-    shiftValue = shiftValues(i);
-    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_shift_%s_pi_per_3000_oo',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.2f", contrast), '.', '_'), strrep(sprintf("%.9f", shiftValue), '.', '_'));
+    shiftValue = shiftValues;
+    fileName = sprintf('freq_%s_contrast_%s_shift_%s_pi_per_3000',join(string(freq),'-'), strrep(sprintf("%.2f", contrast), '.', '_'), 'x');
     disp(fileName);
-    CreateSensorAbsorptionSignalShiftDataset_function(frequencies, contrast, shiftValue, numSamples, fileName, outputFolder)
+    outputFolder = [outDirBase fileName '/'];
+    status = mkdir(outputFolder);
+    CreateSensorAbsorptionSignalShiftDataset_function(freq, contrast, shiftValue, numSamples, fileName, outputFolder)
     fprintf('ending at %s\n', datetime('now'))
 end

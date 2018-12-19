@@ -44,7 +44,7 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
     plt.tight_layout()
 
-folderPath = '/share/wandell/data/reith/circles_experiment/'
+folderPath = '/share/wandell/data/reith/circles_experiment_v2/'
 archivePaths = [os.path.join(folderPath, f) for f in os.listdir(folderPath)]
 for archivePath in archivePaths:
     archive_name = os.path.basename(archivePath)

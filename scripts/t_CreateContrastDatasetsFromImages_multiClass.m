@@ -28,7 +28,7 @@
 
 % Values to set
 
-imageDir = '/share/wandell/data/reith/matlabData/circles/';
+imageDir = '/share/wandell/data/reith/matlabData/generated_circles/';
 imageNames = dir([imageDir '*.bmp']);
 imagePaths = fullfile(imageDir, {imageNames.name});
 numSamples = 2;
@@ -50,7 +50,7 @@ for i = 1:length(imagePaths)
     imagePath = imagePaths(i);
     imagePath = imagePath{1};
     [~,fname,~] = fileparts(imagePath);
-    outputFolder = ['/share/wandell/data/reith/circles_experiment/' fname '/'];
+    outputFolder = ['/share/wandell/data/reith/circles_experiment_v3/' fname '/'];
     status = mkdir(outputFolder);
     % This creates the resulting datasets
     fprintf('starting at %s\n', datetime('now'))

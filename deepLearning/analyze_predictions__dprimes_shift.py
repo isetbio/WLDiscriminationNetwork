@@ -69,7 +69,7 @@ for archivePath in archivePaths:
     fig = plt.gcf()
     fig.set_size_inches(12,12)
     fig.savefig(os.path.join(archivePath, f'ooConfusionMatrix_{archive_name}.png'), dpi=200)
-    nnPicklePath =  os.path.join(archivePath, 'nnPredictionLabels.p')
+    nnPicklePath = os.path.join(archivePath, 'nnPredictionLabels.p')
     nnPredictionLabel = pickle.load(open(nnPicklePath, 'rb'))
     nnPredictions = nnPredictionLabel[:,0].astype(np.int)
     nnLabels = nnPredictionLabel[:,1].astype(np.int)

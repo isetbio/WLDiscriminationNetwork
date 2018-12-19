@@ -28,7 +28,11 @@ nWave = sceneGet(scene,'nwave');
 img = imread(path);
 img = imresize(img, [parms.row, parms.col]);
 % normalize to same range as sine pattern
-img = ((double(img)/255)-0.5)*2*parms.contrast+1;
+img = double(img);
+img = img - mean(img(:));
+s = abs(min(img(:)));
+background = 1;
+img = img/s*parms.contrast+background;
 disp(parms.contrast)
 
 

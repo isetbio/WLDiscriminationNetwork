@@ -6,7 +6,7 @@ import time
 import datetime
 
 deviceIDs = GPUtil.getAvailable(order = 'first', limit = 6, maxLoad = 0.1, maxMemory = 0.1, excludeID=[], excludeUUID=[])
-pathMatDir = "/share/wandell/data/reith/frequencies_experiment/"
+pathMatDir = "/share/wandell/data/reith/circles_experiment_v3/"
 programStart = time.time()
 print(deviceIDs)
 def matFileGen(pathMatDir):
@@ -25,14 +25,14 @@ while True:
             for device in deviceIDs:
                 pathMat = next(pathGen)
                 print(f"Running {pathMat} on GPU {device}")
-                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=(pathMat, int(device), lock, True, True))
+                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=(pathMat, int(device), lock, True, False))
                 Procs[str(device)] = currP
                 currP.start()
         for device, proc in Procs.items():
             if not proc.is_alive():
                 pathMat = next(pathGen)
                 print(f"Running {pathMat} on GPU {device}")
-                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=(pathMat, int(device), lock, True, True))
+                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=(pathMat, int(device), lock, True, False))
                 Procs[str(device)] = currP
                 currP.start()
     except StopIteration:

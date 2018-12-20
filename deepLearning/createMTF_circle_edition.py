@@ -6,7 +6,7 @@ from scipy.stats import norm
 import bisect
 import matplotlib.pyplot as plt
 
-super_folder = '/share/wandell/data/reith/circles_experiment_v2/'
+super_folder = '/share/wandell/data/reith/circles_experiment_v3/'
 target_d = 2
 
 

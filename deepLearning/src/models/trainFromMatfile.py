@@ -36,7 +36,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))
     # Image.fromarray(data[4]*(255/20)).show()
 
-    testDataFull, testLabelsFull = poissonNoiseLoader(meanData, size=30000, numpyData=True)
+    testDataFull, testLabelsFull = poissonNoiseLoader(meanData, size=10000, numpyData=True)
     if len(meanData) > 2:
         accOptimal, optimalOPredictionLabel = getOptimalObserverAccuracy_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
         pickle.dump(optimalOPredictionLabel, open(os.path.join(outPath, "optimalOpredictionLabel.p"), 'wb'))

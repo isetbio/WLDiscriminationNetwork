@@ -23,13 +23,15 @@ def plot_confusion_matrix(cm, classes,
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
         print("Normalized confusion matrix")
     else:
-        print('Confusion matrix, without normalization')
+        pass
+        # print('Confusion matrix, without normalization')
 
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
     plt.colorbar()
     tick_marks = np.arange(len(classes))
-    classes = [round(c, 6) for c in classes]
+    if not type(classes[0]) == str:
+        classes = [round(c, 6) for c in classes]
     plt.xticks(tick_marks, classes, rotation=90)
     plt.yticks(tick_marks, classes)
 
@@ -44,9 +46,42 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
     plt.tight_layout()
 
-folderPath = '/share/wandell/data/reith/circles_experiment_v2/'
+def high_low(archive_path, cnf_matrix, folder_name):
+    out_folder = os.path.join(archive_path, folder_name)
+    os.makedirs(out_folder, exist_ok=True)
+    path_results_dprimes = os.path.join(out_folder, 'results_dprimes.txt')
+    if os.path.exists(path_results_dprimes):
+        os.remove(path_results_dprimes)
+    path_results_raw = os.path.join(out_folder, 'results_raw.txt')
+    with open(path_results_raw, 'w') as f:
+        f.write("lower_row; higher_row; low_low; low_high; high_low; high_high\n")
+    for i in range(cnf_matrix.shape[0]-1):
+        # format is truth_prediction
+        lower_row = cnf_matrix[i]
+        higher_row = cnf_matrix[i+1]
+        low_low = np.sum(lower_row[:i+1])
+        low_high = np.sum(lower_row[i+1:])
+        high_low = np.sum(higher_row[:i+1])
+        high_high = np.sum(higher_row[i+1:])
+        conf_matrix = np.array([[low_low, low_high], [high_low, high_high]])
+        fig = plt.figure()
+        plot_confusion_matrix(conf_matrix, ['low', 'high'], title="Low high confusion matrix")
+        fig.savefig(os.path.join(out_folder, f"{i}_{i+1}_confusion_matrix.png"))
+        plt.close(fig)
+        hit_rate = low_low/(low_low+low_high)
+        false_alarm_rate = high_low/(high_low+high_high)
+        d_prime = norm.ppf(hit_rate)-norm.ppf(false_alarm_rate)
+        with open(path_results_dprimes, 'a') as f:
+            f.write(f"{i}; {i+1}; {d_prime}\n")
+        with open(path_results_raw, 'a') as f:
+            f.write(f"{i}; {i+1}; {low_low}; {low_high}; {high_low}; {high_high}\n")
+    print(f"high_low analysis done for {out_folder}.")
+
+
+folderPath = '/share/wandell/data/reith/circles_experiment_v3/'
 archivePaths = [os.path.join(folderPath, f) for f in os.listdir(folderPath)]
 for archivePath in archivePaths:
+    print(f"Processing {archivePath}..")
     archive_name = os.path.basename(archivePath)
     sLabelsPath = os.path.join(archivePath, 'contrastLabels.p')
     shiftLabels = pickle.load(open(sLabelsPath, "rb")).astype(np.float)
@@ -58,6 +93,7 @@ for archivePath in archivePaths:
     ooLabels = ooPredictionLabel[:,1]
     print(f'Optimal Observer accuracy is {np.mean(ooPredictions==ooLabels)*100}%')
     cnf_matrix = confusion_matrix(ooLabels, ooPredictions)
+    high_low(archivePath, cnf_matrix, 'high_low_oo')
     classes = np.unique(ooLabels)
     plt.figure()
     plot_confusion_matrix(cnf_matrix, seconds, title="Optimal observer confusion matrix")
@@ -71,6 +107,7 @@ for archivePath in archivePaths:
     print(f'Neural Network accuracy is {np.mean(nnPredictions==nnLabels)*100}%')
 
     cnf_matrix = confusion_matrix(nnLabels, nnPredictions)
+    high_low(archivePath, cnf_matrix, 'high_low_nn')
     classes = np.unique(nnLabels)
     plt.figure()
     plot_confusion_matrix(cnf_matrix, seconds, title='Neural network confusion matrix')
@@ -80,22 +117,22 @@ for archivePath in archivePaths:
     print(f'Accuracy is {np.mean(nnPredictions==nnLabels)*100}%')
     nnD = []
     ooD = []
-    print("Results neural network:\n")
+    # print("Results neural network:\n")
     for i in classes:
         selector = np.where(nnPredictions==i)[0]
-        hit = np.sum(nnLabels[selector] == i)/np.sum(nnLabels == i)
-        false_alarm = np.sum(nnLabels[selector] != i)/np.sum(nnLabels != i)
+        hit = (0.5 + np.sum(nnLabels[selector] == i))/(np.sum(nnLabels == i) + 1)
+        false_alarm = (0.5 + np.sum(nnLabels[selector] != i))/(np.sum(nnLabels != i) + 1)
         d = norm.ppf(hit)-norm.ppf(false_alarm)
-        print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {false_alarm*100:.2f}%. N is {len(selector)}")
+        # print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {false_alarm*100:.2f}%. N is {len(selector)}")
         nnD.append(d)
 
-    print("Results optimal observer:\n")
+    # print("Results optimal observer:\n")
     for i in classes:
         selector = np.where(ooPredictions==i)[0]
-        hit = np.sum(nnLabels[selector] == i)/np.sum(nnLabels == i)
-        false_alarm = np.sum(nnLabels[selector] != i)/np.sum(nnLabels != i)
+        hit = (0.5 + np.sum(nnLabels[selector] == i))/(np.sum(nnLabels == i) + 1)
+        false_alarm = (0.5 + np.sum(nnLabels[selector] != i))/(np.sum(nnLabels != i) + 1)
         d = norm.ppf(hit)-norm.ppf(false_alarm)
-        print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {false_alarm*100:.2f}%. N is {len(selector)}")
+        # print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {false_alarm*100:.2f}%. N is {len(selector)}")
         ooD.append(d)
 
     plt.figure()
@@ -114,3 +151,4 @@ for archivePath in archivePaths:
     fig.set_size_inches(6,6)
     fig.savefig(os.path.join(archivePath, f'dPrimeCurves_{archive_name}.png'), dpi=200)
     # plt.show()
+    plt.close(fig='all')

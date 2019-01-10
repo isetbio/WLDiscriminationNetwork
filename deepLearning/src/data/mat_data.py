@@ -3,7 +3,7 @@ import numpy as np
 import h5py
 import torch
 
-def getMatData(pathMat, shuffle=False):
+def get_mat_data(pathMat, shuffle=False):
     matData = sio.loadmat(pathMat)
     data = np.transpose(matData['imgNoise'], (2, 0, 1))
     labels = matData['imgNoiseLabels'].squeeze()
@@ -17,7 +17,7 @@ def getMatData(pathMat, shuffle=False):
     return data, labels, meanData, meanDataLabels
 
 
-def getH5Data(pathMat, shuffle=False):
+def get_h5data(pathMat, shuffle=False):
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
     data = h5Dict['imgNoise']
@@ -32,7 +32,7 @@ def getH5Data(pathMat, shuffle=False):
     return data, labels, meanData, meanDataLabels
 
 
-def getH5MeanData(pathMat, includeContrast=False, includeShift=False):
+def get_h5mean_data(pathMat, includeContrast=False, includeShift=False):
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
     noNoiseData = h5Dict['noNoiseImg']
@@ -51,7 +51,7 @@ def getH5MeanData(pathMat, includeContrast=False, includeShift=False):
         return noNoiseData, noNoiseLabels
 
 
-def matDataLoader(data, labels, batchSize, shuffle=True):
+def mat_data_loader(data, labels, batchSize, shuffle=True):
     epochData = data.clone()
     epochLabels = labels.clone()
     if shuffle:
@@ -68,7 +68,7 @@ def matDataLoader(data, labels, batchSize, shuffle=True):
         j += batchSize
 
 
-def poissonNoiseLoader(meanData, size, numpyData=False):
+def poisson_noise_loader(meanData, size, numpyData=False):
     if numpyData:
         labels = np.random.randint(len(meanData), size=size)
         data = []
@@ -89,6 +89,6 @@ def poissonNoiseLoader(meanData, size, numpyData=False):
 
 if __name__ == '__main__':
     pathMat = "/black/localhome/reith/Desktop/projects/WLDiscriminationNetwork/deepLearning/data/mat_files/10000_samplesPerClass_freq_1_contrast_0_001.h5"
-    meanData, meanDataLabels = getH5MeanData(pathMat)
-    data, labels = poissonNoiseLoader(meanData, 16)
+    meanData, meanDataLabels = get_h5mean_data(pathMat)
+    data, labels = poisson_noise_loader(meanData, 16)
     print("done")

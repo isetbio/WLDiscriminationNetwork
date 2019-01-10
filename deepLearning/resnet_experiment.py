@@ -10,14 +10,14 @@ import pickle
 from scipy.stats import lognorm
 import torchvision.models as models
 
-from .src.data.mat_data import getMatData, matDataLoader
+from .src.data.mat_data import get_mat_data, mat_data_loader
 from .src.models.simple_net import RobustNet
 
 
 def test():
     allAccuracy =[]
     allWrongs = []
-    for batch_idx, (data, target) in enumerate(matDataLoader(testData, testLabels, batchSize, shuffle=False)):
+    for batch_idx, (data, target) in enumerate(mat_data_loader(testData, testLabels, batchSize, shuffle=False)):
         data_temp = np.copy(data)
         data, target = Variable(data), Variable(target)
         data, target = data.cuda(), target.cuda()
@@ -42,7 +42,7 @@ def train():
         epochAcc = []
         lossArr = []
         logCount = 0
-        for batch_idx, (data, target) in enumerate(matDataLoader(trainData, trainLabels, batchSize, shuffle=True)):
+        for batch_idx, (data, target) in enumerate(mat_data_loader(trainData, trainLabels, batchSize, shuffle=True)):
             data, target = Variable(data), Variable(target)
             data, target = data.cuda(), target.cuda()
             # data = data.view(-1, dimIn)
@@ -74,7 +74,7 @@ test_interval = 2
 batchSize = 128
 pathMat = "data/processed/freq_8_contrast_001_sample.mat"
 
-# data, labels = getMatData(pathMat, shuffle=True, extraNoise=True)
+# data, labels = get_mat_data(pathMat, shuffle=True, extraNoise=True)
 # data = torch.from_numpy(data).type(torch.float32)
 # pickle.dump([data, labels], open('mat1PercentNoNoiseData.p', 'wb'))
 data, labels = pickle.load(open("mat1PercentData.p", 'rb'))

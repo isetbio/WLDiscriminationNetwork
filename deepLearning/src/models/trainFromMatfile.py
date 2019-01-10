@@ -1,7 +1,7 @@
-from deepLearning.src.models.resnet_train_test import trainPoisson, test
+from deepLearning.src.models.resnet_train_test import train_poisson, test
 from deepLearning.src.models.GrayResNet import GrayResnet18
-from deepLearning.src.models.optimal_observer import getOptimalObserverAccuracy, calculateDiscriminabilityIndex, getOptimalObserverHitFalsealarm, getOptimalObserverAccuracy_parallel
-from deepLearning.src.data.mat_data import getH5MeanData, poissonNoiseLoader
+from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel
+from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader
 from deepLearning.src.data.logger import Logger
 import torch
 import torch.nn as nn
@@ -28,27 +28,27 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     fileName = os.path.basename(pathMat).split('.')[0]
     sys.stdout = Logger(f"{os.path.join(outPath, fileName)}_log.txt")
     if includeShift:
-        meanData, meanDataLabels, dataContrast, dataShift = getH5MeanData(pathMat, includeContrast=True, includeShift=True)
+        meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True)
     else:
-        meanData, meanDataLabels, dataContrast = getH5MeanData(pathMat, includeContrast=True)
+        meanData, meanDataLabels, dataContrast = get_h5mean_data(pathMat, includeContrast=True)
     # data = torch.from_numpy(data).type(torch.float32)
     # pickle.dump([data, labels, dataNoNoise], open('mat1PercentNoNoiseData.p', 'wb'))
     # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))
     # Image.fromarray(data[4]*(255/20)).show()
 
-    testDataFull, testLabelsFull = poissonNoiseLoader(meanData, size=10000, numpyData=True)
+    testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=10000, numpyData=True)
     if len(meanData) > 2:
-        accOptimal, optimalOPredictionLabel = getOptimalObserverAccuracy_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
+        accOptimal, optimalOPredictionLabel = get_optimal_observer_acc_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
         pickle.dump(optimalOPredictionLabel, open(os.path.join(outPath, "optimalOpredictionLabel.p"), 'wb'))
         pickle.dump(dataContrast, open(os.path.join(outPath, "contrastLabels.p"), 'wb'))
     else:
-        accOptimal = getOptimalObserverAccuracy(testDataFull, testLabelsFull, meanData)
+        accOptimal = get_optimal_observer_acc(testDataFull, testLabelsFull, meanData)
     print(f"Optimal observer accuracy on all data is {accOptimal*100:.2f}%")
 
-    d1 = calculateDiscriminabilityIndex(meanData)
+    d1 = calculate_discriminability_index(meanData)
     print(f"Theoretical d index is {d1}")
 
-    d2 = getOptimalObserverHitFalsealarm(testDataFull, testLabelsFull, meanData)
+    d2 = get_optimal_observer_hit_false_alarm(testDataFull, testLabelsFull, meanData)
     print(f"Optimal observer d index is {d2}")
 
     testData = testDataFull[:500]
@@ -72,7 +72,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
         testLabels = torch.from_numpy(testLabels.astype(np.long))
         testData = torch.from_numpy(testData).type(torch.float32)
-        Net, testAcc = trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
 
         print(f"Best accuracy to date is {bestTestAcc*100:.2f} percent")
@@ -82,7 +82,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         learning_rate = 0.0001
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
-        Net, testAcc = trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
 
         # Train the network more
@@ -90,7 +90,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         learning_rate = 0.00001
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
-        Net, testAcc = trainPoisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
         torch.save(Net.state_dict(), os.path.join(outPath, f"resNet_weights_{fileName}.torch"))
         print("saved resNet weights to", f"resNet_weights_{fileName}.torch")

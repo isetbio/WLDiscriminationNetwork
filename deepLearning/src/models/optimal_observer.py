@@ -4,7 +4,7 @@ import numpy as np
 import multiprocessing
 
 
-def getPoissonAccuracy(dataSignal, dataNoSignal, pureSignal, pureNoSignal):
+def get_poisson_accuracy(dataSignal, dataNoSignal, pureSignal, pureNoSignal):
     allAccuracies = []
     for signal in dataSignal:
         llSignal = poisson.logpmf(signal, pureSignal).sum()
@@ -48,7 +48,7 @@ def parallel_apply_along_axis(func1d, axis, arr, *args):
     return np.concatenate(individual_results)
 
 
-def getOptimalObserverPrediction(datum, meanData):
+def get_optimal_observer_prediction(datum, meanData):
     llVals = []
     for meanDatum in meanData:
         llVals.append(poisson.logpmf(datum, meanDatum).sum())
@@ -56,10 +56,10 @@ def getOptimalObserverPrediction(datum, meanData):
     return prediction
 
 
-def getOptimalObserverAccuracy_parallel(testData, testLabels, meanData, returnPredictionLabel=False):
+def get_optimal_observer_acc_parallel(testData, testLabels, meanData, returnPredictionLabel=False):
     testData = testData.reshape(testData.shape[0], -1)
     meanData = meanData.reshape(meanData.shape[0], -1)
-    predictions = parallel_apply_along_axis(getOptimalObserverPrediction, 1, testData, meanData)
+    predictions = parallel_apply_along_axis(get_optimal_observer_prediction, 1, testData, meanData)
     allAccuracies = np.mean(predictions == testLabels)
     predictionLabel = np.stack((predictions, testLabels)).T
     if returnPredictionLabel:
@@ -68,7 +68,7 @@ def getOptimalObserverAccuracy_parallel(testData, testLabels, meanData, returnPr
         return np.mean(allAccuracies)
 
 
-def getOptimalObserverAccuracy(testData, testLabels, meanData, returnPredictionLabel=False):
+def get_optimal_observer_acc(testData, testLabels, meanData, returnPredictionLabel=False):
     allAccuracies = []
     predictionLabel = np.empty((0,2))
     for datum, label in zip(testData, testLabels):
@@ -84,7 +84,7 @@ def getOptimalObserverAccuracy(testData, testLabels, meanData, returnPredictionL
     else:
         return np.mean(allAccuracies)
 
-def getOptimalObserverHitFalsealarm(testData, testLabels, meanData):
+def get_optimal_observer_hit_false_alarm(testData, testLabels, meanData):
     hits = []
     falseAlarms = []
     allAccuracies = []
@@ -106,7 +106,7 @@ def getOptimalObserverHitFalsealarm(testData, testLabels, meanData):
     d = norm.ppf(np.mean(hits))-norm.ppf(np.mean(falseAlarms))
     return d
 
-def calculateDiscriminabilityIndex(meanData):
+def calculate_discriminability_index(meanData):
     if len(meanData) > 2:
         return 0
     alpha = meanData[0]
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     pureSignal = np.transpose(matData['imgNoNoiseStimulus'], (2, 0, 1))[0]
     pureNoSignal = np.transpose(matData['imgNoNoiseNoStimulus'], (2, 0, 1))[0]
 
-    accuray = getPoissonAccuracy(dataSignal, dataNoSignal, pureSignal, pureNoSignal)
+    accuray = get_poisson_accuracy(dataSignal, dataNoSignal, pureSignal, pureNoSignal)
 
     print(f"The optimal observer has {accuray*100:.2f}% accuracy on the data\n"
           f"({pathMat})")

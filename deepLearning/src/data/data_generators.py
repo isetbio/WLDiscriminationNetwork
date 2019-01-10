@@ -3,14 +3,14 @@ from skimage.measure import block_reduce
 import torch
 
 
-def blockResize(tensorList, rF):
+def block_resize(tensorList, rF):
     newTensorList = []
     for t in tensorList:
         newTensorList.append(block_reduce(t, (rF,rF,rF,1)))
     return newTensorList
 
 
-def shiftCrop(tensorlist, maxShift=0, standardCrop=[slice(7, 55), slice(40, 88), slice(14, 62)]):
+def shift_crop(tensorlist, maxShift=0, standardCrop=[slice(7, 55), slice(40, 88), slice(14, 62)]):
     # Tensor shape is (81, 106, 76, 6)
     newTensorlist = []
     for t in tensorlist:
@@ -29,11 +29,11 @@ def dummy_loader(batchSize, numIn, numOut):
         yield torch.rand([batchSize, numIn]), torch.zeros([batchSize, numOut])
 
 
-def dataLoader(tensorList, batchSize, shuffle=True, randomAxis=True, names=None, maxShift=None, resizeFactor=None, simulationFunction=None):
+def data_loader(tensorList, batchSize, shuffle=True, randomAxis=True, names=None, maxShift=None, resizeFactor=None, simulationFunction=None):
     if maxShift is not None:
-        tensorList = shiftCrop(tensorList, maxShift=maxShift)
+        tensorList = shift_crop(tensorList, maxShift=maxShift)
     if resizeFactor is not None:
-        tensorList = blockResize(tensorList, resizeFactor)
+        tensorList = block_resize(tensorList, resizeFactor)
     tensorArr = torch.from_numpy(np.stack(tensorList, axis=0)).type(torch.float32)
     epochArr = torch.clone(tensorArr)
     if names is not None:

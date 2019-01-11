@@ -11,6 +11,7 @@ def test(batchSize, testData, testLabels, Net, dimIn, includePredictionLabels=Fa
     allWrongs = []
     predictions = []
     labels = []
+    Net.eval()
     for batch_idx, (data, target) in enumerate(mat_data_loader(testData, testLabels, batchSize, shuffle=False)):
         data_temp = np.copy(data)
         data, target = Variable(data), Variable(target)
@@ -40,6 +41,7 @@ def test(batchSize, testData, testLabels, Net, dimIn, includePredictionLabels=Fa
 def train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn):
     bestTestAcc = 0
     testAcc = 0
+    Net.train()
     for epoch in range(epochs):
         epochAcc = []
         lossArr = []
@@ -70,7 +72,7 @@ def train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, 
                 bestTestAcc = testAcc
     return Net, testAcc
 
-def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn):
+def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm):
     bestTestAcc = 0
     testAcc = 0
     meanData = torch.from_numpy(meanData).type(torch.float32).cuda()
@@ -83,6 +85,8 @@ def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLa
         for batch_idx in range(int(np.round(numSamplesEpoch/batchSize))):
             data, target = poisson_noise_loader(meanData, batchSize, numpyData=False)
             data, target = data.cuda(), target.cuda()
+            data -= mean_norm
+            data /= std_norm
             # data = data.view(-1, dimIn)
             data = data.view(-1, 1, dimIn, dimIn)
             optimizer.zero_grad()

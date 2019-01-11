@@ -1,5 +1,5 @@
 from deepLearning.src.models.resnet_train_test import train_poisson, test
-from deepLearning.src.models.GrayResNet import GrayResnet18
+from deepLearning.src.models.GrayResNet import GrayResnet18, GrayResnet101
 from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel
 from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader
 from deepLearning.src.data.logger import Logger
@@ -15,14 +15,14 @@ import datetime
 import pickle
 
 
-def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, includeShift=False):
+def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, includeShift=False, deeper_pls=False):
     # relevant variables
     startTime = time.time()
     print(device, pathMat)
     if device is not None:
         os.environ["CUDA_VISIBLE_DEVICES"] = str(device)
     test_interval = 2
-    batchSize = 128
+    batchSize = 32
     numSamplesEpoch = 10000
     outPath = os.path.dirname(pathMat)
     fileName = os.path.basename(pathMat).split('.')[0]
@@ -37,6 +37,10 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     # Image.fromarray(data[4]*(255/20)).show()
 
     testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=10000, numpyData=True)
+    #normalization values
+    mean_norm = meanData.mean()
+    std_norm = testDataFull.std()
+
     if len(meanData) > 2:
         accOptimal, optimalOPredictionLabel = get_optimal_observer_acc_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
         pickle.dump(optimalOPredictionLabel, open(os.path.join(outPath, "optimalOpredictionLabel.p"), 'wb'))
@@ -57,7 +61,10 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     dimOut = len(meanData)
 
     if train_nn:
-        Net = GrayResnet18(dimOut)
+        if deeper_pls:
+            Net = GrayResnet101(dimOut)
+        else:
+            Net = GrayResnet18(dimOut)
         Net.cuda()
         # print(Net)
         # Net.load_state_dict(torch.load('trained_RobustNet_denoised.torch'))
@@ -67,35 +74,39 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         # Test the network
         # testAcc = test(batchSize, testData, testLabels, Net, dimIn)
         # Train the network
-        epochs = 5
+        epochs = 10
         learning_rate = 0.001
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
         testLabels = torch.from_numpy(testLabels.astype(np.long))
         testData = torch.from_numpy(testData).type(torch.float32)
-        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+        testData -= mean_norm
+        testData /= std_norm
+        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm)
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
 
         print(f"Best accuracy to date is {bestTestAcc*100:.2f} percent")
 
         # Train the network more
-        epochs = 5
+        epochs = 10
         learning_rate = 0.0001
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
-        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm)
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
 
         # Train the network more
-        epochs = 5
+        epochs = 10
         learning_rate = 0.00001
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
-        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn)
+        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm)
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
         torch.save(Net.state_dict(), os.path.join(outPath, f"resNet_weights_{fileName}.torch"))
         print("saved resNet weights to", f"resNet_weights_{fileName}.torch")
         testLabelsFull = torch.from_numpy(testLabelsFull.astype(np.long))
         testDataFull = torch.from_numpy(testDataFull).type(torch.float32)
+        testDataFull -= mean_norm
+        testDataFull /= std_norm
         testAcc, nnPredictionLabels = test(batchSize, testDataFull, testLabelsFull, Net, dimIn, includePredictionLabels=True)
         pickle.dump(nnPredictionLabels, open(os.path.join(outPath, "nnPredictionLabels.p"), 'wb'))
     else:

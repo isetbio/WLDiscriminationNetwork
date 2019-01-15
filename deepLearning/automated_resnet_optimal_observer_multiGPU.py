@@ -28,7 +28,7 @@ while True:
             for device in deviceIDs:
                 pathMat = next(pathGen)
                 print(f"Running {pathMat} on GPU {device}")
-                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=pathMat,
+                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
                                    kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
                                            'NetClass': PretrainedResnetFrozen})
                 Procs[str(device)] = currP
@@ -37,7 +37,7 @@ while True:
             if not proc.is_alive():
                 pathMat = next(pathGen)
                 print(f"Running {pathMat} on GPU {device}")
-                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=pathMat,
+                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
                                    kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
                                            'NetClass': PretrainedResnetFrozen})
                 Procs[str(device)] = currP

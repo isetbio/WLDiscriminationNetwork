@@ -15,7 +15,7 @@ import datetime
 import pickle
 
 
-def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, includeShift=False, deeper_pls=False, oo=True, NetClass=None):
+def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False, deeper_pls=False, oo=True, NetClass=None):
     # relevant variables
     startTime = time.time()
     print(device, pathMat)
@@ -27,7 +27,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     outPath = os.path.dirname(pathMat)
     fileName = os.path.basename(pathMat).split('.')[0]
     sys.stdout = Logger(f"{os.path.join(outPath, fileName)}_log.txt")
-    if includeShift:
+    if include_shift:
         meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True)
     else:
         meanData, meanDataLabels, dataContrast = get_h5mean_data(pathMat, includeContrast=True)
@@ -36,7 +36,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))
     # Image.fromarray(data[4]*(255/20)).show()
 
-    testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=20000, numpyData=True)
+    testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=5000, numpyData=True)
     #normalization values
     mean_norm = meanData.mean()
     std_norm = testDataFull.std()
@@ -132,7 +132,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     file_exists = os.path.isfile(resultCSV)
 
     with open(resultCSV, 'a') as csvfile:
-        if not includeShift:
+        if not include_shift:
             headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast']
             writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
 

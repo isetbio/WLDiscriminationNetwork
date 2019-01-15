@@ -12,10 +12,10 @@ programStart = time.time()
 for matFile in matFiles:
     if matFile[-5:-3] == 'oo':
         print(f"Only optimal observer for: {matFile}")
-        autoTrain_Resnet_optimalObserver(matFile, train_nn=False, includeShift=True)
+        autoTrain_Resnet_optimalObserver(matFile, train_nn=False, include_shift=True)
     else:
         print(matFile)
-        autoTrain_Resnet_optimalObserver(matFile, train_nn=True, includeShift=False, deeper_pls=False, oo=True)
+        autoTrain_Resnet_optimalObserver(matFile, train_nn=True, include_shift=False, deeper_pls=False, oo=True)
 
 
 programEnd = time.time()

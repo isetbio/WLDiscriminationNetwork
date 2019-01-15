@@ -1,4 +1,5 @@
 from deepLearning.src.models.trainFromMatfile import autoTrain_Resnet_optimalObserver
+from deepLearning.src.models.Resnet import PretrainedResnetFrozen
 from glob import glob
 import GPUtil
 import multiprocessing as mp
@@ -25,14 +26,18 @@ while True:
             for device in deviceIDs:
                 pathMat = next(pathGen)
                 print(f"Running {pathMat} on GPU {device}")
-                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=(pathMat, int(device), lock, True, False))
+                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=pathMat,
+                                   kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
+                                           'NetClass': PretrainedResnetFrozen})
                 Procs[str(device)] = currP
                 currP.start()
         for device, proc in Procs.items():
             if not proc.is_alive():
                 pathMat = next(pathGen)
                 print(f"Running {pathMat} on GPU {device}")
-                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=(pathMat, int(device), lock, True, False))
+                currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=pathMat,
+                                   kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
+                                           'NetClass': PretrainedResnetFrozen})
                 Procs[str(device)] = currP
                 currP.start()
     except StopIteration:

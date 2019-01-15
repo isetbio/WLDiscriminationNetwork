@@ -15,7 +15,7 @@ import datetime
 import pickle
 
 
-def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, includeShift=False, deeper_pls=False):
+def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, includeShift=False, deeper_pls=False, oo=True, NetClass=None):
     # relevant variables
     startTime = time.time()
     print(device, pathMat)
@@ -36,24 +36,29 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))
     # Image.fromarray(data[4]*(255/20)).show()
 
-    testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=10000, numpyData=True)
+    testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=20000, numpyData=True)
     #normalization values
     mean_norm = meanData.mean()
     std_norm = testDataFull.std()
 
-    if len(meanData) > 2:
-        accOptimal, optimalOPredictionLabel = get_optimal_observer_acc_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
-        pickle.dump(optimalOPredictionLabel, open(os.path.join(outPath, "optimalOpredictionLabel.p"), 'wb'))
-        pickle.dump(dataContrast, open(os.path.join(outPath, "contrastLabels.p"), 'wb'))
+    if oo:
+        if len(meanData) > 2:
+            accOptimal, optimalOPredictionLabel = get_optimal_observer_acc_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
+            pickle.dump(optimalOPredictionLabel, open(os.path.join(outPath, "optimalOpredictionLabel.p"), 'wb'))
+            pickle.dump(dataContrast, open(os.path.join(outPath, "contrastLabels.p"), 'wb'))
+        else:
+            accOptimal = get_optimal_observer_acc(testDataFull, testLabelsFull, meanData)
+        print(f"Optimal observer accuracy on all data is {accOptimal*100:.2f}%")
+
+        d1 = calculate_discriminability_index(meanData)
+        print(f"Theoretical d index is {d1}")
+
+        d2 = get_optimal_observer_hit_false_alarm(testDataFull, testLabelsFull, meanData)
+        print(f"Optimal observer d index is {d2}")
     else:
-        accOptimal = get_optimal_observer_acc(testDataFull, testLabelsFull, meanData)
-    print(f"Optimal observer accuracy on all data is {accOptimal*100:.2f}%")
-
-    d1 = calculate_discriminability_index(meanData)
-    print(f"Theoretical d index is {d1}")
-
-    d2 = get_optimal_observer_hit_false_alarm(testDataFull, testLabelsFull, meanData)
-    print(f"Optimal observer d index is {d2}")
+        d1 = -1
+        d2 = -1
+        accOptimal = -1
 
     testData = testDataFull[:500]
     testLabels = testLabelsFull[:500]
@@ -61,10 +66,13 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     dimOut = len(meanData)
 
     if train_nn:
-        if deeper_pls:
-            Net = GrayResnet101(dimOut)
+        if NetClass is None:
+            if deeper_pls:
+                Net = GrayResnet101(dimOut)
+            else:
+                Net = GrayResnet18(dimOut)
         else:
-            Net = GrayResnet18(dimOut)
+            Net = NetClass(dimOut)
         Net.cuda()
         # print(Net)
         # Net.load_state_dict(torch.load('trained_RobustNet_denoised.torch'))

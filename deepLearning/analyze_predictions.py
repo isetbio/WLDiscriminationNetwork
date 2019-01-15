@@ -45,7 +45,7 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 
-archivePath = '/share/wandell/data/reith/matlabData/circle_image_rad_4_v2/'
+archivePath = '/share/wandell/data/reith/matlabData/circle_image_rad_4_v4/'
 sLabelsPath = os.path.join(archivePath, 'contrastLabels.p')
 shiftLabels = pickle.load(open(sLabelsPath, "rb")).astype(np.float)
 seconds = shiftLabels*1500/360*3600
@@ -83,19 +83,19 @@ ooD = []
 print("Results neural network:\n")
 for i in classes:
     selector = selector = np.where(nnPredictions==i)[0]
-    hit = np.mean(nnPredictions[selector] == nnLabels[selector])
-    miss = np.mean(nnPredictions[selector] != nnLabels[selector])
-    d = norm.ppf(hit)-norm.ppf(miss)
-    print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {miss*100:.2f}%. N is {len(selector)}")
+    hit = (0.5 + np.sum(nnLabels[selector] == i))/(np.sum(nnLabels == i) + 1)
+    false_alarm = (0.5 + np.sum(nnLabels[selector] != i))/(np.sum(nnLabels != i) + 1)
+    d = norm.ppf(hit)-norm.ppf(false_alarm)
+    print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {false_alarm*100:.2f}%. N is {len(selector)}")
     nnD.append(d)
 
 print("Results optimal observer:\n")
 for i in classes:
     selector = selector = np.where(ooPredictions==i)[0]
-    hit = np.mean(ooPredictions[selector] == ooLabels[selector])
-    miss = np.mean(ooPredictions[selector] != ooLabels[selector])
-    d = norm.ppf(hit)-norm.ppf(miss)
-    print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {miss*100:.2f}%. N is {len(selector)}")
+    hit = (0.5 + np.sum(nnLabels[selector] == i))/(np.sum(nnLabels == i) + 1)
+    false_alarm = (0.5 + np.sum(nnLabels[selector] != i))/(np.sum(nnLabels != i) + 1)
+    d = norm.ppf(hit)-norm.ppf(false_alarm)
+    print(f"d' for {seconds[i]:.2f} seconds is: {d:.3f}. Hit rate is: {hit*100:.2f}% and miss rate is {false_alarm*100:.2f}%. N is {len(selector)}")
     ooD.append(d)
 
 plt.figure()

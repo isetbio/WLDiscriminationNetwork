@@ -48,6 +48,16 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
 
 def high_low(archive_path, cnf_matrix, folder_name):
+    """
+    Looking at the fed in n x n confusion matrix, this function creates multiple 2 x 2 confusion matrices.
+    This is done by comparing all neighboring 2 rows with each other.
+    all values to the upper left until the diagonal confusion matrix value (which is included in the upper left sum)
+    are summed together and the complement calculations are done for the other three values.
+    :param archive_path: Overal output folder
+    :param cnf_matrix: confusion matrix fed into the function
+    :param folder_name: subfolder being created to save the created diagrams
+    :return:
+    """
     out_folder = os.path.join(archive_path, folder_name)
     os.makedirs(out_folder, exist_ok=True)
     path_results_dprimes = os.path.join(out_folder, 'results_dprimes.txt')
@@ -88,6 +98,7 @@ folderPath = '/share/wandell/data/reith/frequencies_experiment/'
 is_shift = True
 
 archivePaths = [os.path.join(folderPath, f) for f in os.listdir(folderPath)]
+# archivePaths = ['/share/wandell/data/reith/matlabData/circle_image_rad_4_v4/']
 for archivePath in archivePaths:
     print(f"Processing {archivePath}..")
     archive_name = os.path.basename(archivePath)

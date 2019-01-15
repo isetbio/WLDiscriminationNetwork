@@ -30,6 +30,11 @@ meanData, meanDataLabels = get_h5mean_data(pathMat)
 # Image.fromarray(data[4]*(255/20)).show()
 
 testData, testLabels = poisson_noise_loader(meanData, size=1000, numpyData=True)
+# you gotta normalize stuff, bro
+# Variance is taken from testData, as it's a good enough representation. Mean is taken from mean meanData
+mean = meanData.mean()
+var = testData.std()
+
 accOptimal = get_optimal_observer_acc(testData, testLabels, meanData)
 print(f"Optimal observer accuracy on all data is {accOptimal*100:.2f}%")
 

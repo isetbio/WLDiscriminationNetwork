@@ -11,7 +11,7 @@ def test(batchSize, testData, testLabels, Net, dimIn, includePredictionLabels=Fa
     allWrongs = []
     predictions = []
     labels = []
-    Net.eval()
+    # Net.eval()
     for batch_idx, (data, target) in enumerate(mat_data_loader(testData, testLabels, batchSize, shuffle=False)):
         data_temp = np.copy(data)
         data, target = Variable(data), Variable(target)
@@ -76,6 +76,7 @@ def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLa
     bestTestAcc = 0
     testAcc = 0
     meanData = torch.from_numpy(meanData).type(torch.float32).cuda()
+    Net.train()
     for epoch in range(epochs):
         epochAcc = []
         lossArr = []
@@ -107,4 +108,5 @@ def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLa
             testAcc = test(batchSize, testData, testLabels, Net, dimIn)
             if testAcc > bestTestAcc:
                 bestTestAcc = testAcc
+            #Net.train()
     return Net, testAcc

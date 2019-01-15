@@ -8,6 +8,7 @@ pathMatDir = '/share/wandell/data/reith/experiment_freq_1_log_contrasts20_frozen
 
 matFiles = glob(f'{pathMatDir}*.h5')
 matFiles.sort()
+matFiles = matFiles[15:17]
 programStart = time.time()
 for matFile in matFiles:
     if matFile[-5:-3] == 'oo':

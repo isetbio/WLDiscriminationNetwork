@@ -13,7 +13,7 @@ print(deviceIDs)
 
 
 def matfile_gen(pathMatDir):
-    matFiles = glob(f'{pathMatDir}**/*.h5')
+    matFiles = glob(f'{pathMatDir}**/*.h5', recursive=True)
     matFiles.sort()
     for matFile in matFiles:
         yield matFile

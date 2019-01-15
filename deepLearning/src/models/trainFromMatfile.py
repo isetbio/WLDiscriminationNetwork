@@ -1,6 +1,6 @@
 from deepLearning.src.models.resnet_train_test import train_poisson, test
 from deepLearning.src.models.GrayResNet import GrayResnet18, GrayResnet101
-from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel
+from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel, calculate_dprime
 from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader
 from deepLearning.src.data.logger import Logger
 import torch
@@ -13,6 +13,7 @@ import csv
 import time
 import datetime
 import pickle
+from scipy.stats import norm
 
 
 def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False, deeper_pls=False, oo=True, NetClass=None):
@@ -46,15 +47,17 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
             accOptimal, optimalOPredictionLabel = get_optimal_observer_acc_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
             pickle.dump(optimalOPredictionLabel, open(os.path.join(outPath, "optimalOpredictionLabel.p"), 'wb'))
             pickle.dump(dataContrast, open(os.path.join(outPath, "contrastLabels.p"), 'wb'))
+            d1 = -1
+            d2 = -1
         else:
-            accOptimal = get_optimal_observer_acc(testDataFull, testLabelsFull, meanData)
+            accOptimal, optimalOPredictionLabel = get_optimal_observer_acc_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
+            d1 = calculate_discriminability_index(meanData)
+            print(f"Theoretical d index is {d1}")
+            d2 = calculate_dprime(optimalOPredictionLabel)
+            print(f"Optimal observer d index is {d2}")
         print(f"Optimal observer accuracy on all data is {accOptimal*100:.2f}%")
 
-        d1 = calculate_discriminability_index(meanData)
-        print(f"Theoretical d index is {d1}")
 
-        d2 = get_optimal_observer_hit_false_alarm(testDataFull, testLabelsFull, meanData)
-        print(f"Optimal observer d index is {d2}")
     else:
         d1 = -1
         d2 = -1
@@ -116,9 +119,11 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         testDataFull -= mean_norm
         testDataFull /= std_norm
         testAcc, nnPredictionLabels = test(batchSize, testDataFull, testLabelsFull, Net, dimIn, includePredictionLabels=True)
+        nn_dprime = calculate_dprime(nnPredictionLabels)
         pickle.dump(nnPredictionLabels, open(os.path.join(outPath, "nnPredictionLabels.p"), 'wb'))
     else:
         testAcc = 0.5
+        nn_dprime = -1
 
 
     print(f"ResNet accuracy is {testAcc*100:.2f}%")
@@ -133,21 +138,21 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
 
     with open(resultCSV, 'a') as csvfile:
         if not include_shift:
-            headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast']
+            headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'nn_dprime']
             writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
 
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
 
-            writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': dataContrast[0].astype(np.float64)})
+            writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': dataContrast[0].astype(np.float64), 'nn_dprime': nn_dprime})
         else:
-            headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'shift']
+            headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'shift', 'nn_dprime']
             writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
 
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
 
-            writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': dataContrast[0].astype(np.float32), 'shift': dataShift[1].astype(np.float64)})
+            writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': dataContrast[0].astype(np.float32), 'shift': dataShift[1].astype(np.float64), 'nn_dprime': nn_dprime})
 
     print(f'Wrote results to {resultCSV}')
     if lock is not None:

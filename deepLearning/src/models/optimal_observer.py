@@ -68,6 +68,17 @@ def get_optimal_observer_acc_parallel(testData, testLabels, meanData, returnPred
         return np.mean(allAccuracies)
 
 
+def calculate_dprime(prediction_label):
+    oo_predictions = prediction_label[:, 0]
+    oo_labels = prediction_label[:, 1]
+    i = 1
+    selector = np.where(oo_predictions == i)[0]
+    hit = (0.5 + np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i) + 1)
+    false_alarm = (0.5 + np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i) + 1)
+    d = norm.ppf(hit) - norm.ppf(false_alarm)
+    return d
+
+
 def get_optimal_observer_acc(testData, testLabels, meanData, returnPredictionLabel=False):
     allAccuracies = []
     predictionLabel = np.empty((0,2))
@@ -88,6 +99,7 @@ def get_optimal_observer_hit_false_alarm(testData, testLabels, meanData):
     hits = []
     falseAlarms = []
     allAccuracies = []
+    predictions = []
     if len(meanData) > 2:
         return 0
     for datum, label in zip(testData, testLabels):
@@ -95,6 +107,7 @@ def get_optimal_observer_hit_false_alarm(testData, testLabels, meanData):
         for meanDatum in meanData:
             llVals.append(poisson.logpmf(datum, meanDatum).sum())
         prediction = np.argmax(llVals)
+        predictions.append(prediction)
         if label == 1: # signal
             hits.append(label == prediction)
         else:
@@ -105,6 +118,12 @@ def get_optimal_observer_hit_false_alarm(testData, testLabels, meanData):
         allAccuracies.append(prediction == label)
     d = norm.ppf(np.mean(hits))-norm.ppf(np.mean(falseAlarms))
     return d
+
+
+# selector = np.where(ooPredictions == i)[0]
+# hit = (0.5 + np.sum(nnLabels[selector] == i)) / (np.sum(nnLabels == i) + 1)
+# false_alarm = (0.5 + np.sum(nnLabels[selector] != i)) / (np.sum(nnLabels != i) + 1)
+# d = norm.ppf(hit) - norm.ppf(false_alarm)
 
 def calculate_discriminability_index(meanData):
     if len(meanData) > 2:

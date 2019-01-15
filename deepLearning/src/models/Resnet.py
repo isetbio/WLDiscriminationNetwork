@@ -28,7 +28,7 @@ class PretrainedResnetFrozen(nn.Module):
 
 
 if __name__ == "__main__":
-    Net = PretrainedResnet(2)
+    Net = PretrainedResnetFrozen(2)
     for name, param in Net.named_parameters():
         if param.requires_grad:
             print(name)

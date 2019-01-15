@@ -7,17 +7,19 @@ import time
 import datetime
 
 deviceIDs = GPUtil.getAvailable(order = 'first', limit = 6, maxLoad = 0.1, maxMemory = 0.1, excludeID=[], excludeUUID=[])
-pathMatDir = "/share/wandell/data/reith/circles_experiment_v3/"
+pathMatDir = "/share/wandell/data/reith/experiment_freq_1_log_contrasts20_frozen_pretrained_resnet/"
 programStart = time.time()
 print(deviceIDs)
-def matFileGen(pathMatDir):
+
+
+def matfile_gen(pathMatDir):
     matFiles = glob(f'{pathMatDir}**/*.h5')
     matFiles.sort()
     for matFile in matFiles:
         yield matFile
 
 
-pathGen = matFileGen(pathMatDir)
+pathGen = matfile_gen(pathMatDir)
 Procs = {}
 lock = mp.Lock()
 while True:

@@ -119,7 +119,10 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         testDataFull -= mean_norm
         testDataFull /= std_norm
         testAcc, nnPredictionLabels = test(batchSize, testDataFull, testLabelsFull, Net, dimIn, includePredictionLabels=True)
-        nn_dprime = calculate_dprime(nnPredictionLabels)
+        if len(meanData) == 2:
+            nn_dprime = calculate_dprime(nnPredictionLabels)
+        else:
+            nn_dprime = -1
         pickle.dump(nnPredictionLabels, open(os.path.join(outPath, "nnPredictionLabels.p"), 'wb'))
     else:
         testAcc = 0.5

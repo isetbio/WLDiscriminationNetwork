@@ -3,14 +3,17 @@ from torch import nn
 import torch.nn.functional as F
 from fnmatch import fnmatch
 from torch import tensor
+import torch
+import numpy as np
+
 
 class PretrainedResnetFrozen(nn.Module):
     def __init__(self, dim_out, min_norm, max_norm, mean_norm, std_norm):
         super().__init__()
-        self.min_norm = tensor(min_norm).cuda()
-        self.max_norm = tensor(max_norm).cuda()
-        self.mean_norm = tensor(mean_norm).cuda()
-        self.std_norm = tensor(std_norm).cuda()
+        self.min_norm = torch.as_tensor(min_norm.astype(np.float)).cuda()
+        self.max_norm = torch.as_tensor(max_norm.astype(np.float)).cuda()
+        self.mean_norm = torch.as_tensor(mean_norm.astype(np.float)).cuda()
+        self.std_norm = torch.as_tensor(std_norm.astype(np.float)).cuda()
         self.channel_mean = tensor([0.485, 0.456, 0.406]).cuda().reshape(1, -1, 1, 1)
         self.channel_std = tensor([0.229, 0.224, 0.225]).cuda().reshape(1, -1, 1, 1)
         self.ResNet = models.resnet18(pretrained=True)

@@ -41,6 +41,8 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     #normalization values
     mean_norm = meanData.mean()
     std_norm = testDataFull.std()
+    min_norm = testDataFull.min()
+    max_norm = testDataFull.max()
 
     if oo:
         if len(meanData) > 2:
@@ -75,7 +77,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
             else:
                 Net = GrayResnet18(dimOut)
         else:
-            Net = NetClass(dimOut)
+            Net = NetClass(dimOut, min_norm, max_norm, mean_norm, std_norm)
         Net.cuda()
         # print(Net)
         # Net.load_state_dict(torch.load('trained_RobustNet_denoised.torch'))

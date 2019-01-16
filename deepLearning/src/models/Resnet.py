@@ -2,16 +2,40 @@ from torchvision import models
 from torch import nn
 import torch.nn.functional as F
 from fnmatch import fnmatch
-
+from torch import tensor
 
 class PretrainedResnetFrozen(nn.Module):
-    def __init__(self, dim_out):
+    def __init__(self, dim_out, min_norm, max_norm, mean_norm, std_norm):
         super().__init__()
+        self.min_norm = tensor(min_norm).cuda()
+        self.max_norm = tensor(max_norm).cuda()
+        self.mean_norm = tensor(mean_norm).cuda()
+        self.std_norm = tensor(std_norm).cuda()
+        self.channel_mean = tensor([0.485, 0.456, 0.406]).cuda().reshape(1, -1, 1, 1)
+        self.channel_std = tensor([0.229, 0.224, 0.225]).cuda().reshape(1, -1, 1, 1)
         self.ResNet = models.resnet18(pretrained=True)
         self.ResNet.fc = nn.Linear(512, dim_out)
         self.freeze_except_fc()
 
     def forward(self, x):
+        """
+        We are using pretrained weights here. So the best way to use them, is to multiply the grayscale
+        image to rbg. After that, it is best to normalize the image the way, the images were normalized.
+        To do so, we first squeeze the values between 0 and 1 and then transform the way, the resnet images
+        were transformed.
+        Normally, this functionality is put into the dataloader, but I want to keep the dataloader general.
+
+        :param x:
+        :return:
+        """
+        # squeeze values between 0 and 1. Use values from test_data instead of small batch to decrease statistical variance
+        # If you think about the math, this does the trick (max_norm and min_norm are from the pre-normalized distribution)
+        x = x*(self.std_norm/(self.max_norm-self.min_norm)) + (self.mean_norm-self.min_norm)/(self.max_norm - self.min_norm)
+        # copy to 3 channels
+        x = x.repeat(1, 3, 1, 1)
+        # substract imagenet mean and scale imagenet std
+        x -= self.channel_mean
+        x /= self.channel_std
         x = self.ResNet(x)
         return F.log_softmax(x)
 

@@ -16,7 +16,7 @@ for matFile in matFiles:
         autoTrain_Resnet_optimalObserver(matFile, train_nn=False, include_shift=True)
     else:
         print(matFile)
-        autoTrain_Resnet_optimalObserver(matFile, train_nn=True, include_shift=False, deeper_pls=False, oo=True)
+        autoTrain_Resnet_optimalObserver(matFile, train_nn=True, include_shift=False, deeper_pls=False, oo=True, NetClass=PretrainedResnetFrozen)
 
 
 programEnd = time.time()

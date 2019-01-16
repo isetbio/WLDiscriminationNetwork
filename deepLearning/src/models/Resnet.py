@@ -17,6 +17,8 @@ class PretrainedResnetFrozen(nn.Module):
         self.channel_mean = tensor([0.485, 0.456, 0.406]).cuda().reshape(1, -1, 1, 1)
         self.channel_std = tensor([0.229, 0.224, 0.225]).cuda().reshape(1, -1, 1, 1)
         self.ResNet = models.resnet18(pretrained=True)
+        # pytorch's standard implementation throws errors at some image sizes..
+        self.ResNet.avgpool = nn.AdaptiveAvgPool2d(1)
         self.ResNet.fc = nn.Linear(512, dim_out)
         self.freeze_except_fc()
 

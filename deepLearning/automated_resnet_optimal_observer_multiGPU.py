@@ -7,7 +7,7 @@ import time
 import datetime
 
 deviceIDs = GPUtil.getAvailable(order = 'first', limit = 6, maxLoad = 0.1, maxMemory = 0.1, excludeID=[], excludeUUID=[])
-pathMatDir = "/share/wandell/data/reith/experiment_freq_1_log_contrasts20_frozen_pretrained_resnet/"
+pathMatDir = "/share/wandell/data/reith/experiment_freq_1_log_contrasts20_higher_frozen_resnet/"
 programStart = time.time()
 print(deviceIDs)
 

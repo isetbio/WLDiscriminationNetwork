@@ -43,16 +43,19 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     std_norm = testDataFull.std()
     min_norm = testDataFull.min()
     max_norm = testDataFull.max()
+    id_name = '5_samplesPerClass_freq_1_contrast_oo_0_000000483293'
+
+    accOptimal, optimalOPredictionLabel = get_optimal_observer_acc_parallel(testDataFull, testLabelsFull, meanData,
+                                                                            returnPredictionLabel=True)
+    pickle.dump(optimalOPredictionLabel, open(os.path.join(outPath, f"{id_name}_oo_pred_label.p"), 'wb'))
+    pickle.dump(dataContrast, open(os.path.join(outPath, f"{id_name}_contrast_labels.p"), 'wb'))
 
     if oo:
         if len(meanData) > 2:
-            accOptimal, optimalOPredictionLabel = get_optimal_observer_acc_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
-            pickle.dump(optimalOPredictionLabel, open(os.path.join(outPath, "optimalOpredictionLabel.p"), 'wb'))
-            pickle.dump(dataContrast, open(os.path.join(outPath, "contrastLabels.p"), 'wb'))
+
             d1 = -1
             d2 = -1
         else:
-            accOptimal, optimalOPredictionLabel = get_optimal_observer_acc_parallel(testDataFull, testLabelsFull, meanData, returnPredictionLabel=True)
             d1 = calculate_discriminability_index(meanData)
             print(f"Theoretical d index is {d1}")
             d2 = calculate_dprime(optimalOPredictionLabel)
@@ -125,7 +128,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
             nn_dprime = calculate_dprime(nnPredictionLabels)
         else:
             nn_dprime = -1
-        pickle.dump(nnPredictionLabels, open(os.path.join(outPath, "nnPredictionLabels.p"), 'wb'))
+        pickle.dump(nnPredictionLabels, open(os.path.join(outPath, f"{id_name}_nn_pred_labels.p"), 'wb'))
     else:
         testAcc = 0.5
         nn_dprime = -1

@@ -43,7 +43,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     std_norm = testDataFull.std()
     min_norm = testDataFull.min()
     max_norm = testDataFull.max()
-    id_name = '5_samplesPerClass_freq_1_contrast_oo_0_000000483293'
+    id_name = os.path.basename(pathMat).split('.')[0]
 
     accOptimal, optimalOPredictionLabel = get_optimal_observer_acc_parallel(testDataFull, testLabelsFull, meanData,
                                                                             returnPredictionLabel=True)

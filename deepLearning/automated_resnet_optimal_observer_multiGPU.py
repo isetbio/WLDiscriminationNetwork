@@ -1,5 +1,5 @@
 from deepLearning.src.models.trainFromMatfile import autoTrain_Resnet_optimalObserver
-from deepLearning.src.models.Resnet import PretrainedResnetFrozen
+from deepLearning.src.models.Resnet import PretrainedResnetFrozen, NotPretrainedResnet
 from glob import glob
 import GPUtil
 import multiprocessing as mp
@@ -7,7 +7,7 @@ import time
 import datetime
 
 deviceIDs = GPUtil.getAvailable(order = 'first', limit = 6, maxLoad = 0.1, maxMemory = 0.1, excludeID=[], excludeUUID=[])
-pathMatDir = "/share/wandell/data/reith/experiment_freq_1_log_contrasts20_higher_frozen_resnet/"
+pathMatDir = "/share/wandell/data/reith/experiment_freq_1_log_contrasts30_higher_nonfrozen_resnet/"
 programStart = time.time()
 print(deviceIDs)
 
@@ -30,7 +30,7 @@ while True:
                 print(f"Running {pathMat} on GPU {device}")
                 currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
                                    kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
-                                           'NetClass': PretrainedResnetFrozen})
+                                           'NetClass': NotPretrainedResnet})
                 Procs[str(device)] = currP
                 currP.start()
         for device, proc in Procs.items():
@@ -39,7 +39,7 @@ while True:
                 print(f"Running {pathMat} on GPU {device}")
                 currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
                                    kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
-                                           'NetClass': PretrainedResnetFrozen})
+                                           'NetClass': NotPretrainedResnet})
                 Procs[str(device)] = currP
                 currP.start()
     except StopIteration:

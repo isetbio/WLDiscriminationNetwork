@@ -8,7 +8,8 @@ import numpy as np
 
 
 class PretrainedResnetFrozen(nn.Module):
-    def __init__(self, dim_out, min_norm, max_norm, mean_norm, std_norm):
+    def __init__(self, dim_out, min_norm=np.float64(0), max_norm=np.float64(1), mean_norm=np.float64(0),
+                 std_norm=np.float64(1), freeze_until=4):
         super().__init__()
         self.min_norm = torch.as_tensor(min_norm.astype(np.float)).cuda()
         self.max_norm = torch.as_tensor(max_norm.astype(np.float)).cuda()
@@ -16,11 +17,12 @@ class PretrainedResnetFrozen(nn.Module):
         self.std_norm = torch.as_tensor(std_norm.astype(np.float)).cuda()
         self.channel_mean = tensor([0.485, 0.456, 0.406]).cuda().reshape(1, -1, 1, 1)
         self.channel_std = tensor([0.229, 0.224, 0.225]).cuda().reshape(1, -1, 1, 1)
+        self.freeze_until = freeze_until
         self.ResNet = models.resnet18(pretrained=True)
         # pytorch's standard implementation throws errors at some image sizes..
         self.ResNet.avgpool = nn.AdaptiveAvgPool2d(1)
         self.ResNet.fc = nn.Linear(512, dim_out)
-        self.freeze_except_fc()
+        self.freeze_net()
 
     def forward(self, x):
         """
@@ -43,6 +45,15 @@ class PretrainedResnetFrozen(nn.Module):
         x /= self.channel_std
         x = self.ResNet(x)
         return F.log_softmax(x)
+
+    def freeze_net(self, freeze_until_val=-1):
+        if freeze_until_val == -1:
+            freeze_until_val = self.freeze_until
+        for name, param in self.named_parameters():
+            if fnmatch(name, f"*.layer[{freeze_until_val+1}-5]*") or fnmatch(name, '*.fc.*'):
+                param.requires_grad = True
+            else:
+                param.requires_grad = False
 
     def freeze_except_fc(self):
         for name, param in self.named_parameters():
@@ -69,7 +80,7 @@ class NotPretrainedResnet(nn.Module):
         # pytorch's standard implementation throws errors at some image sizes..
         self.ResNet.avgpool = nn.AdaptiveAvgPool2d(1)
         self.ResNet.fc = nn.Linear(512, dim_out)
-        self.freeze_except_fc()
+        # self.freeze_except_fc()
 
     def forward(self, x):
         """
@@ -105,12 +116,21 @@ class NotPretrainedResnet(nn.Module):
             param.requires_grad = True
 
 
+def foo(print_val = "lol"):
+    print(print_val)
+
+
+def test(a, **a_args):
+    a(**a_args)
+
+
 if __name__ == "__main__":
+    test(foo, print_val='trololol')
+    '''
     Net = PretrainedResnetFrozen(2)
-    for name, param in Net.named_parameters():
-        if param.requires_grad:
-            print(name)
-    # Net.unfreeze_all()
-    for name, param in Net.named_parameters():
-        if param.requires_grad:
-            print(name)
+    for i in range(2,6):
+        print("######################################")
+        for name, param in Net.named_parameters():
+            if fnmatch(name, f"*.layer[{i}-5]*") or fnmatch(name, '*.fc.*'):
+                print(name)
+    '''

@@ -16,7 +16,8 @@ import pickle
 from scipy.stats import norm
 
 
-def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False, deeper_pls=False, oo=True, NetClass=None):
+def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False,
+                                     deeper_pls=False, oo=True, NetClass=None, NetClass_param=None):
     # relevant variables
     startTime = time.time()
     print(device, pathMat)
@@ -80,7 +81,10 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
             else:
                 Net = GrayResnet18(dimOut)
         else:
-            Net = NetClass(dimOut, min_norm, max_norm, mean_norm, std_norm)
+            if NetClass_param is None:
+                Net = NetClass(dimOut, min_norm, max_norm, mean_norm, std_norm)
+            else:
+                Net = NetClass(dimOut, min_norm, max_norm, mean_norm, std_norm, freeze_until=NetClass_param)
         Net.cuda()
         # print(Net)
         # Net.load_state_dict(torch.load('trained_RobustNet_denoised.torch'))

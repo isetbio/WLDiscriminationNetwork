@@ -59,6 +59,20 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
 
 
 if __name__ == '__main__':
+    full_start = time.time()
+    for i in range(1,21):
+        run_on_folder(f'/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_{i}/', deeper_pls=False, NetClass=None)
+    with open('/share/wandell/data/reith/2_class_MTF_freq_experiment/time.txt', 'w') as txt:
+        txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+
+
+
+'''
+Older runs for documentation purposes..
+##################################################
+if __name__ == '__main__':
     print("sleeping for a bit..")
     time.sleep(2*3600)
     full_start = time.time()
@@ -68,3 +82,6 @@ if __name__ == '__main__':
     run_on_folder('/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_3', deeper_pls=False, NetClass=PretrainedResnetFrozen, NetClass_param=3)
     run_on_folder('/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_4', deeper_pls=False, NetClass=PretrainedResnetFrozen, NetClass_param=4)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+##################################################
+
+'''

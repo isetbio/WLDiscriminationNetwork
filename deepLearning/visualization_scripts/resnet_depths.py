@@ -20,6 +20,12 @@ nn_18 = get_csv_column(csv1, 'nn_dprime')
 nn_101 = get_csv_column(csv2, "nn_dprime")
 contrasts = get_csv_column(csv2, 'contrast')
 
+sort_idxs = np.argsort(contrasts)
+contrasts = contrasts[sort_idxs]
+oo = oo[sort_idxs]
+nn_18 = nn_18[sort_idxs]
+nn_101 = nn_101[sort_idxs]
+
 fig = plt.figure()
 plt.xscale('log')
 plt.xlabel('contrast')
@@ -27,8 +33,8 @@ plt.ylabel('dprime')
 plt.title('Frequency 1 harmonic - dprime for various contrasts')
 
 plt.plot(contrasts, oo, label='Ideal Observer')
-plt.plot(contrasts, nn_frozen, label='ResNet18')
-plt.plot(contrasts, nn_nonfrozen, label='ResNet101')
+plt.plot(contrasts, nn_18, label='ResNet18')
+plt.plot(contrasts, nn_101, label='ResNet101')
 plt.legend(frameon=True)
 
 out_path = os.path.dirname(csv1)

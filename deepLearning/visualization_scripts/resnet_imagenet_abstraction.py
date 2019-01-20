@@ -4,35 +4,31 @@ import numpy as np
 import os
 
 
-def get_csv_column(csv_path, col_name):
+def get_csv_column(csv_path, col_name, sort_by=None):
     df = pd.read_csv(csv_path, delimiter=';')
     col = df[col_name].tolist()
-    return np.array(col)
+    col = np.array(col)
+    if sort_by is not None:
+        sort_val = get_csv_column(csv_path, sort_by)
+        sort_idxs = np.argsort(sort_val)
+        col = col[sort_idxs]
+    return col
 
 
-csv0 = '/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_0/results.csv/results.csv'
-csv1 = '/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_1/results.csv/results.csv'
-csv2 = '/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_2/results.csv/results.csv'
-csv3 = '/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_3/results.csv/results.csv'
-csv4 = '/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_4/results.csv/results.csv'
+csv0 = '/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_0/results.csv'
+csv1 = '/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_1/results.csv'
+csv2 = '/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_2/results.csv'
+csv3 = '/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_3/results.csv'
+csv4 = '/share/wandell/data/reith/experiment_freq_1_log_contrasts30_frozen_until_4/results.csv'
 fname = 'network_imagenet_abstractions_dprime_curve'
 
-oo = get_csv_column(csv0, 'optimal_observer_d_index')
-nn_0 = get_csv_column(csv0, 'nn_dprime')
-nn_1 = get_csv_column(csv1, 'nn_dprime')
-nn_2 = get_csv_column(csv2, 'nn_dprime')
-nn_3 = get_csv_column(csv3, 'nn_dprime')
-nn_4 = get_csv_column(csv4, 'nn_dprime')
-contrasts = get_csv_column(csv4, 'contrast')
-
-sort_idxs = np.argsort(contrasts)
-contrasts = contrasts[sort_idxs]
-oo = oo[sort_idxs]
-nn_0 = nn_0[sort_idxs]
-nn_1 = nn_1[sort_idxs]
-nn_2 = nn_2[sort_idxs]
-nn_3 = nn_3[sort_idxs]
-nn_4 = nn_4[sort_idxs]
+oo = get_csv_column(csv0, 'optimal_observer_d_index', sort_by='contrast')
+nn_0 = get_csv_column(csv0, 'nn_dprime', sort_by='contrast')
+nn_1 = get_csv_column(csv1, 'nn_dprime', sort_by='contrast')
+nn_2 = get_csv_column(csv2, 'nn_dprime', sort_by='contrast')
+nn_3 = get_csv_column(csv3, 'nn_dprime', sort_by='contrast')
+nn_4 = get_csv_column(csv4, 'nn_dprime', sort_by='contrast')
+contrasts = get_csv_column(csv4, 'contrast', sort_by='contrast')
 
 
 fig = plt.figure()
@@ -48,9 +44,9 @@ plt.plot(contrasts, nn_2, label='ResNet18 - first half ImageNet pretrained and f
 plt.plot(contrasts, nn_3, label='ResNet18 - first three quarters Imagenet pretrained and frozen')
 plt.plot(contrasts, nn_4, label='ResNet18 - all layers except final fully connected layer ImageNet pretrained and frozen')
 
-plt.legend(frameon=True)
+plt.legend(frameon=True, fontsize='x-small', loc='upper left')
 
-out_path = os.path.dirname(csv1)
-fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
+out_path = os.path.dirname(csv0)
+fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=500)
 # fig.show()
 print('done!')

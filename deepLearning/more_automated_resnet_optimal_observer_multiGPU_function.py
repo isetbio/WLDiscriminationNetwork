@@ -47,7 +47,6 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
 
         time.sleep(5)
 
-
     for proc in Procs.values():
         proc.join()
 
@@ -60,9 +59,8 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
 
 if __name__ == '__main__':
     full_start = time.time()
-    for i in range(1,21):
-        run_on_folder(f'/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_{i}/', deeper_pls=False, NetClass=None)
-    with open('/share/wandell/data/reith/2_class_MTF_freq_experiment/time.txt', 'w') as txt:
+    run_on_folder('/share/wandell/data/reith/harmonic_shift_calibration/', deeper_pls=False, NetClass=None)
+    with open('/share/wandell/data/reith/harmonic_shift_calibration/time.txt', 'w') as txt:
         txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
@@ -71,6 +69,14 @@ if __name__ == '__main__':
 
 '''
 Older runs for documentation purposes..
+##################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    for i in range(1,21):
+        run_on_folder(f'/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_{i}/', deeper_pls=False, NetClass=None)
+    with open('/share/wandell/data/reith/2_class_MTF_freq_experiment/time.txt', 'w') as txt:
+        txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 ##################################################
 if __name__ == '__main__':
     print("sleeping for a bit..")

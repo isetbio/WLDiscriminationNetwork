@@ -53,7 +53,10 @@ class PretrainedResnetFrozen(nn.Module):
             if fnmatch(name, f"*.layer[{freeze_until_val+1}-5]*") or fnmatch(name, '*.fc.*'):
                 param.requires_grad = True
             else:
-                param.requires_grad = False
+                if fnmatch(name, "ResNet.[b-c]*") and freeze_until_val == 0:
+                    param.requires_grad = True
+                else:
+                    param.requires_grad = False
 
     def freeze_except_fc(self):
         for name, param in self.named_parameters():
@@ -116,21 +119,13 @@ class NotPretrainedResnet(nn.Module):
             param.requires_grad = True
 
 
-def foo(print_val = "lol"):
-    print(print_val)
-
-
-def test(a, **a_args):
-    a(**a_args)
-
-
 if __name__ == "__main__":
-    test(foo, print_val='trololol')
-    '''
     Net = PretrainedResnetFrozen(2)
-    for i in range(2,6):
+    for name, param in Net.named_parameters():
+        if fnmatch(name, "ResNet.[b-c]*"):
+            print(name)
+    for i in range(1,6):
         print("######################################")
         for name, param in Net.named_parameters():
             if fnmatch(name, f"*.layer[{i}-5]*") or fnmatch(name, '*.fc.*'):
                 print(name)
-    '''

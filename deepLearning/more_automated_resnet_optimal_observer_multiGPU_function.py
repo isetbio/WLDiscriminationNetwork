@@ -29,7 +29,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
                     pathMat = next(pathGen)
                     print(f"Running {pathMat} on GPU {device}")
                     currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
-                                       kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
+                                       kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': True,
                                                'NetClass': NetClass, 'deeper_pls': deeper_pls, 'NetClass_param': NetClass_param})
                     Procs[str(device)] = currP
                     currP.start()
@@ -38,7 +38,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
                     pathMat = next(pathGen)
                     print(f"Running {pathMat} on GPU {device}")
                     currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
-                                       kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
+                                       kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': True,
                                                'NetClass': NetClass, 'deeper_pls': deeper_pls, 'NetClass_param': NetClass_param})
                     Procs[str(device)] = currP
                     currP.start()
@@ -59,8 +59,8 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
 
 if __name__ == '__main__':
     full_start = time.time()
-    run_on_folder('/share/wandell/data/reith/harmonic_shift_calibration/', deeper_pls=False, NetClass=None)
-    with open('/share/wandell/data/reith/harmonic_shift_calibration/time.txt', 'w') as txt:
+    run_on_folder('/share/wandell/data/reith/harmonic_shift_calibration_include_shifts/', deeper_pls=False, NetClass=None)
+    with open('/share/wandell/data/reith/harmonic_shift_calibration_include_shifts/time.txt', 'w') as txt:
         txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 

@@ -29,10 +29,11 @@ nn_dprimes = []
 oo_dprimes = []
 
 for p in frequency_paths:
-    freq = int(p.split('_')[-1])
-    freqs.append(freq)
-    nn_dprimes.append(get_csv_column(os.path.join(p, 'results.csv'), 'nn_dprime', sort_by='contrast'))
-    oo_dprimes.append(get_csv_column(os.path.join(p, 'results.csv'), 'optimal_observer_d_index', sort_by='contrast'))
+    if os.path.isdir(p):
+        freq = int(p.split('_')[-1])
+        freqs.append(freq)
+        nn_dprimes.append(get_csv_column(os.path.join(p, 'results.csv'), 'nn_dprime', sort_by='contrast'))
+        oo_dprimes.append(get_csv_column(os.path.join(p, 'results.csv'), 'optimal_observer_d_index', sort_by='contrast'))
 
 sort_idxs = np.argsort(freqs)
 freqs, nn_dprimes, oo_dprimes = np.array(freqs), np.array(nn_dprimes), np.array(oo_dprimes)

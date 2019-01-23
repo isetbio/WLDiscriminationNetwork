@@ -5,7 +5,7 @@ import GPUtil
 import multiprocessing as mp
 import time
 import datetime
-
+import os
 
 
 def matfile_gen(pathMatDir):
@@ -59,8 +59,12 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
 
 if __name__ == '__main__':
     full_start = time.time()
-    run_on_folder('/share/wandell/data/reith/harmonic_shift_calibration_include_shifts/', deeper_pls=False, NetClass=None)
-    with open('/share/wandell/data/reith/harmonic_shift_calibration_include_shifts/time.txt', 'w') as txt:
+    general_folder = '/share/wandell/data/reith/2_class_MTF_shift_experiment/'
+    frequency_folders = [os.path.join(general_folder, f) for f in os.listdir(general_folder)]
+    frequency_folders.sort(key=lambda k: int(k.split('_')[-1]))
+    for f in frequency_folders:
+        run_on_folder(f, deeper_pls=False, NetClass=None)
+    with open(general_folder, 'w') as txt:
         txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
@@ -69,6 +73,13 @@ if __name__ == '__main__':
 
 '''
 Older runs for documentation purposes..
+###################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    run_on_folder('/share/wandell/data/reith/harmonic_shift_calibration_include_shifts/', deeper_pls=False, NetClass=None)
+    with open('/share/wandell/data/reith/harmonic_shift_calibration_include_shifts/time.txt', 'w') as txt:
+        txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 ##################################################
 if __name__ == '__main__':
     full_start = time.time()

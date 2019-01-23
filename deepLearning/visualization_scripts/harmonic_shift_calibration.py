@@ -16,22 +16,22 @@ def get_csv_column(csv_path, col_name, sort_by=None):
 
 
 
-csv1 = '/share/wandell/data/reith/harmonic_shift_calibration/results.csv'
+csv1 = '/share/wandell/data/reith/harmonic_shift_calibration_include_shifts/results.csv'
 fname = 'harmonic_shift_calibration'
 
-oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast')
-nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast')
-shifts = get_csv_column(csv1, 'contrast', sort_by='contrast')
+oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='shift')
+nn = get_csv_column(csv1, 'nn_dprime', sort_by='shift')
+shifts = get_csv_column(csv1, 'shift', sort_by='shift')
 
 fig = plt.figure()
+plt.grid(which='both')
 plt.xscale('log')
-plt.xlabel('contrast')
+plt.xlabel('shift in pi')
 plt.ylabel('dprime')
-plt.title('Frequency 1 harmonic - dprime for various shifting values')
+plt.title('Frequency 1 harmonic - dprime for various shift values')
 
-plt.plot(contrasts, oo, label='Ideal Observer')
-plt.plot(contrasts, nn_18, label='ResNet18')
-plt.plot(contrasts, nn_101, label='ResNet101')
+plt.plot(shifts/np.pi, oo, label='Ideal Observer')
+plt.plot(shifts/np.pi, nn, label='ResNet18')
 plt.legend(frameon=True)
 
 out_path = os.path.dirname(csv1)

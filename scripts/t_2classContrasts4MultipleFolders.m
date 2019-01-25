@@ -27,29 +27,23 @@
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
 % Values to set
-outputFolder = '/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_1';
-mkdir(outputFolder);
-numSamples = 5;
-frequencies = 1;
-% contrastValues = [0.0003, 0.0002, 0.0004];
-contrastValues = logspace(-7.5, -0.5, 18);
-contrastFreqPairs = [];
+for f = 1:20
+    outputFolder = ['/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_' num2str(f)];
+    mkdir(outputFolder);
+    numSamples = 5;
+    frequencies = f;
+    % contrastValues = [0.0003, 0.0002, 0.0004];
+    contrastValues = logspace(-7.5, -0.5, 18);
+    contrastFreqPairs = [];
 
 
-for i = 1:length(contrastValues)
-    for j = 1:length(frequencies)       
+    % This creates the resulting datasets
+    for i = 1:length(contrastValues)
+        fprintf('starting at %s\n', datetime('now'))
         contrast = contrastValues(i);
-        freq = frequencies(j);
-        contrastFreqPairs = cat(1, contrastFreqPairs, [contrast, freq]);
+        fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_oo_%s',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.12f", contrast), '.', '_'));
+        disp(fileName);
+        CreateSensorAbsorptionSignalNoiseDataset_function(frequencies, contrast, numSamples, fileName, outputFolder)
+        fprintf('ending at %s\n', datetime('now'))
     end
-end
-
-% This creates the resulting datasets
-for i = 1:length(contrastValues)
-    fprintf('starting at %s\n', datetime('now'))
-    contrast = contrastValues(i);
-    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_oo_%s',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.12f", contrast), '.', '_'));
-    disp(fileName);
-    CreateSensorAbsorptionSignalNoiseDataset_function(frequencies, contrast, numSamples, fileName, outputFolder)
-    fprintf('ending at %s\n', datetime('now'))
 end

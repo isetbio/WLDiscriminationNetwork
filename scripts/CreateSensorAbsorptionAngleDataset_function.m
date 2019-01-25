@@ -1,4 +1,4 @@
-function CreateSensorAbsorptionSignalShiftDataset_function(scanFreq, scanContrast, shiftValues, numSamples, name, outputFolder)
+function CreateSensorAbsorptionAngleDataset_function(scanAngle, scanFreq, scanContrast, numSamples, name, outputFolder)
 %CREATEDATAFUNCTION Summary of this function goes here
 %   Detailed explanation goes here
 %% Important prameters to set
@@ -23,7 +23,8 @@ sensor = sensorSet(sensor,'noise flag',1);
 
 %% Create data variables
 
-nImages = (length(scanFreq)+1)*length(scanContrast)*length(shiftValues)*numSamples;
+shiftValues = 0;
+nImages = (length(scanAngle)+1)*(length(scanFreq)+1)*length(scanContrast)*length(shiftValues)*numSamples;
 
 % With noise (for each frequency + no signal)
 imgNoise = zeros(256,256, nImages);
@@ -51,13 +52,11 @@ for cc = 1:length(scanContrast)
         else
             p.freq = scanFreq(ff);
         end
-        for sh = 0:length(shiftValues)
-            if sh >= 1
-                p.ph = originalPhase + shiftValues(sh)*pi;
-                disp(originalPhase);
-                disp(p.ph);
+        for an = 0:length(scanAngle)
+            if an == 0
+                p.ang = 0;
             else
-                p.ph = originalPhase;
+                p.ang = scanAngle(an)*pi;
             end
             scene = sceneCreate('harmonic',p);
             oi = oiCreate;
@@ -70,15 +69,17 @@ for cc = 1:length(scanContrast)
                 imgNoiseFreqs(k) = p.freq;
                 imgNoiseContrasts(k) = p.contrast;
                 imgNoisePhases(k) = p.ph;
+                imgNoiseAngles(k) = p.ang;
 
                 % Calculate without noise
                 if nn == 1
                     sensor = sensorSet(sensor,'noise flag',0);
                     sensor = sensorCompute(sensor,oi);
-                    noNoiseImg(:,:,sh+1) = sensorGet(sensor, 'electrons');
-                    noNoiseImgFreq(1+sh) = p.freq;
-                    noNoiseImgContrast(1+sh) = p.contrast;
-                    noNoiseImgPhase(1+sh) = p.ph-originalPhase;
+                    noNoiseImg(:,:,an+1) = sensorGet(sensor, 'electrons');
+                    noNoiseImgFreq(1+an) = p.freq;
+                    noNoiseImgContrast(1+an) = p.contrast;
+                    noNoiseImgPhase(1+an) = p.ph-originalPhase;
+                    noNoiseImgAngle(1+an) = p.ang;
                     sensor = sensorSet(sensor,'noise flag',1);
                 end
 
@@ -101,10 +102,12 @@ if(saveFlag)
         'imgNoiseFreqs', imgNoiseFreqs, ...
         'imgNoiseContrasts', imgNoiseContrasts, ...
         'imgNoisePhases', imgNoisePhases, ...
+        'imgNoiseAngles', imgNoiseAngles, ...
         'noNoiseImg', noNoiseImg, ...
         'noNoiseImgFreq', noNoiseImgFreq, ...
         'noNoiseImgContrast', noNoiseImgContrast, ...
-        'noNoiseImgPhase', sprintfc('%.15f', noNoiseImgPhase));
+        'noNoiseImgPhase', sprintfc('%.15f', noNoiseImgPhase), ...
+        'noNoiseImgAngle', sprintfc('%15f', noNoiseImgAngle));
         
 %     save(sprintf('%s.mat',saveName),...
 %         'imgNoise',...

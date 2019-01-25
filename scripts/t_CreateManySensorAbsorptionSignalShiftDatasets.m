@@ -33,7 +33,7 @@ frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = 0.1;
 contrastFreqPairs = [];
-shiftValues = logspace(-3.5, 2.5, 100);
+shiftValues = logspace(-3.5, 2.5, 18);
 
 for i = 1:length(contrastValues)
     for j = 1:length(frequencies)       

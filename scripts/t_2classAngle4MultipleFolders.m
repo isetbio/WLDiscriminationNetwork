@@ -26,30 +26,29 @@
 % See Also:
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
-% Values to set
-outputFolder = '/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_1';
-mkdir(outputFolder);
-numSamples = 5;
-frequencies = 1;
-% contrastValues = [0.0003, 0.0002, 0.0004];
-contrastValues = logspace(-7.5, -0.5, 18);
-contrastFreqPairs = [];
+
+frequencyVals = unique(round(logspace(0, log(50)/log(10), 20)));
+frequencyVals = 1;
+for f = 1:length(frequencyVals)
+    % Values to set
+    freq = frequencyVals(f);
+    outputFolder = ['/share/wandell/data/reith/2_class_MTF_angle_experiment/frequency_' num2str(freq)];
+    mkdir(outputFolder);
+    numSamples = 2;
+    frequencies = freq;
+    % contrastValues = [0.0003, 0.0002, 0.0004];
+    contrastValues = 0.1;
+    angleValues = logspace(-6, log(2)/log(10), 20);
 
 
-for i = 1:length(contrastValues)
-    for j = 1:length(frequencies)       
-        contrast = contrastValues(i);
-        freq = frequencies(j);
-        contrastFreqPairs = cat(1, contrastFreqPairs, [contrast, freq]);
+    % This creates the resulting datasets
+    for an = 1:length(angleValues)
+        fprintf('starting at %s\n', datetime('now'))
+        contrast = contrastValues;
+        angle = angleValues(an);
+        fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_angle_%s_pi_oo',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.2f", contrast), '.', '_'), strrep(sprintf("%.9f", angle), '.', '_'));
+        disp(fileName);
+        CreateSensorAbsorptionAngleDataset_function(angle,frequencies, contrast, numSamples, fileName, outputFolder)
+        fprintf('ending at %s\n', datetime('now'))
     end
-end
-
-% This creates the resulting datasets
-for i = 1:length(contrastValues)
-    fprintf('starting at %s\n', datetime('now'))
-    contrast = contrastValues(i);
-    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_oo_%s',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.12f", contrast), '.', '_'));
-    disp(fileName);
-    CreateSensorAbsorptionSignalNoiseDataset_function(frequencies, contrast, numSamples, fileName, outputFolder)
-    fprintf('ending at %s\n', datetime('now'))
 end

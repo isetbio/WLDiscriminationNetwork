@@ -50,7 +50,7 @@ for i = 1:length(imagePaths)
     imagePath = imagePaths(i);
     imagePath = imagePath{1};
     [~,fname,~] = fileparts(imagePath);
-    outputFolder = ['/share/wandell/data/reith/circles_experiment_v3/' fname '/'];
+    outputFolder = ['/share/wandell/data/reith/circles_experiment_v4/' fname '/'];
     status = mkdir(outputFolder);
     % This creates the resulting datasets
     fprintf('starting at %s\n', datetime('now'))

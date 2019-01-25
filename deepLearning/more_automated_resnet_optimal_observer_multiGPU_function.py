@@ -59,6 +59,19 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
 
 if __name__ == '__main__':
     full_start = time.time()
+    run_folder = '/share/wandell/data/reith/harmonic_angle_calibration/'
+    run_on_folder(run_folder, deeper_pls=False, NetClass=None)
+    with open(run_folder + 'time.txt', 'w') as txt:
+        txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+
+
+'''
+Older runs for documentation purposes..
+##################################################
+if __name__ == '__main__':
+    full_start = time.time()
     general_folder = '/share/wandell/data/reith/2_class_MTF_shift_experiment/'
     frequency_folders = [os.path.join(general_folder, f) for f in os.listdir(general_folder)]
     frequency_folders.sort(key=lambda k: int(k.split('_')[-1]))
@@ -67,12 +80,6 @@ if __name__ == '__main__':
     with open(general_folder, 'w') as txt:
         txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
-
-
-
-
-'''
-Older runs for documentation purposes..
 ###################################################
 if __name__ == '__main__':
     full_start = time.time()

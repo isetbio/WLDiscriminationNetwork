@@ -94,8 +94,8 @@ def high_low(archive_path, cnf_matrix, folder_name):
     print(f"high_low analysis done for {out_folder}.")
 
 
-folderPath = '/share/wandell/data/reith/frequencies_experiment/'
-is_shift = True
+folderPath = '/share/wandell/data/reith/old_freq_experiments/frequencies_experiment/'
+is_shift = False
 
 archivePaths = [os.path.join(folderPath, f) for f in os.listdir(folderPath)]
 # archivePaths = ['/share/wandell/data/reith/matlabData/circle_image_rad_4_v4/']

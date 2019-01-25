@@ -29,6 +29,8 @@ nn_dprimes = []
 oo_dprimes = []
 
 for p in frequency_paths:
+    if not os.path.isdir(p):
+        continue
     if os.path.isdir(p):
         freq = int(p.split('_')[-1])
         freqs.append(freq)
@@ -64,12 +66,13 @@ nn_bilinear_targets = np.array(nn_bilinear_targets)
 oo_bilinear_targets = np.array(oo_bilinear_targets)
 
 fig = plt.figure()
+plt.yscale('log')
 plt.xlabel('frequency')
-plt.ylabel('contrast needed for a dprime of 2')
+plt.ylabel('1 over contrast')
 plt.title('Modular Transfer Function - Harmonic curve with various frequencies')
 
-plt.plot(freqs, nn_bilinear_targets, label='ResNet')
-plt.plot(freqs, oo_bilinear_targets, label='Optimal Observer')
+plt.plot(freqs, 1/nn_bilinear_targets, label='ResNet')
+plt.plot(freqs, 1/oo_bilinear_targets, label='Optimal Observer')
 plt.legend(frameon=True)
 
 fig.savefig(os.path.join(MTF_path, f'{fname}.png'), dpi=200)

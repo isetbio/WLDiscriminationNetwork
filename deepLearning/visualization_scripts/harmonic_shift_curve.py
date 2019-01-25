@@ -16,8 +16,8 @@ def get_csv_column(csv_path, col_name, sort_by=None):
 
 
 
-csv1 = '/share/wandell/data/reith/harmonic_shift_calibration_include_shifts/results.csv'
-fname = 'harmonic_shift_calibration'
+csv1 = '/share/wandell/data/reith/2_class_MTF_shift_experiment/frequency_12/results.csv'
+fname = 'harmonic_shift_curve'
 
 oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='shift')
 nn = get_csv_column(csv1, 'nn_dprime', sort_by='shift')
@@ -28,7 +28,7 @@ fig = plt.figure()
 plt.xscale('log')
 plt.xlabel('shift in pi')
 plt.ylabel('dprime')
-plt.title('Frequency 1 harmonic - dprime for various shift values')
+plt.title('Frequency 12 harmonic - dprime for various shift values')
 
 plt.plot(shifts/np.pi, oo, label='Ideal Observer')
 plt.plot(shifts/np.pi, nn, label='ResNet18')

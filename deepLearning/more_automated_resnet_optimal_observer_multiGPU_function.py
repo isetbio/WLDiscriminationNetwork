@@ -51,7 +51,8 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
         proc.join()
 
     function_end = time.time()
-
+    with open(os.path.join(dirname, 'time.txt'), 'w') as txt:
+        txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
     time.sleep(60)
     print("done!")

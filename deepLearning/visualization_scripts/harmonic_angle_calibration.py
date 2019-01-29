@@ -19,16 +19,16 @@ def get_csv_column(csv_path, col_name, sort_by=None):
 csv1 = '/share/wandell/data/reith/harmonic_angle_calibration/results.csv'
 fname = 'harmonic_angle_calibration'
 
-oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='shift')
-nn = get_csv_column(csv1, 'nn_dprime', sort_by='shift')
-shifts = get_csv_column(csv1, 'shift', sort_by='shift')
+oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='angle')
+nn = get_csv_column(csv1, 'nn_dprime', sort_by='angle')
+shifts = get_csv_column(csv1, 'angle', sort_by='angle')
 
 fig = plt.figure()
 # plt.grid(which='both')
 plt.xscale('log')
-plt.xlabel('shift in pi')
+plt.xlabel('angle in pi')
 plt.ylabel('dprime')
-plt.title('Frequency 1 harmonic - dprime for various shift values')
+plt.title('Frequency 1 harmonic - dprime for various angle values')
 
 plt.plot(shifts/np.pi, oo, label='Ideal Observer')
 plt.plot(shifts/np.pi, nn, label='ResNet18')

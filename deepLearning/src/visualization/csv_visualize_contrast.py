@@ -54,7 +54,7 @@ if __name__ == '__main__':
     plt.xscale('log')
     plt.xlabel('Contrast values')
     plt.ylabel('Accuracy')
-    plt.title('Freq 1 accuracy for various contrasts')
+    plt.title('Freq 1 accuracy for various shifts')
     if smooth:
         x_new = np.linspace(contrast_values.min(), contrast_values.max(), 200)
         spl = BSpline()

@@ -33,7 +33,7 @@ if __name__ == '__main__':
     plt.xscale('log')
     plt.xlabel('contrast')
     plt.ylabel('dprime')
-    plt.title('Frequency 1 harmonic - dprime for various contrasts')
+    plt.title('Frequency 1 harmonic - dprime for various shifts')
 
     plt.plot(contrasts, oo, label='Ideal Observer')
     plt.plot(contrasts, nn_frozen, label='ResNet18 - abstract ImageNet features')

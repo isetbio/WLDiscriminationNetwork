@@ -13,8 +13,8 @@ def h5gen(folder):
 
 def score_svm(h5_path, lock, num_samples=15000):
     metric = 'contrast'
-    acc, metric_val = get_svm_accuracy(h5_path, num_samples)
-    write_svm_csv(acc, metric_val, os.path.dirname(h5_path), lock=lock, metric_name=metric)
+    acc, dprime, metric_val = get_svm_accuracy(h5_path, num_samples)
+    write_svm_csv(acc, dprime, metric_val, os.path.dirname(h5_path), lock=lock, metric_name=metric)
 
 
 def run_svm_on_h5(folder, num_cpus):

@@ -17,7 +17,8 @@ from scipy.stats import norm
 
 
 def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False,
-                                     deeper_pls=False, oo=True, NetClass=None, NetClass_param=None):
+                                     deeper_pls=False, oo=True, svm=False, NetClass=None, NetClass_param=None,
+                                     include_angle=False):
     # relevant variables
     startTime = time.time()
     print(device, pathMat)
@@ -31,6 +32,8 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     sys.stdout = Logger(f"{os.path.join(outPath, fileName)}_log.txt")
     if include_shift:
         meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True)
+    elif include_angle:
+        meanData, meanDataLabels, dataContrast, dataAngle = get_h5mean_data(pathMat, includeContrast=True, includeAngle=True)
     else:
         meanData, meanDataLabels, dataContrast = get_h5mean_data(pathMat, includeContrast=True)
     # data = torch.from_numpy(data).type(torch.float32)
@@ -73,6 +76,9 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     testLabels = testLabelsFull[:500]
     dimIn = testData[0].shape[1]
     dimOut = len(meanData)
+
+    if svm:
+        pass
 
     if train_nn:
         if NetClass is None:
@@ -149,7 +155,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     file_exists = os.path.isfile(resultCSV)
 
     with open(resultCSV, 'a') as csvfile:
-        if not include_shift:
+        if not include_shift and not include_angle:
             headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'nn_dprime']
             writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
 
@@ -157,7 +163,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
                 writer.writeheader()  # file doesn't exist yet, write a header
 
             writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': dataContrast[0].astype(np.float64), 'nn_dprime': nn_dprime})
-        else:
+        elif include_shift:
             headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'shift', 'nn_dprime']
             writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
 
@@ -165,6 +171,14 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
                 writer.writeheader()  # file doesn't exist yet, write a header
 
             writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': dataContrast[0].astype(np.float32), 'shift': dataShift[1].astype(np.float64), 'nn_dprime': nn_dprime})
+        elif include_angle:
+            headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'angle', 'nn_dprime']
+            writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
+
+            if not file_exists:
+                writer.writeheader()  # file doesn't exist yet, write a header
+
+            writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': dataContrast[0].astype(np.float32), 'shift': dataAngle[1].astype(np.float64), 'nn_dprime': nn_dprime})
 
     print(f'Wrote results to {resultCSV}')
     if lock is not None:

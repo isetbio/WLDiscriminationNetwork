@@ -32,23 +32,19 @@ def get_h5data(pathMat, shuffle=False):
     return data, labels, meanData, meanDataLabels
 
 
-def get_h5mean_data(pathMat, includeContrast=False, includeShift=False):
+def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeAngle=False):
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
-    noNoiseData = h5Dict['noNoiseImg']
-    noNoiseLabels = h5Dict['noNoiseImgFreq']
-    if includeShift and includeShift:
-        dataContrast = h5Dict['noNoiseImgContrast']
-        dataShift = h5Dict['noNoiseImgPhase']
-        return noNoiseData, noNoiseLabels, dataContrast, dataShift
-    elif includeContrast:
-        dataContrast = h5Dict['noNoiseImgContrast']
-        return noNoiseData, noNoiseLabels, dataContrast
-    elif includeShift:
-        dataShift = h5Dict['noNoiseImgPhase']
-        return noNoiseData, noNoiseLabels, dataShift
-    else:
-        return noNoiseData, noNoiseLabels
+    args = []
+    args.append(h5Dict['noNoiseImg'])
+    args.append(h5Dict['noNoiseImgFreq'])
+    if includeContrast:
+        args.append(h5Dict['noNoiseImgContrast'])
+    if includeShift:
+        args.append(h5Dict['noNoiseImgPhase'])
+    if includeAngle:
+        args.append(h5Dict['noNoiseImgAngle'])
+    return args
 
 
 def mat_data_loader(data, labels, batchSize, shuffle=True):

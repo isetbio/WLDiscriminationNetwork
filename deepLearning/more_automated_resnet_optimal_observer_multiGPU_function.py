@@ -29,8 +29,9 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
                     pathMat = next(pathGen)
                     print(f"Running {pathMat} on GPU {device}")
                     currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
-                                       kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': True,
-                                               'NetClass': NetClass, 'deeper_pls': deeper_pls, 'NetClass_param': NetClass_param})
+                                       kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
+                                               'NetClass': NetClass, 'deeper_pls': deeper_pls, 'NetClass_param': NetClass_param,
+                                               'include_angle': True})
                     Procs[str(device)] = currP
                     currP.start()
             for device, proc in Procs.items():
@@ -38,8 +39,9 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
                     pathMat = next(pathGen)
                     print(f"Running {pathMat} on GPU {device}")
                     currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
-                                       kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': True,
-                                               'NetClass': NetClass, 'deeper_pls': deeper_pls, 'NetClass_param': NetClass_param})
+                                       kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
+                                               'NetClass': NetClass, 'deeper_pls': deeper_pls, 'NetClass_param': NetClass_param,
+                                               'include_angle': True})
                     Procs[str(device)] = currP
                     currP.start()
         except StopIteration:

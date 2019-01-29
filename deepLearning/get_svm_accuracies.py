@@ -64,7 +64,7 @@ def subfolder_gen(super_folder):
 if __name__ == '__main__':
     super_folder = '/share/wandell/data/reith/2_class_MTF_freq_experiment/'
     folder_gen = subfolder_gen(super_folder)
-    parallel_folders = list(range(7))
+    parallel_folders = list(range(2))
     num_cpus = 5
     processes = {}
     while True:

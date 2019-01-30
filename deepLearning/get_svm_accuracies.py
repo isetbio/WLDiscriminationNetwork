@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     folder_gen = subfolder_gen(super_folder)
     parallel_folders = list(range(2))
-    num_cpus = 5
+    num_cpus = 6
     processes = {}
     while True:
         try:

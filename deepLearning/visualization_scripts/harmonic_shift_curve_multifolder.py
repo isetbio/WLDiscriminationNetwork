@@ -15,7 +15,7 @@ def get_csv_column(csv_path, col_name, sort_by=None):
     return col
 
 
-super_folder = '/share/wandell/data/reith/2_class_MTF_freq_experiment/'
+super_folder = '/share/wandell/data/reith/2_class_MTF_shift_experiment/'
 include_svm = False
 
 folder_paths = [f.path for f in os.scandir(super_folder) if f.is_dir()]
@@ -23,27 +23,24 @@ folder_paths = [f.path for f in os.scandir(super_folder) if f.is_dir()]
 for p in folder_paths:
     csv1 = os.path.join(p, 'results.csv')
     csv_svm = os.path.join(p, 'svm_results.csv')
-    fname = 'harmonic_contrast_curve'
+    fname = 'harmonic_shift_curve'
 
-    oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast')
-    nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast')
-    contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast')
+    oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='shift')
+    nn = get_csv_column(csv1, 'nn_dprime', sort_by='shift')
+    shifts = get_csv_column(csv1, 'shift', sort_by='shift')
 
     fig = plt.figure()
     # plt.grid(which='both')
     plt.xscale('log')
-    plt.xlabel('contrast')
+    plt.xlabel('shift in pi')
     plt.ylabel('dprime')
-    plt.title(f"Frequency {p.split('_')[-1]} harmonic - dprime for various contrast values")
-
-    plt.plot(contrasts, oo, label='Ideal Observer')
-    plt.plot(contrasts, nn, label='ResNet18')
-    if include_svm:
-        svm = get_csv_column(csv_svm, 'svm_accuracy', sort_by='contrast')
-        plt.plot(contrasts, svm, label='Support Vector Machine')
+    plt.title(f"Frequency {p.split('_')[-1]} harmonic - dprime for various shift values")
+    freq = int(p.split('_')[-1])
+    plt.plot(shifts/np.pi/freq, oo, label='Ideal Observer')
+    plt.plot(shifts/np.pi/freq, nn, label='ResNet18')
     plt.legend(frameon=True)
 
-    out_path = p
+    out_path = os.path.dirname(csv1)
     fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
     # fig.show()
     print('done!')

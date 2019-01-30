@@ -19,8 +19,7 @@ def get_csv_column(csv_path, col_name, sort_by=None, max_vals=20):
 
 
 MTF_path = '/share/wandell/data/reith/2_class_MTF_shift_experiment/'
-fname = 'Modular_transfer_function_frequencies_log'
-
+fname = 'Modular_transfer_function_frequencies_shift_in_relation_to_harmonic'
 target_d = 2
 
 frequency_paths = [f.path for f in os.scandir(MTF_path) if f.is_dir()]
@@ -45,19 +44,19 @@ shifts = get_csv_column(os.path.join(frequency_paths[0], 'results.csv'), 'shift'
 nn_bilinear_targets = []
 oo_bilinear_targets = []
 
-for dprimes in nn_dprimes:
+for dprimes, freq in zip(nn_dprimes, freqs):
     right_target = bisect.bisect(dprimes, target_d)
     left_target = right_target -1
     p_val = (target_d - dprimes[left_target])/(dprimes[right_target]-dprimes[left_target])
-    interpolated_val = (1-p_val) * shifts[left_target] + p_val * shifts[right_target]
+    interpolated_val = (1-p_val) * (shifts*freq)[left_target] + p_val * (shifts*freq)[right_target]
     nn_bilinear_targets.append(interpolated_val)
 
-for dprimes in oo_dprimes:
+for dprimes, freq in zip(oo_dprimes, freqs):
     right_target = bisect.bisect(dprimes, target_d)
     left_target = right_target -1
     p_val = (target_d - dprimes[left_target])/(dprimes[right_target]-dprimes[left_target])
     print(p_val, shifts[left_target])
-    interpolated_val = (1-p_val) * shifts[left_target] + p_val * shifts[right_target]
+    interpolated_val = (1-p_val) * (shifts*freq)[left_target] + p_val * (shifts*freq)[right_target]
     oo_bilinear_targets.append(interpolated_val)
 
 nn_bilinear_targets = np.array(nn_bilinear_targets)
@@ -65,7 +64,6 @@ oo_bilinear_targets = np.array(oo_bilinear_targets)
 
 fig = plt.figure()
 plt.yscale('log')
-plt.xscale('log')
 plt.xlabel('frequency')
 plt.ylabel('1 over shift')
 plt.title('Modular Transfer Function - Harmonic curve shifts with various frequencies')

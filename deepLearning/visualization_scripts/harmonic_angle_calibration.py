@@ -16,7 +16,7 @@ def get_csv_column(csv_path, col_name, sort_by=None):
 
 
 
-csv1 = '/share/wandell/data/reith/harmonic_angle_calibration/results.csv'
+csv1 = '/share/wandell/data/reith/2_class_MTF_angle_experiment/frequency_1/results.csv'
 fname = 'harmonic_angle_calibration'
 
 oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='angle')

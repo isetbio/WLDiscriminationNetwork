@@ -30,6 +30,7 @@ freqs =[]
 nn_dprimes = []
 oo_dprimes = []
 
+
 for p in frequency_paths:
     if not os.path.isdir(p):
         continue
@@ -38,7 +39,7 @@ for p in frequency_paths:
         freqs.append(freq)
         nn_dprimes.append(get_csv_column(os.path.join(p, 'results.csv'), 'nn_dprime', sort_by='contrast'))
         oo_dprimes.append(get_csv_column(os.path.join(p, 'results.csv'), 'optimal_observer_d_index', sort_by='contrast'))
-        svm_dprimes.append()
+
 
 sort_idxs = np.argsort(freqs)
 freqs, nn_dprimes, oo_dprimes = np.array(freqs), np.array(nn_dprimes), np.array(oo_dprimes)
@@ -65,6 +66,8 @@ for dprimes in oo_dprimes:
     interpolated_val = (1-p_val) * contrasts[left_target] + p_val * contrasts[right_target]
     oo_bilinear_targets.append(interpolated_val)
 
+
+
 nn_bilinear_targets = np.array(nn_bilinear_targets)
 oo_bilinear_targets = np.array(oo_bilinear_targets)
 
@@ -76,6 +79,20 @@ plt.title('Modular Transfer Function - Harmonic curve with various frequencies')
 
 plt.plot(freqs, 1/nn_bilinear_targets, label='ResNet')
 plt.plot(freqs, 1/oo_bilinear_targets, label='Optimal Observer')
+############SVM SUPPORT#######################################
+if include_svm:
+    svm_bilinear_targets = []
+    svm_dprimes = []
+    svm_dprimes.append(get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by='contrast'))
+    for dprimes in svm_dprimes:
+        right_target = bisect.bisect(dprimes, target_d)
+        left_target = right_target -1
+        p_val = (target_d - dprimes[left_target])/(dprimes[right_target]-dprimes[left_target])
+        interpolated_val = (1-p_val) * contrasts[left_target] + p_val * contrasts[right_target]
+        svm_bilinear_targets.append(interpolated_val)
+        svm_bilinear_targets = np.array(svm_bilinear_targets)
+        plt.plot(freqs, 1 / svm_bilinear_targets, label='Support Vector Machine')
+###############################################################
 plt.legend(frameon=True)
 
 fig.savefig(os.path.join(MTF_path, f'{fname}.png'), dpi=200)

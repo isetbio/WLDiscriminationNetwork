@@ -39,7 +39,7 @@ def get_svm_accuracy(path_mat, num_samples=15000, **kwargs):
     acc = np.mean(preds == y_test)
     dprime = calculate_dprime(np.stack([preds, y_test], axis=1))
     print(f'Accuracy is {acc}, Dprime is {dprime} num train samples is {num_train}, took {str(datetime.timedelta(seconds=time.time()-start))}.')
-    return acc, dprime, float(dataMetric[0])
+    return acc, dprime, float(dataMetric[1])
 
 
 if __name__ == '__main__':

@@ -55,7 +55,7 @@ def run_svm_on_h5(folder, num_cpus, metric, **kwargs):
 
 
 def subfolder_gen(super_folder):
-    sub_folders = [os.path.join(super_folder, f) + '/' for f in os.listdir(super_folder)]
+    sub_folders = [f.path + '/' for f in os.scandir(super_folder) if f.is_dir()]
     for f in sub_folders:
         yield f
 

@@ -75,7 +75,7 @@ if __name__ == '__main__':
     while True:
         try:
             if processes == {}:
-                for it in parallel_folders:
+                for f in parallel_folders:
                     iterations = next(iter_gen)
                     print(f"scoring {iterations}")
                     curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric], kwargs={'includeContrast': True, 'num_samples': iterations})
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     while True:
         try:
             if processes == {}:
-                for it in parallel_folders:
+                for f in parallel_folders:
                     iterations = next(iter_gen)
                     print(f"scoring {iterations}")
                     curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric], kwargs={'includeContrast': True, 'num_samples': iterations})

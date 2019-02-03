@@ -13,7 +13,7 @@ def h5gen(folder):
 
 def score_svm(h5_path, lock, metric='contrast', num_samples=15000, **kwargs):
     acc, dprime, metric_val = get_svm_accuracy(h5_path, num_samples, **kwargs)
-    write_svm_csv(acc, dprime, metric_val, os.path.dirname(h5_path), lock=lock, metric_name=metric)
+    write_svm_csv(acc, dprime, metric_val, os.path.dirname(h5_path), lock=lock, metric_name=metric, num_samples=num_samples)
 
 
 def run_svm_on_h5(folder, num_cpus, metric, **kwargs):
@@ -59,7 +59,81 @@ def subfolder_gen(super_folder):
     for f in sub_folders:
         yield f
 
+def num_iterations_gen(arr):
+    for a in arr:
+        yield a
 
+if __name__ == '__main__':
+    sub_folder = '/share/wandell/data/reith/svm_num_samples_freq1_contrast/'
+    metric = 'contrast'
+    kwargs = {'includeContrast': True}
+    function_start = time.time()
+    iter_gen = num_iterations_gen([1000,  1576,  2484,  3915,  6170,  9724, 15000, 24155])
+    parallel_folders = list(range(2))
+    num_cpus = 5
+    processes = {}
+    while True:
+        try:
+            if processes == {}:
+                for it in parallel_folders:
+                    iterations = next(iter_gen)
+                    print(f"scoring {iterations}")
+                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric], kwargs={'includeContrast': True, 'num_samples': iterations})
+                    processes[f] = curr_p
+                    curr_p.start()
+            for f, proc in processes.items():
+                if not proc.is_alive():
+                    iterations = next(iter_gen)
+                    print(f"scoring {iterations}")
+                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric], kwargs={'includeContrast': True, 'num_samples': iterations})
+                    processes[f] = curr_p
+                    curr_p.start()
+        except StopIteration:
+            break
+
+        time.sleep(5)
+
+    for proc in processes.values():
+        proc.join()
+
+        parallel_folders = list(range(2))
+    num_cpus = 3
+    processes = {}
+    iter_gen = num_iterations_gen([38070])
+    while True:
+        try:
+            if processes == {}:
+                for it in parallel_folders:
+                    iterations = next(iter_gen)
+                    print(f"scoring {iterations}")
+                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric], kwargs={'includeContrast': True, 'num_samples': iterations})
+                    processes[f] = curr_p
+                    curr_p.start()
+            for f, proc in processes.items():
+                if not proc.is_alive():
+                    iterations = next(iter_gen)
+                    print(f"scoring {iterations}")
+                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric], kwargs={'includeContrast': True, 'num_samples': iterations})
+                    processes[f] = curr_p
+                    curr_p.start()
+        except StopIteration:
+            break
+
+        time.sleep(5)
+
+    for proc in processes.values():
+        proc.join()
+    function_end = time.time()
+    with open(os.path.join(super_folder, 'time_svm.txt'), 'w') as txt:
+        txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
+    print("done!")
+
+
+
+"""
+Older examples:
+#####################################
 if __name__ == '__main__':
     super_folder = '/share/wandell/data/reith/2_class_MTF_angle_experiment/'
     metric = 'angle'
@@ -98,4 +172,6 @@ if __name__ == '__main__':
         txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
     print("done!")
+##############################################
 
+"""

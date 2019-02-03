@@ -8,18 +8,18 @@ import datetime
 import time
 
 
-def write_svm_csv(acc, dprime, metric, out_path, lock=None, metric_name='contrast'):
+def write_svm_csv(acc, dprime, metric, out_path, lock=None, metric_name='contrast', include_samples=15000):
     if lock is not None:
         lock.acquire()
     svm_csv = os.path.join(out_path, "svm_results.csv")
     file_exists = os.path.isfile(svm_csv)
 
     with open(svm_csv, 'a') as csv_file:
-            headers = ['svm_accuracy', 'dprime_accuracy', metric_name]
+            headers = ['svm_accuracy', 'dprime_accuracy', metric_name, 'samples_used']
             writer = csv.DictWriter(csv_file, delimiter=';', lineterminator='\n',fieldnames=headers)
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
-            writer.writerow({'svm_accuracy': acc, 'dprime_accuracy': dprime, metric_name: metric})
+            writer.writerow({'svm_accuracy': acc, 'dprime_accuracy': dprime, metric_name: metric, 'samples_used': include_samples})
     if lock is not None:
         lock.release()
 

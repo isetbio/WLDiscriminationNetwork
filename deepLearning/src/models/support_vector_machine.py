@@ -8,7 +8,7 @@ import datetime
 import time
 
 
-def write_svm_csv(acc, dprime, metric, out_path, lock=None, metric_name='contrast', include_samples=15000):
+def write_svm_csv(acc, dprime, metric, out_path, lock=None, metric_name='contrast', num_samples=15000):
     if lock is not None:
         lock.acquire()
     svm_csv = os.path.join(out_path, "svm_results.csv")
@@ -19,14 +19,18 @@ def write_svm_csv(acc, dprime, metric, out_path, lock=None, metric_name='contras
             writer = csv.DictWriter(csv_file, delimiter=';', lineterminator='\n',fieldnames=headers)
             if not file_exists:
                 writer.writeheader()  # file doesn't exist yet, write a header
-            writer.writerow({'svm_accuracy': acc, 'dprime_accuracy': dprime, metric_name: metric, 'samples_used': include_samples})
+            writer.writerow({'svm_accuracy': acc, 'dprime_accuracy': dprime, metric_name: metric, 'samples_used': num_samples})
     if lock is not None:
         lock.release()
 
 
-def get_svm_accuracy(path_mat, num_samples=15000, **kwargs):
+def get_svm_accuracy(path_mat, num_samples=15000, lock=None, **kwargs):
     start = time.time()
+    if lock is not None:
+        lock.acquire()
     meanData, meanDataLabels, dataMetric = get_h5mean_data(path_mat, **kwargs)
+    if lock is not None:
+        lock.release()
     testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=num_samples, numpyData=True)
     testDataFull = testDataFull.reshape(testDataFull.shape[0], -1)
     svc = svm.LinearSVC()

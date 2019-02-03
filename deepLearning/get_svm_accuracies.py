@@ -12,13 +12,14 @@ def h5gen(folder):
 
 
 def score_svm(h5_path, lock, metric='contrast', num_samples=15000, **kwargs):
-    acc, dprime, metric_val = get_svm_accuracy(h5_path, num_samples, **kwargs)
+    acc, dprime, metric_val = get_svm_accuracy(h5_path, num_samples, lock=lock, **kwargs)
     write_svm_csv(acc, dprime, metric_val, os.path.dirname(h5_path), lock=lock, metric_name=metric, num_samples=num_samples)
 
 
-def run_svm_on_h5(folder, num_cpus, metric, **kwargs):
+def run_svm_on_h5(folder, num_cpus, metric, lock=None, **kwargs):
     function_start = time.time()
-    lock = mp.Lock()
+    if lock is None:
+        lock = mp.Lock()
     h5 = h5gen(folder)
     cpus = list(range(num_cpus))
     procs = {}
@@ -71,6 +72,7 @@ if __name__ == '__main__':
     iter_gen = num_iterations_gen([1000,  1576,  2484,  3915,  6170,  9724, 15000, 24155])
     parallel_folders = list(range(2))
     num_cpus = 5
+    lock = mp.Lock()
     processes = {}
     while True:
         try:
@@ -78,14 +80,14 @@ if __name__ == '__main__':
                 for f in parallel_folders:
                     iterations = next(iter_gen)
                     print(f"scoring {iterations}")
-                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric], kwargs={'includeContrast': True, 'num_samples': iterations})
+                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric, lock], kwargs={'includeContrast': True, 'num_samples': iterations})
                     processes[f] = curr_p
                     curr_p.start()
             for f, proc in processes.items():
                 if not proc.is_alive():
                     iterations = next(iter_gen)
                     print(f"scoring {iterations}")
-                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric], kwargs={'includeContrast': True, 'num_samples': iterations})
+                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric, lock], kwargs={'includeContrast': True, 'num_samples': iterations})
                     processes[f] = curr_p
                     curr_p.start()
         except StopIteration:

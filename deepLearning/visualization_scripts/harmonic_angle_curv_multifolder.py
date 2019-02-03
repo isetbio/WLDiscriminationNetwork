@@ -15,7 +15,7 @@ def get_csv_column(csv_path, col_name, sort_by=None):
     return col
 
 
-super_folder = '/share/wandell/data/reith/2_class_MTF_freq_experiment/'
+super_folder = '/share/wandell/data/reith/2_class_MTF_angle_experiment/'
 include_svm = True
 
 folder_paths = [f.path for f in os.scandir(super_folder) if f.is_dir()]
@@ -23,25 +23,25 @@ folder_paths = [f.path for f in os.scandir(super_folder) if f.is_dir()]
 for p in folder_paths:
     csv1 = os.path.join(p, 'results.csv')
     csv_svm = os.path.join(p, 'svm_results.csv')
-    fname = 'harmonic_contrast_curve_svm'
+    fname = 'harmonic_angle_curve_svm'
 
-    oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast')
-    nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast')
-    contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast')
+    oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='angle')
+    nn = get_csv_column(csv1, 'nn_dprime', sort_by='angle')
+    angles = get_csv_column(csv1, 'angle', sort_by='angle')
 
     fig = plt.figure()
     # plt.grid(which='both')
     plt.xscale('log')
-    plt.xlabel('contrast')
+    plt.xlabel('angle')
     plt.ylabel('dprime')
-    plt.title(f"Frequency {p.split('_')[-1]} harmonic - dprime for various contrast values")
+    plt.title(f"Frequency {p.split('_')[-1]} harmonic - dprime for various angle values")
 
-    plt.plot(contrasts, oo, label='Ideal Observer')
-    plt.plot(contrasts, nn, label='ResNet18')
+    plt.plot(angles, oo, label='Ideal Observer')
+    plt.plot(angles, nn, label='ResNet18')
     if include_svm:
-        svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='contrast')
+        svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='angle')
         svm[svm == svm.max()] = oo.max()
-        plt.plot(contrasts, svm, label='Support Vector Machine')
+        plt.plot(angles, svm, label='Support Vector Machine')
     plt.legend(frameon=True)
 
     out_path = p

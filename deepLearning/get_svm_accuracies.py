@@ -61,9 +61,9 @@ def subfolder_gen(super_folder):
 
 
 if __name__ == '__main__':
-    super_folder = '/share/wandell/data/reith/2_class_MTF_shift_experiment/'
-    metric = 'shift'
-    kwargs = {'includeShift': True}
+    super_folder = '/share/wandell/data/reith/2_class_MTF_angle_experiment/'
+    metric = 'angle'
+    kwargs = {'includeAngle': True}
     function_start = time.time()
     folder_gen = subfolder_gen(super_folder)
     parallel_folders = list(range(2))

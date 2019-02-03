@@ -17,14 +17,14 @@ def get_csv_column(csv_path, col_name, sort_by=None):
 
 
 MTF_path = '/share/wandell/data/reith/2_class_MTF_freq_experiment/'
-fname = 'Modular_transfer_function_frequencies'
+fname = 'Modular_transfer_function_frequencies_svm'
 include_svm = True
 
 if os.path.exists(os.path.join(MTF_path, f'{fname}.png')):
     os.remove(os.path.join(MTF_path, f'{fname}.png'))
 target_d = 2
 
-frequency_paths = [os.path.join(MTF_path, freq_dir) for freq_dir in os.listdir(MTF_path)]
+frequency_paths = [f.path for f in os.scandir(MTF_path) if f.is_dir()]
 
 freqs =[]
 nn_dprimes = []
@@ -83,16 +83,23 @@ plt.plot(freqs, 1/oo_bilinear_targets, label='Optimal Observer')
 if include_svm:
     svm_bilinear_targets = []
     svm_dprimes = []
-    svm_dprimes.append(get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by='contrast'))
+    svm_freqs = []
+    for p in frequency_paths:
+        freq = int(p.split('_')[-1])
+        svm_freqs.append(freq)
+        svm_dprimes.append(get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by='contrast'))
+    svm_dprimes, svm_freqs = np.array(svm_dprimes), np.array(svm_freqs)
+    sort_idxs = np.argsort(svm_freqs)
+    svm_dprimes = svm_dprimes[sort_idxs]
     for dprimes in svm_dprimes:
         right_target = bisect.bisect(dprimes, target_d)
         left_target = right_target -1
         p_val = (target_d - dprimes[left_target])/(dprimes[right_target]-dprimes[left_target])
         interpolated_val = (1-p_val) * contrasts[left_target] + p_val * contrasts[right_target]
         svm_bilinear_targets.append(interpolated_val)
-        svm_bilinear_targets = np.array(svm_bilinear_targets)
-        plt.plot(freqs, 1 / svm_bilinear_targets, label='Support Vector Machine')
-###############################################################
+    svm_bilinear_targets = np.array(svm_bilinear_targets)
+    plt.plot(freqs, 1 / svm_bilinear_targets, label='Support Vector Machine')
+################################################################
 plt.legend(frameon=True)
 
 fig.savefig(os.path.join(MTF_path, f'{fname}.png'), dpi=200)

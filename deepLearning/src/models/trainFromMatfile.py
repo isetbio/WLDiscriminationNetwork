@@ -2,7 +2,7 @@ from deepLearning.src.models.resnet_train_test import train_poisson, test
 from deepLearning.src.models.GrayResNet import GrayResnet18, GrayResnet101
 from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel, calculate_dprime
 from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader
-from deepLearning.src.data.logger import Logger
+from deepLearning.src.data.logger import Logger, CsvWriter
 import torch
 import torch.nn as nn
 from torch import optim
@@ -18,17 +18,23 @@ from scipy.stats import norm
 
 def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False,
                                      deeper_pls=False, oo=True, svm=False, NetClass=None, NetClass_param=None,
-                                     include_angle=False):
+                                     include_angle=False, training_csv=True):
     # relevant variables
     startTime = time.time()
     print(device, pathMat)
     if device is not None:
         os.environ["CUDA_VISIBLE_DEVICES"] = str(device)
-    test_interval = 2
+    test_interval = 1
     batchSize = 32
     numSamplesEpoch = 10000
     outPath = os.path.dirname(pathMat)
     fileName = os.path.basename(pathMat).split('.')[0]
+    if training_csv:
+        TrainWrt = CsvWriter(os.path.join(outPath, 'train_results.csv'), header=['accuracy', 'dprime', 'epoch'], lock=lock)
+        TestWrt = CsvWriter(os.path.join(outPath, 'test_results.csv'), header=['accuracy', 'dprime', 'epoch'], lock=lock)
+        train_test_log = [TrainWrt, TestWrt]
+    else:
+        train_test_log = None
     sys.stdout = Logger(f"{os.path.join(outPath, fileName)}_log.txt")
     if include_shift:
         meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True)
@@ -36,11 +42,26 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         meanData, meanDataLabels, dataContrast, dataAngle = get_h5mean_data(pathMat, includeContrast=True, includeAngle=True)
     else:
         meanData, meanDataLabels, dataContrast = get_h5mean_data(pathMat, includeContrast=True)
-    # data = torch.from_numpy(data).type(torch.float32)
+    # data =    torch.from_numpy(data).type(torch.float32)
     # pickle.dump([data, labels, dataNoNoise], open('mat1PercentNoNoiseData.p', 'wb'))
     # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))
     # Image.fromarray(data[4]*(255/20)).show()
+    if training_csv:
+        header = ['accuracy', 'dprime', 'epoch', 'contrast']
+        default_vals = {}
+        default_vals['contrast'] = dataContrast[0]
+        if include_shift:
+            header.append('shift')
+            default_vals['shift'] = dataShift[1]
+        if include_angle:
+            header.append('angle')
+            default_vals['angle'] = dataAngle[1]
 
+        TrainWrt = CsvWriter(os.path.join(outPath, 'train_results.csv'), header=header, default_vals=default_vals, lock=lock)
+        TestWrt = CsvWriter(os.path.join(outPath, 'test_results.csv'), header=header, default_vals=default_vals, lock=lock)
+        train_test_log = [TrainWrt, TestWrt]
+    else:
+        train_test_log = None
     testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=5000, numpyData=True)
     #normalization values
     mean_norm = meanData.mean()
@@ -107,7 +128,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         testData = torch.from_numpy(testData).type(torch.float32)
         testData -= mean_norm
         testData /= std_norm
-        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm)
+        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log)
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
 
         print(f"Best accuracy to date is {bestTestAcc*100:.2f} percent")
@@ -117,7 +138,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         learning_rate = 0.0001
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
-        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm)
+        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log)
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
 
         # Train the network more
@@ -125,7 +146,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         learning_rate = 0.00001
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
-        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm)
+        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log)
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
         torch.save(Net.state_dict(), os.path.join(outPath, f"resNet_weights_{fileName}.torch"))
         print("saved resNet weights to", f"resNet_weights_{fileName}.torch")

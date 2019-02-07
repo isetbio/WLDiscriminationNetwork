@@ -2,6 +2,7 @@ from torch.autograd import Variable
 import numpy as np
 import torch
 
+from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel, calculate_dprime
 
 from deepLearning.src.data.mat_data import poisson_noise_loader, mat_data_loader
 
@@ -72,7 +73,7 @@ def train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, 
                 bestTestAcc = testAcc
     return Net, testAcc
 
-def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm):
+def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log=None):
     bestTestAcc = 0
     testAcc = 0
     meanData = torch.from_numpy(meanData).type(torch.float32).cuda()
@@ -82,6 +83,8 @@ def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLa
         lossArr = []
         logCount = 0
         testAcc = 0
+        predictions = []
+        labels = []
         print(f"One epoch simulates {numSamplesEpoch} samples.")
         for batch_idx in range(int(np.round(numSamplesEpoch/batchSize))):
             data, target = poisson_noise_loader(meanData, batchSize, numpyData=False)
@@ -100,12 +103,17 @@ def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLa
             currAcc = (prediction == target).cpu().numpy()
             epochAcc.extend(list(currAcc))
             lossArr.append(loss.data.item())
+            predictions.extend(prediction)
+            labels.extend(target)
             if logCount % 10 == 0:
                 print(f"Train epoch: {epoch} and batch number {logCount}, loss is {np.mean(lossArr)}, accuracy is {np.mean(epochAcc)}")
             logCount += 1
         print(f"Train epoch: {epoch}, loss is {np.mean(lossArr)}, accuracy is {np.mean(epochAcc)}")
+        if train_test_log is not None:
+            train_test_log[0].write_row(epoch=epoch, accuracy=np.mean(epochAcc), dprime=calculate_dprime(np.stack((predictions, labels)).T))
         if epoch % test_interval == 0:
-            testAcc = test(batchSize, testData, testLabels, Net, dimIn)
+            testAcc, prediction_labels = test(batchSize, testData, testLabels, Net, dimIn, includePredictionLabels=True)
+            train_test_log[1].write_row(epoch=epoch, accuracy=testAcc, dprime=calculate_dprime(prediction_labels))
             if testAcc > bestTestAcc:
                 bestTestAcc = testAcc
             #Net.train()

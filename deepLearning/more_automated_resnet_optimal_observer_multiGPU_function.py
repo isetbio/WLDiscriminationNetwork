@@ -31,7 +31,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
                     currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
                                        kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
                                                'NetClass': NetClass, 'deeper_pls': deeper_pls, 'NetClass_param': NetClass_param,
-                                               'include_angle': True})
+                                               'include_angle': False})
                     Procs[str(device)] = currP
                     currP.start()
             for device, proc in Procs.items():
@@ -41,7 +41,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
                     currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
                                        kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
                                                'NetClass': NetClass, 'deeper_pls': deeper_pls, 'NetClass_param': NetClass_param,
-                                               'include_angle': True})
+                                               'include_angle': False})
                     Procs[str(device)] = currP
                     currP.start()
         except StopIteration:

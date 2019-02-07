@@ -27,8 +27,6 @@ class CsvWriter:
     def __init__(self, file_path, header, default_vals=None, lock=None, delete_if_exists=False):
         self.lock = lock
         self.fp = file_path
-        for k in default_vals.keys():
-            header.append(k)
         self.header = header
         self.write_header()
         self.default_vals = default_vals

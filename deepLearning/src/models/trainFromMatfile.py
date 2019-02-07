@@ -29,12 +29,6 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     numSamplesEpoch = 10000
     outPath = os.path.dirname(pathMat)
     fileName = os.path.basename(pathMat).split('.')[0]
-    if training_csv:
-        TrainWrt = CsvWriter(os.path.join(outPath, 'train_results.csv'), header=['accuracy', 'dprime', 'epoch'], lock=lock)
-        TestWrt = CsvWriter(os.path.join(outPath, 'test_results.csv'), header=['accuracy', 'dprime', 'epoch'], lock=lock)
-        train_test_log = [TrainWrt, TestWrt]
-    else:
-        train_test_log = None
     sys.stdout = Logger(f"{os.path.join(outPath, fileName)}_log.txt")
     if include_shift:
         meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True)

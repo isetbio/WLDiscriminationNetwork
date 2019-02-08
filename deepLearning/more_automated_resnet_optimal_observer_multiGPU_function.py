@@ -62,8 +62,8 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
 
 if __name__ == '__main__':
     full_start = time.time()
-    run_on_folder('/share/wandell/data/reith/imagenet_training/freq1_harmonic_random', deeper_pls=False, NetClass=NotPretrainedResnet)
-    run_on_folder('/share/wandell/data/reith/imagenet_training/freq1_harmonic_pretrained', deeper_pls=False, NetClass=PretrainedResnetFrozen, NetClass_param=0)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/low_lr/freq1_harmonic_random_lowerlr/', deeper_pls=False, NetClass=NotPretrainedResnet)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/low_lr/freq1_harmonic_pretrained_lowerlr/', deeper_pls=False, NetClass=PretrainedResnetFrozen, NetClass_param=0)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 

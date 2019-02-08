@@ -115,8 +115,9 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         # Test the network
         # testAcc = test(batchSize, testData, testLabels, Net, dimIn)
         # Train the network
+        lr_deviation = 0.01
         epochs = 10
-        learning_rate = 0.001
+        learning_rate = 0.001*lr_deviation
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
         testLabels = torch.from_numpy(testLabels.astype(np.long))
         testData = torch.from_numpy(testData).type(torch.float32)
@@ -129,7 +130,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
 
         # Train the network more
         epochs = 10
-        learning_rate = 0.0001
+        learning_rate = 0.0001*lr_deviation
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
         Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log)
@@ -137,7 +138,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
 
         # Train the network more
         epochs = 10
-        learning_rate = 0.00001
+        learning_rate = 0.00001*lr_deviation
         optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
 
         Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log)

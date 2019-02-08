@@ -57,6 +57,7 @@ class PretrainedResnetFrozen(nn.Module):
                     param.requires_grad = True
                 else:
                     param.requires_grad = False
+        pass
 
     def freeze_except_fc(self):
         for name, param in self.named_parameters():

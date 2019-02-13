@@ -5,10 +5,6 @@ function CreateContrastDatasetFromImage_function(scanFreq, scanContrast, shiftVa
 
 saveName = fullfile(outputFolder, name);
 saveFlag = true;
-resolution = [256 256];
-p = harmonicP;
-eTime = 1e-3;
-% fov = 5;
 
 %% Set up the camera sensor
 
@@ -37,8 +33,6 @@ noNoiseImg = zeros(256,256,length(scanFreq)*length(shiftValues)+1);
 noNoiseImgFreq = zeros(length(scanFreq)*length(shiftValues)+1, 1);
 noNoiseImgContrast = zeros(length(scanFreq)*length(shiftValues)+1, 1);
 noNoiseImgPhase = zeros(length(scanFreq)*length(shiftValues)+1, 1);
-
-
 
 %% Run a loop over all frequencies (1), all contrast strengths (1) and over the number of samples
 k = 1;

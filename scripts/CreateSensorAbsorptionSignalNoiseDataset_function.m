@@ -1,23 +1,31 @@
-function CreateSensorAbsorptionSignalNoiseDataset_function(scanFreq, scanContrast, numSamples, name, outputFolder)
+function outFile = CreateSensorAbsorptionSignalNoiseDataset_function(scanFreq, scanContrast, numSamples, name, outputFolder)
 %CREATEDATAFUNCTION Summary of this function goes here
 %   Detailed explanation goes here
 %% Important prameters to set
 
+% Examples:
+%{
+scanFreq = 1;
+scanContrast = 1;
+numSamples = 1;
+name = 'foo';
+outputFolder = tempdir;
+CreateSensorAbsorptionSignalNoiseDataset_function(scanFreq, scanContrast, numSamples, name, outputFolder)
+%}
+
+%%
 saveName = fullfile(outputFolder, name);
 saveFlag = true;
-resolution = [256 256];
-p = harmonicP;
-eTime = 1e-3;
-% fov = 5;
 
 %% Set up the camera sensor
 
-resolution = [256 256];
 p = harmonicP;
 eTime = 1e-3;
-% fov = 5;
+fov = 1;
+
+sensorSize = [256 256];
 sensor = sensorCreate('monochrome');
-sensor = sensorSet(sensor,'size',resolution);
+sensor = sensorSet(sensor,'size',sensorSize);
 sensor = sensorSet(sensor,'exp time',eTime);
 sensor = sensorSet(sensor,'noise flag',1);
 
@@ -30,16 +38,15 @@ imgNoise = zeros(256,256, nImages);
 imgNoiseContrasts = zeros(nImages,1);
 imgNoiseFreqs = zeros(nImages,1);
 
-
 % Without noise (two for each frequency + no signal)
 noNoiseImg = zeros(256,256,length(scanFreq)+1);
 noNoiseImgFreq = zeros(length(scanFreq)+1, 1);
 noNoiseImgContrast = zeros(length(scanFreq)+1, 1);
 
-
-
 %% Run a loop over all frequencies (1), all contrast strengths (1) and over the number of samples
 k = 1;
+p.row = 256;
+p.col = 256;
 for cc = 1:length(scanContrast)
     p.contrast = scanContrast(cc);
     for ff = 0 : length(scanFreq)
@@ -48,9 +55,10 @@ for cc = 1:length(scanContrast)
         else
             p.freq = scanFreq(ff);
         end
-        scene = sceneCreate('harmonic',p);
+        scene = sceneCreate('harmonic',p);  % sceneWindow(scene);
+        scene = sceneSet(scene,'fov',fov);  
         oi = oiCreate;
-        oi = oiCompute(oi,scene);
+        oi = oiCompute(oi,scene);           % oiWindow(oi);
         sensor = sensorSet(sensor,'noise flag',1);
         for nn = 1:numSamples
             fprintf('Generating image: %i \n',k)
@@ -61,7 +69,7 @@ for cc = 1:length(scanContrast)
             
             % Calculate without noise
             if nn == 1
-                sensor = sensorSet(sensor,'noise flag',0);
+                sensor = sensorSet(sensor,'noise flag',0);  % The proper noise flag is in question.  Maybe -1 is better.
                 sensor = sensorCompute(sensor,oi);
                 noNoiseImg(:,:,ff+1) = sensorGet(sensor, 'electrons');
                 noNoiseImgFreq(ff+1) = p.freq;
@@ -82,8 +90,9 @@ noNoiseImg = noNoiseImg(11:248, 11:248,:);
 %% Save everything
 
 if(saveFlag)
+    outFile = sprintf('%s.h5',saveName);
     % currDate = datestr(now,'mm-dd-yy_HH_MM');
-    hdf5write(sprintf('%s.h5',saveName), ...
+    hdf5write(outFile, ...
         'imgNoise', imgNoise, ...
         'imgNoiseFreqs', imgNoiseFreqs, ...
         'imgNoiseContrasts', imgNoiseContrasts, ...
@@ -91,13 +100,6 @@ if(saveFlag)
         'noNoiseImgFreq', noNoiseImgFreq, ...
         'noNoiseImgContrast', noNoiseImgContrast);
         
-%     save(sprintf('%s.mat',saveName),...
-%         'imgNoise',...
-%         'imgNoiseLabels',...
-%         'meanImg',...
-%         'meanImgLabels',...
-%         'imgContrasts',...
-%         'imgFreqs');
 end
 end
 

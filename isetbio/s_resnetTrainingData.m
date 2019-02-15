@@ -77,11 +77,6 @@ nullScene = generateGaborScene(...
 
 sceneWindow(nullScene);
 
-%{
-% Visualize the generated scene
-visualizeScene(nullScene, ...
-    'displayRadianceMaps', false);
-%}
 %% *Step 4.* Compute the optical images of the 2 scenes
 
 % Generate wavefront-aberration derived human optics
@@ -95,33 +90,31 @@ oiWindow(theSignalOI);
 % Compute the retinal image of the null stimulus
 theNullOI = oiCompute(theOI, nullScene);
 
-
-%% *Step 6a.* Compute a number of mosaic response instances to both the test and the null stimuli
-% Here we compute a number of response instances, each corresponding to a 10 
-% msec stimulus exposure
+%% Compute a time series of mosaic responses to signal and the null stimuli
 
 % Generate instances of eye movement paths. This step will
 % take a few minutes to complete.
 nTrialsNum   = 2;
-emPathLength = 25;    % This makes it 100 ms trial for a 5 ms integration 
+
+% This makes it 100 ms trial for a 5 ms integration 
+startPath  =  6;  
+nPathSteps = 20;
+emPathLength = nPathSteps + startPath - 1;    
+
 theMosaic.noiseFlag = 'none';
 
 theMosaic.emGenSequence(emPathLength,'nTrials',nTrialsNum,'rSeed',randi(1e9,1));
-emPositions = theMosaic.emPositions(:,6:25,:);
+emPositions = theMosaic.emPositions(:,(startPath:emPathLength),:);
 coneExcitationsNull = theMosaic.compute(theNullOI,'emPath',emPositions);
 theMosaic.name = 'Null';
-theMosaic.window;
-theMosaic.plot('Eye Movement Path');
 
 theMosaic.emGenSequence(emPathLength,'nTrials',nTrialsNum,'rSeed',randi(1e9,1));
 emPositions = theMosaic.emPositions;
 coneExcitationsSignal = theMosaic.compute(theSignalOI,'emPath',emPositions);
-theMosaic.name = 'Signal';
-theMosaic.window;
-theMosaic.plot('Eye Movement Path');
 
+%{
+% theMosaic.window;
+% theMosaic.plot('Eye Movement Path');
+%}
 
-%% Have a look
-
-
-%%
+%% END

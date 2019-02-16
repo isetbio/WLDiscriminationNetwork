@@ -15,7 +15,9 @@ def matfile_gen(pathMatDir):
         yield matFile
 
 
-def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None):
+def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None, **kwargs):
+    kword_args = {'train_nn': True, 'include_shift': False, 'NetClass': NetClass, 'deeper_pls': deeper_pls,
+                  'NetClass_param': NetClass_param, 'include_angle': False}
     deviceIDs = GPUtil.getAvailable(order='first', limit=6, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
     print(deviceIDs)
     function_start = time.time()
@@ -29,9 +31,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
                     pathMat = next(pathGen)
                     print(f"Running {pathMat} on GPU {device}")
                     currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
-                                       kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
-                                               'NetClass': NetClass, 'deeper_pls': deeper_pls, 'NetClass_param': NetClass_param,
-                                               'include_angle': False})
+                                       kwargs={'device': int(device), 'lock': lock, **kword_args, **kwargs})
                     Procs[str(device)] = currP
                     currP.start()
             for device, proc in Procs.items():
@@ -39,9 +39,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
                     pathMat = next(pathGen)
                     print(f"Running {pathMat} on GPU {device}")
                     currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
-                                       kwargs={'device': int(device), 'lock': lock, 'train_nn': True, 'include_shift': False,
-                                               'NetClass': NetClass, 'deeper_pls': deeper_pls, 'NetClass_param': NetClass_param,
-                                               'include_angle': False})
+                                       kwargs={'device': int(device), 'lock': lock, **kword_args, **kwargs})
                     Procs[str(device)] = currP
                     currP.start()
         except StopIteration:
@@ -62,14 +60,22 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None)
 
 if __name__ == '__main__':
     full_start = time.time()
-    run_on_folder('/share/wandell/data/reith/imagenet_training/low_lr/freq1_harmonic_random_lowerlr/', deeper_pls=False, NetClass=NotPretrainedResnet)
-    run_on_folder('/share/wandell/data/reith/imagenet_training/low_lr/freq1_harmonic_pretrained_lowerlr/', deeper_pls=False, NetClass=PretrainedResnetFrozen, NetClass_param=0)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/more_epochs_lower_lr/', num_epochs=48, initial_lr=0.001, lr_deviation=0.1, lr_epoch_reps=4)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/more_epochs_same_lr/', num_epochs=48, initial_lr=0.001, lr_deviation=0.1, lr_epoch_reps=3)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/more_epochs_slower_lr_decline/', num_epochs=48, initial_lr=0.001, lr_deviation=0.33, lr_epoch_reps=12)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/standard_lr/', num_epochs=30, initial_lr=0.001, lr_deviation=0.1, lr_epoch_reps=3)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 
 '''
 Older runs for documentation purposes..
 ##################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    run_on_folder('/share/wandell/data/reith/imagenet_training/freq1_harmonic_random', deeper_pls=False, NetClass=NotPretrainedResnet)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/freq1_harmonic_pretrained', deeper_pls=False, NetClass=PretrainedResnetFrozen, NetClass_param=0)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+###################################################
 if __name__ == '__main__':
     full_start = time.time()
     general_folder = '/share/wandell/data/reith/2_class_MTF_angle_experiment/'

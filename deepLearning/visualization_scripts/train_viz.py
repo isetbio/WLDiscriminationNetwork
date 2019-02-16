@@ -15,10 +15,10 @@ def get_csv_column(csv_path, col_name, sort_by=None):
     return col
 
 
-mode = 'train'
-csv1 = f'/share/wandell/data/reith/imagenet_training/freq1_harmonic_pretrained/{mode}_results.csv'
-csv2 =  f'/share/wandell/data/reith/imagenet_training/freq1_harmonic_random/{mode}_results.csv'
-fname = f'{mode}ing_and_accuracy'
+mode = 'test'
+csv1 = f'/share/wandell/data/reith/imagenet_training/low_lr/freq1_harmonic_pretrained_lowerlr/{mode}_results.csv'
+csv2 =  f'/share/wandell/data/reith/imagenet_training/low_lr/freq1_harmonic_random_lowerlr/{mode}_results.csv'
+fname = f'{mode}ing_and_accuracy lower lr'
 
 acc_im = get_csv_column(csv1, 'accuracy', sort_by=None)
 epoch_im = get_csv_column(csv1, 'epoch', sort_by=None)
@@ -80,3 +80,14 @@ fig2.savefig(os.path.join(out_path, f'{fname}_randomly_initialized.png'), dpi=40
 
 # fig.show()
 print('done!')
+
+
+"""
+Older params:
+#########################################
+mode = 'train'
+csv1 = f'/share/wandell/data/reith/imagenet_training/freq1_harmonic_pretrained/{mode}_results.csv'
+csv2 =  f'/share/wandell/data/reith/imagenet_training/freq1_harmonic_random/{mode}_results.csv'
+fname = f'{mode}ing_and_accuracy'
+##########################################
+"""

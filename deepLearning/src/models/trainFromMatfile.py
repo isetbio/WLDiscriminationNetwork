@@ -18,7 +18,8 @@ from scipy.stats import norm
 
 def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False,
                                      deeper_pls=False, oo=True, svm=False, NetClass=None, NetClass_param=None,
-                                     include_angle=False, training_csv=True):
+                                     include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
+                                     lr_epoch_reps=3):
     # relevant variables
     startTime = time.time()
     print(device, pathMat)
@@ -115,33 +116,20 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         # Test the network
         # testAcc = test(batchSize, testData, testLabels, Net, dimIn)
         # Train the network
-        lr_deviation = 0.01
-        epochs = 10
-        learning_rate = 0.001*lr_deviation
-        optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
+        lr_deviation = lr_deviation
+        num_epochs = num_epochs
+        learning_rate = initial_lr
         testLabels = torch.from_numpy(testLabels.astype(np.long))
         testData = torch.from_numpy(testData).type(torch.float32)
         testData -= mean_norm
         testData /= std_norm
-        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log)
-        # bestTestAcc = max(bestTestAcc, bestTestAccStep)
+        for i in range(lr_epoch_reps):
+            print(f"Trainig for {num_epochs/lr_epoch_reps} epochs with a learning rate of {learning_rate}..")
+            optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
+            Net, testAcc = train_poisson(round(num_epochs/lr_epoch_reps), numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log)
+            print(f"Test accuracy is {testAcc*100:.2f} percent")
+            learning_rate = learning_rate*lr_deviation
 
-        print(f"Best accuracy to date is {bestTestAcc*100:.2f} percent")
-
-        # Train the network more
-        epochs = 10
-        learning_rate = 0.0001*lr_deviation
-        optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
-
-        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log)
-        # bestTestAcc = max(bestTestAcc, bestTestAccStep)
-
-        # Train the network more
-        epochs = 10
-        learning_rate = 0.00001*lr_deviation
-        optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
-
-        Net, testAcc = train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log)
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
         torch.save(Net.state_dict(), os.path.join(outPath, f"resNet_weights_{fileName}.torch"))
         print("saved resNet weights to", f"resNet_weights_{fileName}.torch")

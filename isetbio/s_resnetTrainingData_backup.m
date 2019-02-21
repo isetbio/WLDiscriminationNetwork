@@ -18,6 +18,17 @@ presentationDisplay = displayCreate('LCD-Apple', 'viewing distance', 0.57);
 % Double the display resolution
 presentationDisplay = displaySet(presentationDisplay,'dpi', 2*96);
 
+%% Create a cone mosaic object with a 5 msec integration window
+
+% Generate a hexagonal cone mosaic with ecc-based cone quantal efficiency
+theMosaic = coneMosaic;
+% This is a way to make only red cones
+%   The order is Missing, Red, Green and Blue
+%   
+% theMosaic.spatialDensity = [0,1,0,0];
+theMosaic.setSizeToFOV(0.5*sceneSizeDegs);
+theMosaic.integrationTime = 5/1000;      % Integration time in ms
+
 %% Create a harmonic test stimulus
 %
 
@@ -27,7 +38,7 @@ presentationDisplay = displaySet(presentationDisplay,'dpi', 2*96);
 spatialFrequency = 4;
 contrast         = 0.6;
 sceneSizeDegs    = 1;
-meanL            = 36;   % Mean display luminance
+meanL            = 75;   % Mean display luminance
 
 % Parameter struct for a Gabor stimulus 
 stimParams = struct(...
@@ -47,24 +58,13 @@ signalScene = generateGaborScene(...
     'stimParams', stimParams,...
     'presentationDisplay', presentationDisplay);
 
-% sceneWindow(signalScene);
+sceneWindow(signalScene);
 
 % Visualize the generated scene
 %{
 visualizeScene(testScene, ...
     'displayRadianceMaps', false);
 %}
-
-%% Create a cone mosaic object with a 5 msec integration window
-
-% Generate a hexagonal cone mosaic with ecc-based cone quantal efficiency
-theMosaic = coneMosaic;
-% This is a way to make only red cones
-%   The order is Missing, Red, Green and Blue
-%   
-% theMosaic.spatialDensity = [0,1,0,0];
-theMosaic.setSizeToFOV(0.5*sceneSizeDegs);
-theMosaic.integrationTime = 5/1000;      % Integration time in ms
 %% *Step 3.* Create the null stimulus - a 0% contrast Gabor
 
 % Zero contrast for the null stimulus 
@@ -75,7 +75,7 @@ nullScene = generateGaborScene(...
     'stimParams', stimParams,...
     'presentationDisplay', presentationDisplay);
 
-% sceneWindow(nullScene);
+sceneWindow(nullScene);
 
 %% *Step 4.* Compute the optical images of the 2 scenes
 
@@ -85,7 +85,7 @@ theOI = oiCreate('wvf human');
 % Compute the retinal image of the test stimulus
 theSignalOI = oiCompute(theOI, signalScene);
 
-% oiWindow(theSignalOI);
+oiWindow(theSignalOI);
 
 % Compute the retinal image of the null stimulus
 theNullOI = oiCompute(theOI, nullScene);
@@ -112,7 +112,6 @@ theMosaic.emGenSequence(emPathLength,'nTrials',nTrialsNum,'rSeed',randi(1e9,1));
 emPositions = theMosaic.emPositions;
 coneExcitationsSignal = theMosaic.compute(theSignalOI,'emPath',emPositions);
 
-disp("interesting");
 %{
 % theMosaic.window;
 % theMosaic.plot('Eye Movement Path');

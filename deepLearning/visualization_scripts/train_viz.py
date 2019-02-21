@@ -86,7 +86,7 @@ print('done!')
 Older params:
 #########################################
 mode = 'train'
-csv1 = f'/share/wandell/data/reith/imagenet_training/freq1_harmonic_pretrained/{mode}_results.csv'
+path_csv = f'/share/wandell/data/reith/imagenet_training/freq1_harmonic_pretrained/{mode}_results.csv'
 csv2 =  f'/share/wandell/data/reith/imagenet_training/freq1_harmonic_random/{mode}_results.csv'
 fname = f'{mode}ing_and_accuracy'
 ##########################################

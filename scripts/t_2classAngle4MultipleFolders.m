@@ -28,7 +28,7 @@
 
 
 frequencyVals = unique(round(logspace(0, log(50)/log(10), 20)));
-frequencyVals = 1;
+% frequencyVals = 1;
 for f = 1:length(frequencyVals)
     % Values to set
     freq = frequencyVals(f);
@@ -38,7 +38,7 @@ for f = 1:length(frequencyVals)
     frequencies = freq;
     % contrastValues = [0.0003, 0.0002, 0.0004];
     contrastValues = 0.1;
-    angleValues = logspace(-6, log(2)/log(10), 20);
+    angleValues = logspace(-6, log(0.05)/log(10), 18);
 
 
     % This creates the resulting datasets

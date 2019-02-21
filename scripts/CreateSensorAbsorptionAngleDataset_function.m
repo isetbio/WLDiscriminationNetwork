@@ -69,7 +69,7 @@ for cc = 1:length(scanContrast)
                 imgNoiseFreqs(k) = p.freq;
                 imgNoiseContrasts(k) = p.contrast;
                 imgNoisePhases(k) = p.ph;
-                imgNoiseAngles(k) = p.ang;
+                imgNoiseAngles(k) = p.ang/pi;
 
                 % Calculate without noise
                 if nn == 1
@@ -79,7 +79,7 @@ for cc = 1:length(scanContrast)
                     noNoiseImgFreq(1+an) = p.freq;
                     noNoiseImgContrast(1+an) = p.contrast;
                     noNoiseImgPhase(1+an) = p.ph-originalPhase;
-                    noNoiseImgAngle(1+an) = p.ang;
+                    noNoiseImgAngle(1+an) = p.ang/pi;
                     sensor = sensorSet(sensor,'noise flag',1);
                 end
 

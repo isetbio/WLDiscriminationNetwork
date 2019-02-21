@@ -60,15 +60,26 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
-    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/more_epochs_lower_lr/', num_epochs=48, initial_lr=0.001, lr_deviation=0.1, lr_epoch_reps=4)
-    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/more_epochs_same_lr/', num_epochs=48, initial_lr=0.001, lr_deviation=0.1, lr_epoch_reps=3)
-    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/more_epochs_slower_lr_decline/', num_epochs=48, initial_lr=0.001, lr_deviation=0.33, lr_epoch_reps=12)
-    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/standard_lr/', num_epochs=30, initial_lr=0.001, lr_deviation=0.1, lr_epoch_reps=3)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/30_epochs_lr_0_01_lr_deviation_0_1_lr_epoch_reps_3/', num_epochs=30, initial_lr=0.01, lr_deviation=0.1, lr_epoch_reps=3)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/48_epochs_lr_0_01_lr_deviation_0_1_lr_epoch_reps_3', num_epochs=48, initial_lr=0.01, lr_deviation=0.1, lr_epoch_reps=3)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/48_epochs_lr_0_01_lr_deviation_0_1_lr_epoch_reps_4', num_epochs=48, initial_lr=0.01, lr_deviation=0.1, lr_epoch_reps=4)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/48_epochs_lr_0_01_lr_deviation_0_33_lr_epoch_reps_6', num_epochs=48, initial_lr=0.01, lr_deviation=0.33, lr_epoch_reps=6)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/48_epochs_lr_0_001_lr_deviation_0_33_lr_epoch_reps_6', num_epochs=48, initial_lr=0.001, lr_deviation=0.33, lr_epoch_reps=6)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/48_epochs_lr_0_01_lr_deviation_0_33_lr_epoch_reps_12', num_epochs=48, initial_lr=0.01, lr_deviation=0.33, lr_epoch_reps=12)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 
 '''
 Older runs for documentation purposes..
+##################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    # run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/more_epochs_lower_lr/', num_epochs=48, initial_lr=0.001, lr_deviation=0.1, lr_epoch_reps=4)
+    # run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/more_epochs_same_lr/', num_epochs=48, initial_lr=0.001, lr_deviation=0.1, lr_epoch_reps=3)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/more_epochs_slower_lr_decline/', num_epochs=48, initial_lr=0.001, lr_deviation=0.33, lr_epoch_reps=12)
+    run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/standard_lr/', num_epochs=30, initial_lr=0.001, lr_deviation=0.1, lr_epoch_reps=3)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
 ##################################################
 if __name__ == '__main__':
     full_start = time.time()

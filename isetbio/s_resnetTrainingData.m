@@ -28,18 +28,27 @@ spatialFrequency = 4;
 contrast         = 0.6;
 sceneSizeDegs    = 1;
 meanL            = 36;   % Mean display luminance
+shift            = 0;
+phaseD           = 90;
+sigmaD           = 0.10;
+orientationDegs  = 0;
+nPathSteps = 20;
+nTrialsNum   = 5;
+outPath = '/share/wandell/data/reith/coneMosaik/test';
+name = sprintf('%d_samplesPerClass_frames_%d_freq_%s_contrast_%s',nTrialsNum, nPathSteps, join(string(spatialFrequency),'-'), strrep(sprintf("%.8f", contrast), '.', '_'));
+saveName = fullfile(outPath, name);
 
 % Parameter struct for a Gabor stimulus 
 stimParams = struct(...
     'spatialFrequencyCyclesPerDeg', spatialFrequency, ... % cycles/deg
-    'orientationDegs', 0, ...               % 0 degrees (rotation)
-    'phaseDegs', 90, ...                    % spatial phase in degrees (0 is cos phase and 90 is sin)
-    'sizeDegs', sceneSizeDegs, ...          % D x D degrees
-    'sigmaDegs', 0.10, ...                   % sigma of Gaussian envelope, in degrees
-    'contrast', contrast,...                % Michelson contrast
-    'meanLuminanceCdPerM2', meanL, ...      % mean luminance
-    'pixelsAlongWidthDim', [], ...          % pixels- width dimension
-    'pixelsAlongHeightDim', [] ...          % pixel- height dimension
+    'orientationDegs', orientationDegs, ...               % 0 degrees (rotation)
+    'phaseDegs', 90 + shift, ...                          % spatial phase in degrees (0 is cos phase and 90 is sin)
+    'sizeDegs', sceneSizeDegs, ...                        % D x D degrees
+    'sigmaDegs', sigmaD, ...                              % sigma of Gaussian envelope, in degrees
+    'contrast', contrast,...                              % Michelson contrast
+    'meanLuminanceCdPerM2', meanL, ...                    % mean luminance
+    'pixelsAlongWidthDim', [], ...                        % pixels- width dimension
+    'pixelsAlongHeightDim', [] ...                        % pixel- height dimension
     );
 
 % Generate a scene representing the 10% Gabor stimulus as realized on the presentationDisplay
@@ -94,11 +103,11 @@ theNullOI = oiCompute(theOI, nullScene);
 
 % Generate instances of eye movement paths. This step will
 % take a few minutes to complete.
-nTrialsNum   = 2;
+% moved to top - nTrialsNum   = 2;
 
 % This makes it 100 ms trial for a 5 ms integration 
 startPath  =  6;  
-nPathSteps = 20;
+% moved to top - nPathSteps = 20;
 emPathLength = nPathSteps + startPath - 1;    
 
 theMosaic.noiseFlag = 'none';
@@ -113,6 +122,35 @@ emPositions = theMosaic.emPositions;
 coneExcitationsSignal = theMosaic.compute(theSignalOI,'emPath',emPositions);
 
 disp("interesting");
+contrasts = zeros(nTrialsNum,1);
+contrasts(:) = contrast;
+spatialFrequencyCyclesPerDeg = zeros(nTrialsNum, 1);
+spatialFrequencyCyclesPerDeg(:) = spatialFrequency;
+phaseDegs = zeros(nTrialsNum, 1);
+phaseDegs(:) = phaseD;
+shifts = zeros(nTrialsNum, 1);
+shifts(:) = shift;
+meanLuminance = zeros(nTrialsNum, 1);
+meanLuminance(:) = meanL;
+sigmaGaussianEnvelope = zeros(nTrialsNum, 1);
+sigmaGaussianEnvelope(:) = sigmaD;
+rotation = zeros(nTrialsNum, 1);
+rotation(:) = orientationDegs;
+
+
+outFile = sprintf('%s.h5',saveName);
+% currDate = datestr(now,'mm-dd-yy_HH_MM');
+hdf5write(outFile, ...
+    'coneExcitationsSignal', coneExcitationsSignal, ...
+    'coneExcitationsNull', coneExcitationsNull, ...
+    'spatialFrequencyCyclesPerDeg', spatialFrequencyCyclesPerDeg, ...
+    'phaseDegs', phaseDegs, ...
+    'shift', shifts, ...
+    'meanLuminance', meanLuminance, ...
+    'sigmaGaussianEnvelope', sigmaGaussianEnvelope, ...
+    'rotation', rotation, ...
+    'contrast', contrasts);
+
 %{
 % theMosaic.window;
 % theMosaic.plot('Eye Movement Path');

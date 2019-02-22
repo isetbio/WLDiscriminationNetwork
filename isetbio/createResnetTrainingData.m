@@ -25,7 +25,7 @@ presentationDisplay = displaySet(presentationDisplay,'dpi', 2*96);
 % Let's choose these parameters:    [4 8 16 32]
 % 
 p = inputParser;
-addParameter(p, 'spatialFrequency',4);
+addParameter(p, 'frequency',4);
 addParameter(p, 'contrast', 0.6);
 addParameter(p, 'sceneSizeDegs', 1);
 addParameter(p, 'meanL',36);
@@ -38,7 +38,7 @@ addParameter(p, 'nTrialsNum',5);
 addParameter(p, 'outPath', -1);
 parse(p, varargin{:});
 
-spatialFrequency = p.Results.spatialFrequency;
+spatialFrequency = p.Results.frequency;
 contrast         = p.Results.contrast;
 sceneSizeDegs    = p.Results.sceneSizeDegs;
 meanL            = p.Results.meanL;   % Mean display luminance
@@ -57,7 +57,7 @@ saveName = fullfile(outPath, name);
 stimParams = struct(...
     'spatialFrequencyCyclesPerDeg', spatialFrequency, ... % cycles/deg
     'orientationDegs', orientationDegs, ...               % 0 degrees (rotation)
-    'phaseDegs', 90 + shift, ...                          % spatial phase in degrees (0 is cos phase and 90 is sin)
+    'phaseDegs', phaseD + shift, ...                          % spatial phase in degrees (0 is cos phase and 90 is sin)
     'sizeDegs', sceneSizeDegs, ...                        % D x D degrees
     'sigmaDegs', sigmaD, ...                              % sigma of Gaussian envelope, in degrees
     'contrast', contrast,...                              % Michelson contrast

@@ -1,1 +1,1 @@
-createResnetTrainingData('outPath', '/share/wandell/data/reith/coneMosaik/test/', 'contrast', 0.5);
+createResnetTrainingData('outPath', '/share/wandell/data/reith/coneMosaik/test/', 'contrast', 0.5, 'frequency', 4);

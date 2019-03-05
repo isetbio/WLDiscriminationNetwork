@@ -1,4 +1,4 @@
-function createResnetTrainingData(varargin)
+function result = createResnetTrainingData(varargin)
 %% Choose parameters for RESNET and SVM comparisons
 %  
 % Training in this case for harmonic detection thresholds
@@ -9,6 +9,19 @@ function createResnetTrainingData(varargin)
 %                  XYZ = displayGet(d,'xyz',rgbValues)
 %         
 % FR/BW ISETBio Team, 2019
+
+
+% TODO
+%   Add position of the target in the visual field.  That way we can
+%   produce targets at different locations
+%
+
+% Examples:
+%{
+% nTrials, nRows, nCols, nTime
+  defaultData = createResnetTrainingData;
+  ieMovie(squeeze(defaultData.coneExcitationsSignal(1,:,:,:)));
+%}
 
 %% Create a presentation display
 % We employ an existing display specification, here an Apple LCD display.
@@ -49,6 +62,10 @@ orientationDegs  = p.Results.orientationDegs;
 nPathSteps       = p.Results.nPathSteps;
 nTrialsNum       = p.Results.nTrialsNum;
 outPath          = p.Results.outPath;
+
+% Filled in only when there is output argument in the calling
+% function.
+result = [];
 
 name = sprintf('%d_samplesPerClass_frames_%d_freq_%s_contrast_%s',nTrialsNum, nPathSteps, join(string(spatialFrequency),'-'), strrep(sprintf("%.8f", contrast), '.', '_'));
 saveName = fullfile(outPath, name);
@@ -152,19 +169,37 @@ sigmaGaussianEnvelope(:) = sigmaD;
 rotation = zeros(nTrialsNum, 1);
 rotation(:) = orientationDegs;
 
-
-outFile = sprintf('%s.h5',saveName);
-% currDate = datestr(now,'mm-dd-yy_HH_MM');
-hdf5write(outFile, ...
-    'coneExcitationsSignal', coneExcitationsSignal, ...
-    'coneExcitationsNull', coneExcitationsNull, ...
-    'spatialFrequencyCyclesPerDeg', spatialFrequencyCyclesPerDeg, ...
-    'phaseDegs', phaseDegs, ...
-    'shift', shifts, ...
-    'meanLuminance', meanLuminance, ...
-    'sigmaGaussianEnvelope', sigmaGaussianEnvelope, ...
-    'rotation', rotation, ...
-    'contrast', contrasts);
+% If the data are returned, don't write them out.
+% If the data are not returned, write them out.
+if nargout == 0
+    outFile = sprintf('%s.h5',saveName);
+    
+    % currDate = datestr(now,'mm-dd-yy_HH_MM');
+    % The new function is worse.
+    hdf5write(outFile, ...
+        'coneExcitationsSignal', coneExcitationsSignal, ...
+        'coneExcitationsNull', coneExcitationsNull, ...
+        'spatialFrequencyCyclesPerDeg', spatialFrequencyCyclesPerDeg, ...
+        'phaseDegs', phaseDegs, ...
+        'shift', shifts, ...
+        'meanLuminance', meanLuminance, ...
+        'sigmaGaussianEnvelope', sigmaGaussianEnvelope, ...
+        'rotation', rotation, ...
+        'contrast', contrasts);
+else
+    
+    result.coneExcitationsSignal = coneExcitationsSignal;
+    result.coneExcitationsNull   = coneExcitationsNull;
+    %{
+        'spatialFrequencyCyclesPerDeg', spatialFrequencyCyclesPerDeg, ...
+        'phaseDegs', phaseDegs, ...
+        'shift', shifts, ...
+        'meanLuminance', meanLuminance, ...
+        'sigmaGaussianEnvelope', sigmaGaussianEnvelope, ...
+        'rotation', rotation, ...
+        'contrast', contrasts);
+    %}
+end
 
 %{
 % theMosaic.window;

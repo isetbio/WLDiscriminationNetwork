@@ -26,7 +26,7 @@ presentationDisplay = displaySet(presentationDisplay,'dpi', 2*96);
 
 spatialFrequency = 4;
 contrast         = 0.6;
-sceneSizeDegs    = 1;
+sceneSizeDegs    = 2;
 meanL            = 36;   % Mean display luminance
 shift            = 0;
 phaseD           = 90;
@@ -47,8 +47,8 @@ stimParams = struct(...
     'sigmaDegs', sigmaD, ...                              % sigma of Gaussian envelope, in degrees
     'contrast', contrast,...                              % Michelson contrast
     'meanLuminanceCdPerM2', meanL, ...                    % mean luminance
-    'pixelsAlongWidthDim', [], ...                        % pixels- width dimension
-    'pixelsAlongHeightDim', [] ...                        % pixel- height dimension
+    'pixelsAlongWidthDim', [1024], ...                        % pixels- width dimension
+    'pixelsAlongHeightDim', [1024] ...                        % pixel- height dimension
     );
 
 % Generate a scene representing the 10% Gabor stimulus as realized on the presentationDisplay

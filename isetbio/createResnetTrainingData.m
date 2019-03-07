@@ -30,7 +30,9 @@ function result = createResnetTrainingData(varargin)
 presentationDisplay = displayCreate('LCD-Apple', 'viewing distance', 0.57);
 
 % Double the display resolution
-presentationDisplay = displaySet(presentationDisplay,'dpi', 2*96);
+%presentationDisplay = displaySet(presentationDisplay,'dpi', 2*96);
+presentationDisplay = displaySet(presentationDisplay,'dpi', 0.5*96);
+
 
 %% Create a harmonic test stimulus
 %
@@ -49,6 +51,9 @@ addParameter(p, 'orientationDegs', 0);
 addParameter(p, 'nPathSteps', 20);
 addParameter(p, 'nTrialsNum',5);
 addParameter(p, 'outPath', -1);
+addParameter(p, 'signalGridSize', 1);
+addParameter(p, 'signalLocation', 1);
+addParameter(p, 'gridZoom', 1); 
 parse(p, varargin{:});
 
 spatialFrequency = p.Results.frequency;
@@ -62,6 +67,9 @@ orientationDegs  = p.Results.orientationDegs;
 nPathSteps       = p.Results.nPathSteps;
 nTrialsNum       = p.Results.nTrialsNum;
 outPath          = p.Results.outPath;
+signalGridSize   = p.Results.signalGridSize;
+signalLocation   = p.Results.signalLocation;
+gridZoom         = p.Results.gridZoom;
 
 % Filled in only when there is output argument in the calling
 % function.
@@ -74,13 +82,16 @@ saveName = fullfile(outPath, name);
 stimParams = struct(...
     'spatialFrequencyCyclesPerDeg', spatialFrequency, ... % cycles/deg
     'orientationDegs', orientationDegs, ...               % 0 degrees (rotation)
-    'phaseDegs', phaseD + shift, ...                          % spatial phase in degrees (0 is cos phase and 90 is sin)
+    'phaseDegs', phaseD + shift, ...                      % spatial phase in degrees (0 is cos phase and 90 is sin)
     'sizeDegs', sceneSizeDegs, ...                        % D x D degrees
     'sigmaDegs', sigmaD, ...                              % sigma of Gaussian envelope, in degrees
     'contrast', contrast,...                              % Michelson contrast
     'meanLuminanceCdPerM2', meanL, ...                    % mean luminance
     'pixelsAlongWidthDim', [], ...                        % pixels- width dimension
-    'pixelsAlongHeightDim', [] ...                        % pixel- height dimension
+    'pixelsAlongHeightDim', [], ...                       % pixel- height dimension
+    'signalGridSize', signalGridSize, ...                 % grid size, where signal location can be specified (2x2 grid -> 2)
+    'signalLocation', signalLocation, ...                 % location, where to put the signal. In a 2x2 grid: 1 -> upperLeft, 2 -> upperRight, 3 -> lowerRight etc. etc.
+    'gridZoom', gridZoom ...                              % zoom the grid into the display. Useful, if some extra padding around is needed to include eye movement..
     );
 
 % Generate a scene representing the 10% Gabor stimulus as realized on the presentationDisplay
@@ -138,19 +149,28 @@ theNullOI = oiCompute(theOI, nullScene);
 % moved to top - nTrialsNum   = 2;
 
 % This makes it 100 ms trial for a 5 ms integration 
-startPath  =  6;  
+startPath  =  10;  
 % moved to top - nPathSteps = 20;
 emPathLength = nPathSteps + startPath - 1;    
 
 theMosaic.noiseFlag = 'none';
 
 theMosaic.emGenSequence(emPathLength,'nTrials',nTrialsNum,'rSeed',randi(1e9,1));
-emPositions = theMosaic.emPositions(:,(startPath:emPathLength),:);
+
+if nPathSteps == 1
+    % static  case:
+    emPositions = theMosaic.emPositions(:,1,:);
+else
+    % non static case:
+    emPositions = theMosaic.emPositions(:,(startPath:emPathLength),:);
+end
 coneExcitationsNull = theMosaic.compute(theNullOI,'emPath',emPositions);
 theMosaic.name = 'Null';
 
 theMosaic.emGenSequence(emPathLength,'nTrials',nTrialsNum,'rSeed',randi(1e9,1));
-emPositions = theMosaic.emPositions;
+% I think it's better if both, signal and no signal, have the same eye
+% movement path.
+% emPositions = theMosaic.emPositions;
 coneExcitationsSignal = theMosaic.compute(theSignalOI,'emPath',emPositions);
 
 disp("interesting");
@@ -188,17 +208,16 @@ if nargout == 0
         'contrast', contrasts);
 else
     
-    result.coneExcitationsSignal = coneExcitationsSignal;
-    result.coneExcitationsNull   = coneExcitationsNull;
-    %{
-        'spatialFrequencyCyclesPerDeg', spatialFrequencyCyclesPerDeg, ...
-        'phaseDegs', phaseDegs, ...
-        'shift', shifts, ...
-        'meanLuminance', meanLuminance, ...
-        'sigmaGaussianEnvelope', sigmaGaussianEnvelope, ...
-        'rotation', rotation, ...
-        'contrast', contrasts);
-    %}
+    result.coneExcitationsSignal        = coneExcitationsSignal;
+    result.coneExcitationsNull          = coneExcitationsNull;
+    result.spatialFrequencyCyclesPerDeg = spatialFrequencyCyclesPerDeg;
+    result.phaseDegs                    = phaseDegs;
+    result.shift                        = shifts;
+    result.meanLuminance                = meanLuminance;
+    result.sigmaGaussianEnvelope        = sigmaGaussianEnvelope;
+    result.rotation                     = rotation;
+    result.contrast                     = contrasts;
+
 end
 
 %{

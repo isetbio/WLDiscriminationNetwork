@@ -17,7 +17,7 @@ def matfile_gen(pathMatDir):
 
 def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None, **kwargs):
     kword_args = {'train_nn': True, 'include_shift': False, 'NetClass': NetClass, 'deeper_pls': deeper_pls,
-                  'NetClass_param': NetClass_param, 'include_angle': False}
+                  'NetClass_param': NetClass_param, 'include_angle': False, 'them_cones': True}
     deviceIDs = GPUtil.getAvailable(order='first', limit=6, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
     print(deviceIDs)
     function_start = time.time()
@@ -60,6 +60,17 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
+    run_on_folder('/share/wandell/data/reith/coneMosaik/static_case_freq1_var_contrasts/', separate_rgb=False, svm=True)
+    run_on_folder('/share/wandell/data/reith/coneMosaik/static_case_freq1_var_contrasts_rgb/', separate_rgb=True, NetClass=NotPretrainedResnet, svm=True)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+
+'''
+Older runs for documentation purposes..
+#################################################
+test higher start lr rates
+if __name__ == '__main__':
+    full_start = time.time()
     run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/30_epochs_lr_0_01_lr_deviation_0_1_lr_epoch_reps_3/', num_epochs=30, initial_lr=0.01, lr_deviation=0.1, lr_epoch_reps=3)
     run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/48_epochs_lr_0_01_lr_deviation_0_1_lr_epoch_reps_3', num_epochs=48, initial_lr=0.01, lr_deviation=0.1, lr_epoch_reps=3)
     run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/48_epochs_lr_0_01_lr_deviation_0_1_lr_epoch_reps_4', num_epochs=48, initial_lr=0.01, lr_deviation=0.1, lr_epoch_reps=4)
@@ -67,10 +78,6 @@ if __name__ == '__main__':
     run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/48_epochs_lr_0_001_lr_deviation_0_33_lr_epoch_reps_6', num_epochs=48, initial_lr=0.001, lr_deviation=0.33, lr_epoch_reps=6)
     run_on_folder('/share/wandell/data/reith/imagenet_training/different_training_params/48_epochs_lr_0_01_lr_deviation_0_33_lr_epoch_reps_12', num_epochs=48, initial_lr=0.01, lr_deviation=0.33, lr_epoch_reps=12)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
-
-
-'''
-Older runs for documentation purposes..
 ##################################################
 if __name__ == '__main__':
     full_start = time.time()

@@ -92,7 +92,10 @@ def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLa
             data -= mean_norm
             data /= std_norm
             # data = data.view(-1, dimIn)
-            data = data.view(-1, 1, dimIn, dimIn)
+            if len(data.shape) == 4:
+                data = data.permute(0,3,1,2)
+            else:
+                data = data.view(-1, 1, dimIn, dimIn)
             optimizer.zero_grad()
             # Net.train()
             net_out = Net(data)

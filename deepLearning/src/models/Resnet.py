@@ -100,8 +100,9 @@ class NotPretrainedResnet(nn.Module):
         # squeeze values between 0 and 1. Use values from test_data instead of small batch to decrease statistical variance
         # If you think about the math, this does the trick (max_norm and min_norm are from the pre-normalized distribution)
         # x = x*(self.std_norm/(self.max_norm-self.min_norm)) + (self.mean_norm-self.min_norm)/(self.max_norm - self.min_norm)
-        # copy to 3 channels
-        x = x.repeat(1, 3, 1, 1)
+        # copy to 3 channels if not already there
+        if x.shape[1] == 1:
+            x = x.repeat(1, 3, 1, 1)
         # substract imagenet mean and scale imagenet std
         # x -= self.channel_mean
         # x /= self.channel_std

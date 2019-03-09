@@ -3,6 +3,7 @@ from deepLearning.src.models.GrayResNet import GrayResnet18, GrayResnet101
 from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel, calculate_dprime
 from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader
 from deepLearning.src.data.logger import Logger, CsvWriter
+from deepLearning.src.models.support_vector_machine import score_svm
 import torch
 import torch.nn as nn
 from torch import optim
@@ -19,7 +20,7 @@ from scipy.stats import norm
 def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False,
                                      deeper_pls=False, oo=True, svm=False, NetClass=None, NetClass_param=None,
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
-                                     lr_epoch_reps=3):
+                                     lr_epoch_reps=3, them_cones=False, separate_rgb=False):
     # relevant variables
     startTime = time.time()
     print(device, pathMat)
@@ -32,11 +33,11 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     fileName = os.path.basename(pathMat).split('.')[0]
     sys.stdout = Logger(f"{os.path.join(outPath, fileName)}_log.txt")
     if include_shift:
-        meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True)
+        meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True, them_cones=them_cones, separate_rgb=separate_rgb)
     elif include_angle:
-        meanData, meanDataLabels, dataContrast, dataAngle = get_h5mean_data(pathMat, includeContrast=True, includeAngle=True)
+        meanData, meanDataLabels, dataContrast, dataAngle = get_h5mean_data(pathMat, includeContrast=True, includeAngle=True, them_cones=them_cones, separate_rgb=separate_rgb)
     else:
-        meanData, meanDataLabels, dataContrast = get_h5mean_data(pathMat, includeContrast=True)
+        meanData, meanDataLabels, dataContrast = get_h5mean_data(pathMat, includeContrast=True, them_cones=them_cones, separate_rgb=separate_rgb)
     # data =    torch.from_numpy(data).type(torch.float32)
     # pickle.dump([data, labels, dataNoNoise], open('mat1PercentNoNoiseData.p', 'wb'))
     # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))
@@ -94,7 +95,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     dimOut = len(meanData)
 
     if svm:
-        pass
+        score_svm(pathMat, lock, them_cones=them_cones, separate_rgb=separate_rgb, includeContrast=True)
 
     if train_nn:
         if NetClass is None:

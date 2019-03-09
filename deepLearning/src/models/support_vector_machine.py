@@ -8,6 +8,11 @@ import datetime
 import time
 
 
+def score_svm(h5_path, lock, metric='contrast', num_samples=15000, **kwargs):
+    acc, dprime, metric_val = get_svm_accuracy(h5_path, num_samples, lock=lock, **kwargs)
+    write_svm_csv(acc, dprime, metric_val, os.path.dirname(h5_path), lock=lock, metric_name=metric, num_samples=num_samples)
+
+
 def write_svm_csv(acc, dprime, metric, out_path, lock=None, metric_name='contrast', num_samples=15000):
     if lock is not None:
         lock.acquire()

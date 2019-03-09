@@ -32,18 +32,42 @@ def get_h5data(pathMat, shuffle=False):
     return data, labels, meanData, meanDataLabels
 
 
-def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeAngle=False):
+def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeAngle=False, them_cones=False,
+                    separate_rgb=False):
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
     args = []
-    args.append(h5Dict['noNoiseImg'])
-    args.append(h5Dict['noNoiseImgFreq'])
-    if includeContrast:
-        args.append(h5Dict['noNoiseImgContrast'])
-    if includeShift:
-        args.append(h5Dict['noNoiseImgPhase'])
-    if includeAngle:
-        args.append(h5Dict['noNoiseImgAngle'])
+    if them_cones:
+        # 2 = red, 3 = green, 4 = blue
+        mosaic = h5Dict['mosaicPattern']
+        img_data = h5Dict['excitationsData']
+        img_data = np.squeeze(img_data)
+        if separate_rgb:
+            r = np.copy(img_data)
+            r[:, mosaic != 2] = 0
+            g = np.copy(img_data)
+            g[:, mosaic != 3] = 0
+            b = np.copy(img_data)
+            b[:, mosaic != 4] = 0
+            img_data = np.stack((r, g, b), axis=-1)
+        # img_data = np.transpose(img_data, (3, 1, 2, 0))
+        args.append(img_data)
+        args.append(h5Dict['spatialFrequencyCyclesPerDeg'])
+        if includeContrast:
+            args.append(h5Dict['contrast'])
+        if includeShift:
+            args.append(h5Dict['shift'])
+        if includeAngle:
+            args.append(h5Dict['rotation'])
+    else:
+        args.append(h5Dict['noNoiseImg'])
+        args.append(h5Dict['noNoiseImgFreq'])
+        if includeContrast:
+            args.append(h5Dict['noNoiseImgContrast'])
+        if includeShift:
+            args.append(h5Dict['noNoiseImgPhase'])
+        if includeAngle:
+            args.append(h5Dict['noNoiseImgAngle'])
     return args
 
 

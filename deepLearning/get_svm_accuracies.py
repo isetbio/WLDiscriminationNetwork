@@ -69,39 +69,10 @@ if __name__ == '__main__':
     metric = 'contrast'
     kwargs = {'includeContrast': True}
     function_start = time.time()
-    iter_gen = num_iterations_gen([1000,  1576,  2484,  3915,  6170,  9724, 15000, 24155])
-    parallel_folders = list(range(2))
-    num_cpus = 5
-    lock = mp.Lock()
+    parallel_folders = list(range(1))
+    num_cpus = 2
     processes = {}
-    while True:
-        try:
-            if processes == {}:
-                for f in parallel_folders:
-                    iterations = next(iter_gen)
-                    print(f"scoring {iterations}")
-                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric, lock], kwargs={'includeContrast': True, 'num_samples': iterations})
-                    processes[f] = curr_p
-                    curr_p.start()
-            for f, proc in processes.items():
-                if not proc.is_alive():
-                    iterations = next(iter_gen)
-                    print(f"scoring {iterations}")
-                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric, lock], kwargs={'includeContrast': True, 'num_samples': iterations})
-                    processes[f] = curr_p
-                    curr_p.start()
-        except StopIteration:
-            break
-
-        time.sleep(5)
-
-    for proc in processes.values():
-        proc.join()
-
-        parallel_folders = list(range(2))
-    num_cpus = 3
-    processes = {}
-    iter_gen = num_iterations_gen([38070])
+    iter_gen = num_iterations_gen([60000])
     while True:
         try:
             if processes == {}:
@@ -126,7 +97,7 @@ if __name__ == '__main__':
     for proc in processes.values():
         proc.join()
     function_end = time.time()
-    with open(os.path.join(super_folder, 'time_svm.txt'), 'w') as txt:
+    with open(os.path.join(sub_folder, 'time_svm.txt'), 'w') as txt:
         txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
     print("done!")

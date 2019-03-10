@@ -18,7 +18,10 @@ def test(batchSize, testData, testLabels, Net, dimIn, includePredictionLabels=Fa
         data, target = Variable(data), Variable(target)
         data, target = data.cuda(), target.cuda()
         # data = data.view(-1, dimIn)
-        data = data.view(-1, 1, dimIn, dimIn)
+        if len(data.shape) == 4:
+            data = data.permute(0, 3, 1, 2)
+        else:
+            data = data.view(-1, 1, dimIn, dimIn)
         # Net.eval()
         net_out = Net(data)
         prediction = net_out.max(1)[1]

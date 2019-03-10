@@ -41,15 +41,32 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
         # 2 = red, 3 = green, 4 = blue
         mosaic = h5Dict['mosaicPattern']
         img_data = h5Dict['excitationsData']
-        img_data = np.squeeze(img_data)
+        if len(img_data.shape) == 4:
+            img_data = np.transpose(img_data, (3, 1, 2, 0))
+        else:
+            img_data = np.transpose(img_data, (2, 0, 1))
         if separate_rgb:
-            r = np.copy(img_data)
-            r[:, mosaic != 2] = 0
-            g = np.copy(img_data)
-            g[:, mosaic != 3] = 0
-            b = np.copy(img_data)
-            b[:, mosaic != 4] = 0
-            img_data = np.stack((r, g, b), axis=-1)
+            if len(img_data.shape) == 4:
+                r = np.copy(img_data)
+                r[:, mosaic != 2, :] = 0
+                g = np.copy(img_data)
+                g[:, mosaic != 3, :] = 0
+                b = np.copy(img_data)
+                b[:, mosaic != 4, :] = 0
+                stack_list = []
+                for i in range(img_data.shape[3]):
+                    stack_list.append(r[..., i])
+                    stack_list.append(g[..., i])
+                    stack_list.append(b[..., i])
+                img_data = np.stack(stack_list, axis=-1)
+            else:
+                r = np.copy(img_data)
+                r[:, mosaic != 2] = 0
+                g = np.copy(img_data)
+                g[:, mosaic != 3] = 0
+                b = np.copy(img_data)
+                b[:, mosaic != 4] = 0
+                img_data = np.stack((r, g, b), axis=-1)
         # img_data = np.transpose(img_data, (3, 1, 2, 0))
         args.append(img_data)
         args.append(h5Dict['spatialFrequencyCyclesPerDeg'])

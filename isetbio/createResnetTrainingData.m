@@ -172,7 +172,7 @@ else
     emPositions = theMosaic.emPositions(:,(startPath:emPathLength),:);
 end
 coneExcitationsNull = theMosaic.compute(theNullOI,'emPath',emPositions);
-excitationsData = cat(4, excitationsData, coneExcitationsNull);
+excitationsData = cat(1, excitationsData, coneExcitationsNull);
 theMosaic.name = 'Null';
 
 % I think it's better if both, signal and no signal, have the same eye
@@ -185,7 +185,7 @@ for i = 1:length(signalScenes)
    % Compute the retinal image of the test stimulus
    theSignalOI = oiCompute(theOI, sc);
    coneExcitationsSignal = theMosaic.compute(theSignalOI,'emPath',emPositions);
-   excitationsData = cat(4, excitationsData, coneExcitationsSignal);
+   excitationsData = cat(1, excitationsData, coneExcitationsSignal);
 end
 
 

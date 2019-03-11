@@ -42,7 +42,11 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
         mosaic = h5Dict['mosaicPattern']
         img_data = h5Dict['excitationsData']
         if len(img_data.shape) == 4:
-            img_data = np.transpose(img_data, (3, 1, 2, 0))
+            # quickfix different h5 files... (to be deleted)
+            if img_data.shape[-1] == 1:
+                img_data = np.squeeze(img_data)
+            else:
+                img_data = np.transpose(img_data, (3, 1, 2, 0))
         else:
             img_data = np.transpose(img_data, (2, 0, 1))
         if separate_rgb:

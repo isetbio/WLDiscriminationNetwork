@@ -35,7 +35,7 @@ for i, p in enumerate(folder_paths):
         appendix = ' rgb split'
     csv1 = os.path.join(p, 'results.csv')
     csv_svm = os.path.join(p, 'svm_results.csv')
-    fname = 'cone_mosaic_contrasts_calibration_exclude_lower_vals'
+    fname = 'cone_mosaic_contrasts_calibration_exclude_lower_vals_updated'
 
     oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast', exclude_from=10**-3)
     nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast', exclude_from=10**-3)

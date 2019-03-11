@@ -15,6 +15,7 @@ import time
 import datetime
 import pickle
 from scipy.stats import norm
+import multiprocessing as mp
 
 
 def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False,
@@ -95,7 +96,9 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     dimOut = len(meanData)
 
     if svm:
-        score_svm(pathMat, lock, them_cones=them_cones, separate_rgb=separate_rgb, includeContrast=True)
+        svm_process = mp.Process(score_svm, args=[pathMat, lock],
+                                 kwargs={'them_cones': them_cones, 'separate_rgb': separate_rgb, 'includeContrast': True})
+        svm_process.start()
 
     if train_nn:
         if NetClass is None:

@@ -60,7 +60,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
-    run_on_folder('/share/wandell/data/reith/coneMosaik/static_case_freq1_var_contrasts_no_gabor/', separate_rgb=False, svm=True)
+    run_on_folder('/share/wandell/data/reith/coneMosaik/static_case_freq1_var_contrasts_no_gabor_90degs_rotated/', separate_rgb=False, svm=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 '''

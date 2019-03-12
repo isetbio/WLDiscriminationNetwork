@@ -48,7 +48,7 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
             else:
                 img_data = np.transpose(img_data, (3, 1, 2, 0))
         else:
-            img_data = np.transpose(img_data, (2, 0, 1))
+            img_data = np.transpose(img_data, (2, 1, 0))
         if separate_rgb:
             if len(img_data.shape) == 4:
                 r = np.copy(img_data)

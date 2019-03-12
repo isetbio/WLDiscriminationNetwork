@@ -20,7 +20,7 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
 
 include_svm = True
 
-folder_paths = ['/share/wandell/data/reith/coneMosaik/static_case_freq1_var_contrasts/']
+folder_paths = ['/share/wandell/data/reith/coneMosaik/static_case_freq1_var_contrasts_no_gabor/']
 
 fig = plt.figure()
 # plt.grid(which='both')

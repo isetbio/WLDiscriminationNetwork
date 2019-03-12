@@ -73,8 +73,11 @@ def calculate_dprime(prediction_label):
     oo_labels = prediction_label[:, 1]
     i = 1
     selector = np.where(oo_predictions == i)[0]
-    hit = (0.5 + np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i) + 1)
-    false_alarm = (0.5 + np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i) + 1)
+    hit = (np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i))
+    false_alarm = (np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i))
+    if not (0<hit<1 and 0<false_alarm<1):
+        hit = (0.5 + np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i) + 1)
+        false_alarm = (0.5 + np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i) + 1)
     d = norm.ppf(hit) - norm.ppf(false_alarm)
     return d
 

@@ -20,7 +20,7 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
 
 include_svm = True
 
-folder_paths = ['/share/wandell/data/reith/coneMosaik/static_case_freq1_var_contrasts_no_gabor_90degs_rotated/']
+folder_paths = ['/share/wandell/data/reith/coneMosaik/sanity_sensor_data/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_real_mean/']
 
 fig = plt.figure()
 # plt.grid(which='both')
@@ -28,27 +28,30 @@ plt.xscale('log')
 plt.xlabel('contrast')
 plt.ylabel('dprime')
 plt.title(f"Contrast calibration for cone mosaic")
+plt.title(f"Sensor data - real vs rounded mean comparison")
 for i, p in enumerate(folder_paths):
     if i == 0:
-        appendix = ' no split'
+        appendix = ' rounded mean ground truth'
     elif i == 1:
-        appendix = ' rgb split'
+        appendix = ' real mean ground truth'
     csv1 = os.path.join(p, 'results.csv')
     csv_svm = os.path.join(p, 'svm_results.csv')
     fname = 'cone_mosaic_contrasts_calibration_exclude_lower_vals_updated'
+    fname = 'sensor_data_real_mean_rounded_mean'
 
-    oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast', exclude_from=10**-3)
-    nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast', exclude_from=10**-3)
-    contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast', exclude_from=10**-3)
+    oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast')
+    nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast')
+    contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast')
 
     plt.plot(contrasts, oo, label='Ideal Observer'+appendix)
     plt.plot(contrasts, nn, label='ResNet18'+appendix)
+    epsilon = 0.001
     if include_svm:
-        svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='contrast', exclude_from=10**-3)
-        svm[svm == svm.max()] = oo.max()
+        svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='contrast')
+        svm[svm >= (svm.max()-epsilon)] = oo.max()
         plt.plot(contrasts, svm, label='Support Vector Machine'+appendix)
 
-plt.legend(frameon=True)
+plt.legend(frameon=True, loc='upper left', fontsize='x-small')
 out_path = p
 fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
 # fig.show()

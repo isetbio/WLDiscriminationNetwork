@@ -12,7 +12,7 @@ def test(batchSize, testData, testLabels, Net, dimIn, includePredictionLabels=Fa
     allWrongs = []
     predictions = []
     labels = []
-    # Net.eval()
+    Net.eval()
     for batch_idx, (data, target) in enumerate(mat_data_loader(testData, testLabels, batchSize, shuffle=False)):
         data_temp = np.copy(data)
         data, target = Variable(data), Variable(target)
@@ -35,6 +35,7 @@ def test(batchSize, testData, testLabels, Net, dimIn, includePredictionLabels=Fa
         allWrongs.extend(wrongs)
         predictions.extend(prediction)
         labels.extend(target)
+    Net.train()
     print(f"Test accuracy is {np.mean(allAccuracy)}")
     if includePredictionLabels:
         return np.mean(allAccuracy), np.stack((predictions, testLabels)).T

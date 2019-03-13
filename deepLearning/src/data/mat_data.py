@@ -81,11 +81,11 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
         if includeAngle:
             args.append(h5Dict['rotation'])
     else:
-        # round to .5 experiment:
+        # round to .1f experiment:
         experiment = h5Dict['noNoiseImg']
-        experiment += 0.5
-        experiment = np.round(experiment)
-        experiment -= 0.5
+        # experiment += 0.5
+        experiment = np.round(experiment, 1)
+        # experiment -= 0.5
         args.append(experiment)
         #####################
         # args.append(h5Dict['noNoiseImg'])

@@ -21,7 +21,7 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
 include_svm = True
 
 folder_paths = ['/share/wandell/data/reith/coneMosaik/sanity_sensor_data/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_1decimal_mean/']
-folder_paths = ['/share/wandell/data/reith/coneMosaik/sensor_sanity_real_mean/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_1decimal_mean/']
+#folder_paths = ['/share/wandell/data/reith/coneMosaik/sensor_sanity_real_mean/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_1decimal_mean/']
 
 
 fig = plt.figure()
@@ -30,7 +30,7 @@ plt.xscale('log')
 plt.xlabel('contrast')
 plt.ylabel('dprime')
 plt.title(f"Contrast calibration for cone mosaic")
-plt.title(f"Sensor data - rounded to rounded point 5 mean comparison")
+plt.title(f"Sensor data - rounded parameters comparison")
 for i, p in enumerate(folder_paths):
     if i == 0:
         appendix = ' rounded mean'
@@ -39,7 +39,7 @@ for i, p in enumerate(folder_paths):
     csv1 = os.path.join(p, 'results.csv')
     csv_svm = os.path.join(p, 'svm_results.csv')
     fname = 'sensor_data_rounded_to_1dec_rounded_mean'
-    fname = 'sensor_data_real_mean_to_1dec_rounded_mean'
+    # fname = 'sensor_data_real_mean_to_1dec_rounded_mean'
 
     oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast', exclude_from=10**-6)
     nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast', exclude_from=10**-6)

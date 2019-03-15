@@ -33,7 +33,7 @@ def get_h5data(pathMat, shuffle=False):
 
 
 def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeAngle=False, them_cones=False,
-                    separate_rgb=False):
+                    separate_rgb=False, meanData_rounding=None):
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
     args = []
@@ -84,7 +84,8 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
         # round to .1f experiment:
         experiment = h5Dict['noNoiseImg']
         # experiment += 0.567891011121314
-        experiment = np.round(experiment, 7)
+        if meanData_rounding is not None:
+            experiment = np.round(experiment, meanData_rounding)
         # experiment -= 0.567891011121314
         args.append(experiment)
         #####################

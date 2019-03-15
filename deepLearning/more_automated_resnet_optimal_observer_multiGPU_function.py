@@ -57,15 +57,26 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     time.sleep(60)
     print("done!")
 
-
 if __name__ == '__main__':
     full_start = time.time()
-    run_on_folder('/share/wandell/data/reith/coneMosaik/sensor_sanity_7decimal_mean/', separate_rgb=False, svm=True)
+    super_path = '/share/wandell/data/reith/coneMosaik/various_rounding_rounds/'
+    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    fpaths.sort()
+    # run_on_folder(fpaths.pop(0), separate_rgb=False, svm=True, meanData_rounding=None)
+    for i, path in enumerate(fpaths, start=1):
+        print(path)
+        run_on_folder(path, separate_rgb=False, svm=True, meanData_rounding=i)
+
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 '''
 Older runs for documentation purposes..
 #################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    run_on_folder('/share/wandell/data/reith/coneMosaik/sensor_sanity_7decimal_mean/', separate_rgb=False, svm=True)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+###################################################
 Calibrate static cone mosaic case
     full_start = time.time()
     run_on_folder('/share/wandell/data/reith/coneMosaik/static_case_freq1_var_contrasts/', separate_rgb=False, svm=True)

@@ -22,7 +22,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
                                      deeper_pls=False, oo=True, svm=False, NetClass=None, NetClass_param=None,
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,
-                                     random_noise=False):
+                                     shuffled_pixels=False):
 
 
     # relevant variables
@@ -38,13 +38,13 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     sys.stdout = Logger(f"{os.path.join(outPath, fileName)}_log.txt")
     if include_shift:
         meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True,
-                                                                            them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding, random_noise=random_noise)
+                                                                            them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding, shuffled_pixels=shuffled_pixels)
     elif include_angle:
         meanData, meanDataLabels, dataContrast, dataAngle = get_h5mean_data(pathMat, includeContrast=True, includeAngle=True,
-                                                                            them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding, random_noise=random_noise)
+                                                                            them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding, shuffled_pixels=shuffled_pixels)
     else:
         meanData, meanDataLabels, dataContrast = get_h5mean_data(pathMat, includeContrast=True,
-                                                                 them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding, random_noise=random_noise)
+                                                                 them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding, shuffled_pixels=shuffled_pixels)
     # data =    torch.from_numpy(data).type(torch.float32)
     # pickle.dump([data, labels, dataNoNoise], open('mat1PercentNoNoiseData.p', 'wb'))
     # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))

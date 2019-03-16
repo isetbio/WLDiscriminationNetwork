@@ -57,17 +57,29 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     time.sleep(60)
     print("done!")
 
+
+if __name__ == '__main__':
+    full_start = time.time()
+    fpath = '/share/wandell/data/reith/coneMosaik/shuffled_pixels/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=True, svm=True)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+'''
+TODO soon:
 if __name__ == '__main__':
     full_start = time.time()
     super_path = '/share/wandell/data/reith/coneMosaik/various_rounding_rounds/'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     fpaths.sort()
-    run_on_folder(fpaths.pop(0), them_cones=False, separate_rgb=False, meanData_rounding=None, random_noise=True, svm=True)
+    run_on_folder(fpaths.pop(0), them_cones=False, separate_rgb=False, meanData_rounding=None, random_noise=False, svm=True)
     for i, path in enumerate(fpaths, start=1):
         print(path)
-        run_on_folder(path, svm=True, them_cones=False, separate_rgb=False, meanData_rounding=None, random_noise=True)
+        run_on_folder(path, svm=True, them_cones=False, separate_rgb=False, meanData_rounding=None, random_noise=False)
 
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+'''
+
 
 '''
 Older runs for documentation purposes..

@@ -62,10 +62,10 @@ if __name__ == '__main__':
     super_path = '/share/wandell/data/reith/coneMosaik/various_rounding_rounds/'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     fpaths.sort()
-    run_on_folder(fpaths.pop(0), meanData_params={'them_cones': False, 'separate_rgb': False, 'meanData_rounding': None}, svm=True)
+    run_on_folder(fpaths.pop(0), them_cones=False, separate_rgb=False, meanData_rounding=None, random_noise=True, svm=True)
     for i, path in enumerate(fpaths, start=1):
         print(path)
-        run_on_folder(path, svm=True, meanData_params={'them_cones': False, 'separate_rgb': False, 'meanData_rounding': None}, NetClass=NotPretrainedResnet)
+        run_on_folder(path, svm=True, them_cones=False, separate_rgb=False, meanData_rounding=None, random_noise=True)
 
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 

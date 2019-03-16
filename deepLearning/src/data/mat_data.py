@@ -37,9 +37,6 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
     args = []
-    if random_noise:
-        contrast = h5Dict['noNoiseImgContrast']
-        img_data = np.random.rand(2,224,224)*50
     if them_cones:
         # 2 = red, 3 = green, 4 = blue
         mosaic = h5Dict['mosaicPattern']
@@ -90,6 +87,16 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
         if meanData_rounding is not None:
             experiment = np.round(experiment, meanData_rounding)
         # experiment -= 0.567891011121314
+        if random_noise:
+            np.random.seed(42)
+            rows = experiment.shape[-2]
+            cols = experiment.shape[-1]
+            shuff_args = np.random.permutation(np.arange(rows*cols))
+            result = []
+            for md in experiment:
+                result.append(md.flatten()[shuff_args].reshape(rows,cols))
+            experiment = np.stack(result)
+            print("nice")
         args.append(experiment)
         #####################
         # args.append(h5Dict['noNoiseImg'])

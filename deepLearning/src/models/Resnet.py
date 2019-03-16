@@ -72,7 +72,7 @@ class PretrainedResnetFrozen(nn.Module):
 
 
 class NotPretrainedResnet(nn.Module):
-    def __init__(self, dim_out, min_norm, max_norm, mean_norm, std_norm):
+    def __init__(self, dim_out, min_norm=np.float64(1), max_norm=np.float64(1), mean_norm=np.float64(1), std_norm=np.float64(1)):
         super().__init__()
         self.min_norm = torch.as_tensor(min_norm.astype(np.float)).cuda()
         self.max_norm = torch.as_tensor(max_norm.astype(np.float)).cuda()
@@ -107,7 +107,7 @@ class NotPretrainedResnet(nn.Module):
         # x -= self.channel_mean
         # x /= self.channel_std
         x = self.ResNet(x)
-        return F.log_softmax(x)
+        return F.log_softmax(x, dim=1)
 
     def freeze_except_fc(self):
         for name, param in self.named_parameters():

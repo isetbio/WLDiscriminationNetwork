@@ -33,10 +33,13 @@ def get_h5data(pathMat, shuffle=False):
 
 
 def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeAngle=False, them_cones=False,
-                    separate_rgb=False, meanData_rounding=None):
+                    separate_rgb=False, meanData_rounding=None, random_noise=False):
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
     args = []
+    if random_noise:
+        contrast = h5Dict['noNoiseImgContrast']
+        img_data = np.random.rand(2,224,224)*50
     if them_cones:
         # 2 = red, 3 = green, 4 = blue
         mosaic = h5Dict['mosaicPattern']

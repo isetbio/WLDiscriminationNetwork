@@ -21,7 +21,11 @@ import multiprocessing as mp
 def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False,
                                      deeper_pls=False, oo=True, svm=False, NetClass=None, NetClass_param=None,
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
-                                     lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None):
+                                     lr_epoch_reps=3, meanData_params=None):
+
+    # set default mean data
+    if meanData_params is None:
+        meanData_params = {'them_cones': False, 'separate_rgb': False, 'meanData_rounding': None}
     # relevant variables
     startTime = time.time()
     print(device, pathMat)
@@ -34,11 +38,11 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     fileName = os.path.basename(pathMat).split('.')[0]
     sys.stdout = Logger(f"{os.path.join(outPath, fileName)}_log.txt")
     if include_shift:
-        meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True, them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding)
+        meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True, **meanData_params)
     elif include_angle:
-        meanData, meanDataLabels, dataContrast, dataAngle = get_h5mean_data(pathMat, includeContrast=True, includeAngle=True, them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding)
+        meanData, meanDataLabels, dataContrast, dataAngle = get_h5mean_data(pathMat, includeContrast=True, includeAngle=True, **meanData_params)
     else:
-        meanData, meanDataLabels, dataContrast = get_h5mean_data(pathMat, includeContrast=True, them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding)
+        meanData, meanDataLabels, dataContrast = get_h5mean_data(pathMat, includeContrast=True, **meanData_params)
     # data =    torch.from_numpy(data).type(torch.float32)
     # pickle.dump([data, labels, dataNoNoise], open('mat1PercentNoNoiseData.p', 'wb'))
     # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))

@@ -29,12 +29,12 @@ fig = plt.figure()
 plt.xscale('log')
 plt.xlabel('contrast')
 plt.ylabel('dprime')
-plt.title(f"Sensor data - real mean vs shuffled pixels")
+plt.title(f"Sensor data - harmonic curve pixel location vs randomized pixel location")
 for i, p in enumerate(folder_paths):
     if i == 0:
-        appendix = ' real mean'
+        appendix = ' harmonic curve pixel location'
     elif i == 1:
-        appendix = ' shuffled pixels'
+        appendix = ' randomized pixel location'
     csv1 = os.path.join(p, 'results.csv')
     csv_svm = os.path.join(p, 'svm_results.csv')
     fname = 'sensor_data_real_mean_vs_shuffled_pixels'
@@ -52,7 +52,7 @@ for i, p in enumerate(folder_paths):
         svm[svm >= (svm.max()-epsilon)] = oo.max()
         plt.plot(contrasts, svm, label='Support Vector Machine'+appendix)
 
-plt.legend(frameon=True, loc='upper left', fontsize='x-small')
+plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
 out_path = p
 fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
 # fig.show()

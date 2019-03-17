@@ -58,14 +58,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     print("done!")
 
 
-if __name__ == '__main__':
-    full_start = time.time()
-    fpath = '/share/wandell/data/reith/coneMosaik/shuffled_pixels/'
-    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=True, svm=True)
-    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
-'''
-TODO soon:
 if __name__ == '__main__':
     full_start = time.time()
     super_path = '/share/wandell/data/reith/coneMosaik/various_rounding_rounds/'
@@ -78,11 +71,16 @@ if __name__ == '__main__':
 
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
-'''
 
 
 '''
 Older runs for documentation purposes..
+#################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    fpath = '/share/wandell/data/reith/coneMosaik/shuffled_pixels/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=True, svm=True)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 #################################################
 if __name__ == '__main__':
     full_start = time.time()

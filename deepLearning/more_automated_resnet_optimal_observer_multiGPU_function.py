@@ -60,14 +60,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
-    super_path = '/share/wandell/data/reith/coneMosaik/various_rounding_rounds/'
-    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
-    fpaths.sort()
-    run_on_folder(fpaths.pop(0), them_cones=False, separate_rgb=False, meanData_rounding=None, svm=True)
-    for i, path in enumerate(fpaths, start=1):
-        print(path)
-        run_on_folder(path, svm=True, them_cones=False, separate_rgb=False, meanData_rounding=i)
-
+    run_on_folder('/share/wandell/data/reith/coneMosaik/freq1_sensor_data_round/', them_cones=False, separate_rgb=False, meanData_rounding=0, svm=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 """
@@ -92,10 +85,10 @@ if __name__ == '__main__':
     super_path = '/share/wandell/data/reith/coneMosaik/various_rounding_rounds/'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     fpaths.sort()
-    run_on_folder(fpaths.pop(0), them_cones=False, separate_rgb=False, meanData_rounding=None, random_noise=False, svm=True)
+    # run_on_folder(fpaths.pop(0), them_cones=False, separate_rgb=False, meanData_rounding=None, svm=True)
     for i, path in enumerate(fpaths, start=1):
         print(path)
-        run_on_folder(path, svm=True, them_cones=False, separate_rgb=False, meanData_rounding=None, random_noise=False)
+        # run_on_folder(path, svm=True, them_cones=False, separate_rgb=False, meanData_rounding=i)
 
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 

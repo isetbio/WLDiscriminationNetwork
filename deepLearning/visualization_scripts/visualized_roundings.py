@@ -32,7 +32,7 @@ plt.xscale('log')
 plt.xlabel('contrast')
 plt.ylabel('dprime')
 plt.title(f"Sensor data - Comparison between various template data roundings")
-for i, p in enumerate(folder_paths, start=1):
+for i, p in enumerate(folder_paths, start=0):
     if i <= 8:
         appendix = f' rounded to {i} decimal'
     elif i == 9:
@@ -43,6 +43,7 @@ for i, p in enumerate(folder_paths, start=1):
     # fname = 'sensor_data_real_mean_to_1dec_rounded_mean'
 
     oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast')
+    oo = get_csv_column(csv1, 'theoretical_d_index', sort_by='contrast')
     nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast')
     contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast')
     if include_oo:

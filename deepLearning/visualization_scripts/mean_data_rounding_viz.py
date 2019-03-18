@@ -20,7 +20,7 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
 
 include_svm = True
 
-folder_paths = ['/share/wandell/data/reith/coneMosaik/sanity_sensor_data/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_1decimal_mean/']
+folder_paths = ['/share/wandell/data/reith/coneMosaik/sensor_sanity_real_mean/', '/share/wandell/data/reith/coneMosaik/freq1_sensor_data_round/']
 #folder_paths = ['/share/wandell/data/reith/coneMosaik/sensor_sanity_real_mean/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_1decimal_mean/']
 
 
@@ -33,9 +33,9 @@ plt.title(f"Contrast calibration for cone mosaic")
 plt.title(f"Sensor data - rounded parameters comparison")
 for i, p in enumerate(folder_paths):
     if i == 0:
-        appendix = ' rounded mean'
+        appendix = ' real mean'
     elif i == 1:
-        appendix = ' rounded to .1f mean'
+        appendix = ' rounded to .0f mean'
     csv1 = os.path.join(p, 'results.csv')
     csv_svm = os.path.join(p, 'svm_results.csv')
     fname = 'sensor_data_rounded_to_1dec_rounded_mean'

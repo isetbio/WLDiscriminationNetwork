@@ -103,7 +103,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
 
     if svm:
         svm_process = mp.Process(target=score_svm, args=[pathMat, lock],
-                                 kwargs={'them_cones': them_cones, 'separate_rgb': separate_rgb, 'includeContrast': True})
+                                 kwargs={'them_cones': them_cones, 'separate_rgb': separate_rgb, 'meanData_rounding': meanData_rounding, 'shuffled_pixels': shuffled_pixels})
         svm_process.start()
 
     if train_nn:

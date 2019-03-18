@@ -60,7 +60,9 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
-    run_on_folder('/share/wandell/data/reith/coneMosaik/freq1_sensor_data_round/', them_cones=False, separate_rgb=False, meanData_rounding=0, svm=True)
+    i = 0
+    print(f"Round to {i} decimals.")
+    run_on_folder('/share/wandell/data/reith/coneMosaik/freq1_sensor_data_round/', them_cones=False, separate_rgb=False, meanData_rounding=i, svm=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 """

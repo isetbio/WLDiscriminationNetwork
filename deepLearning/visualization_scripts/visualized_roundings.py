@@ -18,8 +18,9 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
     return col
 
 
-include_svm = True
-
+include_svm = False
+include_oo = True
+include_nn = False
 fpath = '/share/wandell/data/reith/coneMosaik/various_rounding_rounds/'
 folder_paths = [f.path for f in os.scandir(fpath) if f.is_dir()]
 folder_paths.sort()
@@ -44,9 +45,10 @@ for i, p in enumerate(folder_paths, start=1):
     oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast')
     nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast')
     contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast')
-
-    plt.plot(contrasts, oo, label='Ideal Observer'+appendix)
-    plt.plot(contrasts, nn, label='ResNet18'+appendix)
+    if include_oo:
+        plt.plot(contrasts, oo, label='Ideal Observer'+appendix)
+    if include_nn:
+        plt.plot(contrasts, nn, label='ResNet18'+appendix)
     epsilon = 0.001
     if include_svm:
         svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='contrast')

@@ -87,6 +87,7 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
         experiment = np.transpose(experiment, (0, 2, 1))
         # experiment += 0.567891011121314
         if meanData_rounding is not None:
+            print(f"Rounding mean_data to {meanData_rounding} decimals..")
             experiment = np.round(experiment, meanData_rounding)
         # experiment -= 0.567891011121314
         if shuffled_pixels:

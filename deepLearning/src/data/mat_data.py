@@ -157,7 +157,7 @@ def poisson_noise_loader(meanData, size, numpyData=False):
                 if l==0:
                     data.append(torch.poisson(meanData[l]))
                 else:
-                    selector = torch.randint(1, high=len(meanData))
+                    selector = np.random.randint(1, len(meanData))
                     data.append(torch.poisson(meanData[selector]))
         else:
             labels = torch.randint(len(meanData), (size,)).type(torch.long)

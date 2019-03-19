@@ -63,7 +63,7 @@ if __name__ == '__main__':
     fpath = '/share/wandell/data/reith/coneMosaik/signal_location_experiment/multiple_locations_freq1/'
     run_on_folder(fpath, them_cones=True, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True)
     fpath = '/share/wandell/data/reith/coneMosaik/signal_location_experiment/one_location_freq1/'
-    run_on_folder(fpath, them_cones=True, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True)
+    # run_on_folder(fpath, them_cones=True, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 """
 LATER

@@ -90,7 +90,7 @@ stimParams = struct(...
     'pixelsAlongWidthDim', [], ...                        % pixels- width dimension
     'pixelsAlongHeightDim', [], ...                       % pixel- height dimension
     'signalGridSize', signalGridSize, ...                 % grid size, where signal location can be specified (2x2 grid -> 2)
-    'signalLocation', signalLocation, ...                 % location, where to put the signal. In a 2x2 grid: 1 -> upperLeft, 2 -> upperRight, 3 -> lowerRight etc. etc.
+    'signalLocation', signalLocation(1), ...                 % location, where to put the signal. In a 2x2 grid: 1 -> upperLeft, 2 -> upperRight, 3 -> lowerRight etc. etc.
     'gridZoom', gridZoom ...                              % zoom the grid into the display. Useful, if some extra padding around is needed to include eye movement..
     );
 
@@ -132,12 +132,15 @@ nullScene = generateGaborScene(...
 % Generate a scene representing the 10% Gabor stimulus as realized on the presentationDisplay
 signalScenes = [];
 for i = 1:length(contrasts)
-stimParams.contrast = contrasts(i);
-contrastsResult = cat(1, contrastsResult, stimParams.contrast);
-signalScene = generateGaborScene(...
-    'stimParams', stimParams,...
-    'presentationDisplay', presentationDisplay);
-signalScenes = [signalScenes signalScene];
+    stimParams.contrast = contrasts(i);
+    for j = 1:length(signalLocation)
+        stimParams.signalLocation = signalLocation(j);
+        contrastsResult = cat(1, contrastsResult, stimParams.contrast);
+        signalScene = generateGaborScene(...
+        'stimParams', stimParams,...
+        'presentationDisplay', presentationDisplay);
+        signalScenes = [signalScenes signalScene];
+    end
 end
 %% *Step 4.* Compute the optical images of the 2 scenes
 

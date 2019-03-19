@@ -39,18 +39,18 @@ for i, p in enumerate(folder_paths, start=0):
         appendix = ' not rounded'
     csv1 = os.path.join(p, 'results.csv')
     csv_svm = os.path.join(p, 'svm_results.csv')
-    fname = 'sensor_data_varous_rounding_points_nn'
+    fname = 'sensor_data_varous_rounding_points_nn_residual'
     # fname = 'sensor_data_real_mean_to_1dec_rounded_mean'
 
     oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast')
-    oo = get_csv_column(csv1, 'theoretical_d_index', sort_by='contrast')
-    oo[oo>7] = 7
+    # oo = get_csv_column(csv1, 'theoretical_d_index', sort_by='contrast')
+    # oo[oo>7] = 7
     nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast')
     contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast')
     if include_oo:
         plt.plot(contrasts, oo, label='Ideal Observer'+appendix)
     if include_nn:
-        plt.plot(contrasts, nn, label='ResNet18'+appendix)
+        plt.plot(contrasts, oo-nn, label='OO - ResNet18 difference'+appendix)
     epsilon = 0.001
     if include_svm:
         svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='contrast')

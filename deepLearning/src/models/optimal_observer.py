@@ -60,6 +60,9 @@ def get_optimal_observer_acc_parallel(testData, testLabels, meanData, returnPred
     testData = testData.reshape(testData.shape[0], -1)
     meanData = meanData.reshape(meanData.shape[0], -1)
     predictions = parallel_apply_along_axis(get_optimal_observer_prediction, 1, testData, meanData)
+    # again, treat cases with more than 2 mean data arrays as multiple signal location cases.
+    if meanData.shape[0] > 2:
+        predictions[predictions >= 1] = 1
     allAccuracies = np.mean(predictions == testLabels)
     predictionLabel = np.stack((predictions, testLabels)).T
     if returnPredictionLabel:

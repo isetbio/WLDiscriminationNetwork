@@ -131,18 +131,38 @@ def mat_data_loader(data, labels, batchSize, shuffle=True):
 
 
 def poisson_noise_loader(meanData, size, numpyData=False):
+    np.random.seed(42)
     if numpyData:
-        labels = np.random.randint(len(meanData), size=size)
+        # more data means all data after #0 are signal cases
         data = []
-        for l in labels:
-            data.append(np.random.poisson(meanData[l]))
+        if len(meanData) > 2:
+            labels = np.random.randint(2, size=size)
+            for l in labels:
+                if l == 0:
+                    data.append(np.random.poisson(meanData[l]))
+                else:
+                    selector = np.random.randint(1, len(meanData))
+                    data.append(np.random.poisson(meanData[selector]))
+        else:
+            labels = np.random.randint(len(meanData), size=size)
+            for l in labels:
+                data.append(np.random.poisson(meanData[l]))
         data = np.stack(data)
         return data, labels
     else:
-        labels = torch.randint(len(meanData), (size,)).type(torch.long)
         data = []
-        for l in labels:
-            data.append(torch.poisson(meanData[l]))
+        if len(meanData) > 2:
+            labels = torch.randint(2, (size,)).type(torch.long)
+            for l in labels:
+                if l==0:
+                    data.append(torch.poisson(meanData[l]))
+                else:
+                    selector = torch.randint(1, high=len(meanData))
+                    data.append(torch.poisson(meanData[selector]))
+        else:
+            labels = torch.randint(len(meanData), (size,)).type(torch.long)
+            for l in labels:
+                data.append(torch.poisson(meanData[l]))
         data = torch.stack(data)
         return data, labels
 

@@ -60,6 +60,16 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
+    fpath = '/share/wandell/data/reith/coneMosaik/signal_location_experiment/multiple_locations_freq1/'
+    run_on_folder(fpath, them_cones=True, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True)
+    fpath = '/share/wandell/data/reith/coneMosaik/signal_location_experiment/one_location_freq1/'
+    # run_on_folder(fpath, them_cones=True, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+"""
+LATER
+if __name__ == '__main__':
+    full_start = time.time()
     super_path = '/share/wandell/data/reith/coneMosaik/various_rounding_rounds_eval/'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     fpaths.sort()
@@ -67,13 +77,6 @@ if __name__ == '__main__':
     for i, path in enumerate(fpaths, start=0):
         print(f'Running on {path} with rounding to {i}f decimals.')
         run_on_folder(path, svm=True, them_cones=False, separate_rgb=False, meanData_rounding=i, test_eval=True)
-    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
-"""
-LATER
-if __name__ == '__main__':
-    full_start = time.time()
-    fpath = '/share/wandell/data/reith/coneMosaik/dummy_folder/'
-    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=True, svm=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
     
 """

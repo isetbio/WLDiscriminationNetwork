@@ -80,9 +80,15 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
 
     if oo:
         if len(meanData) > 2:
+            if optimalOPredictionLabel.max() > 1:
+                d1 = -1
+                d2 = -1
+            else:
+                d1 = -1
+                print(f"Theoretical d index is {d1}")
+                d2 = calculate_dprime(optimalOPredictionLabel)
+                print(f"Optimal observer d index is {d2}")
 
-            d1 = -1
-            d2 = -1
         else:
             d1 = calculate_discriminability_index(meanData)
             print(f"Theoretical d index is {d1}")
@@ -148,7 +154,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         testDataFull -= mean_norm
         testDataFull /= std_norm
         testAcc, nnPredictionLabels = test(batchSize, testDataFull, testLabelsFull, Net, dimIn, includePredictionLabels=True, test_eval=test_eval)
-        if len(meanData) == 2:
+        if len(meanData) == 2 or optimalOPredictionLabel.max() <= 1:
             nn_dprime = calculate_dprime(nnPredictionLabels)
         else:
             nn_dprime = -1

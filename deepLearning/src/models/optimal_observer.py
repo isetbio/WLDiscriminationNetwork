@@ -63,6 +63,15 @@ def get_optimal_observer_acc_parallel(testData, testLabels, meanData, returnPred
     # again, treat cases with more than 2 mean data arrays as multiple signal location cases.
     if meanData.shape[0] > 2:
         predictions[predictions >= 1] = 1
+        # To adjust the distribution of different classes to the ideal observer prior of evenly distributed classes
+        extra_preds = []
+        extra_labels = []
+        for i in range(len(meanData)-2):
+            extra_preds.extend(predictions[testLabels == 1])
+            extra_labels.extend(testLabels[testLabels == 1])
+        predictions = np.concatenate((np.array(extra_preds), predictions))
+        testLabels = np.concatenate((np.array(extra_labels), testLabels))
+
     allAccuracies = np.mean(predictions == testLabels)
     predictionLabel = np.stack((predictions, testLabels)).T
     if returnPredictionLabel:

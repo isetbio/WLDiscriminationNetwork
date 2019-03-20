@@ -22,7 +22,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
                                      deeper_pls=False, oo=True, svm=False, NetClass=None, NetClass_param=None,
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,
-                                     shuffled_pixels=False):
+                                     shuffled_pixels=False, test_eval=False):
 
 
     # relevant variables
@@ -136,7 +136,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         for i in range(lr_epoch_reps):
             print(f"Trainig for {num_epochs/lr_epoch_reps} epochs with a learning rate of {learning_rate}..")
             optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
-            Net, testAcc = train_poisson(round(num_epochs/lr_epoch_reps), numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log)
+            Net, testAcc = train_poisson(round(num_epochs/lr_epoch_reps), numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log, test_eval)
             print(f"Test accuracy is {testAcc*100:.2f} percent")
             learning_rate = learning_rate*lr_deviation
 
@@ -147,7 +147,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         testDataFull = torch.from_numpy(testDataFull).type(torch.float32)
         testDataFull -= mean_norm
         testDataFull /= std_norm
-        testAcc, nnPredictionLabels = test(batchSize, testDataFull, testLabelsFull, Net, dimIn, includePredictionLabels=True)
+        testAcc, nnPredictionLabels = test(batchSize, testDataFull, testLabelsFull, Net, dimIn, includePredictionLabels=True, test_eval=test_eval)
         if len(meanData) == 2:
             nn_dprime = calculate_dprime(nnPredictionLabels)
         else:

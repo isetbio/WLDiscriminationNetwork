@@ -18,9 +18,9 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
     return col
 
 
-include_svm = False
+include_svm = True
 include_oo = True
-include_nn = False
+include_nn = True
 folder_paths = ['/share/wandell/data/reith/coneMosaik/signal_location_experiment/one_location_freq1/', '/share/wandell/data/reith/coneMosaik/signal_location_experiment/multiple_locations_freq1/']
 #folder_paths = ['/share/wandell/data/reith/coneMosaik/sensor_sanity_real_mean/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_1decimal_mean/']
 

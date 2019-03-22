@@ -21,50 +21,41 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
 include_svm = True
 include_oo = True
 include_nn = True
-if np.sum([include_svm, include_nn, include_oo]) == 1:
-    if include_nn: suff='_nn'
-    elif include_svm: suff='_svm'
-    elif include_oo: suff='_oo'
-else: suff=''
+folder_paths = ['/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_69/']
+#folder_paths = ['/share/wandell/data/reith/coneMosaik/sensor_sanity_real_mean/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_1decimal_mean/']
 
-fpath = '/share/wandell/data/reith/coneMosaik/various_rounding_rounds_eval/'
-folder_paths = [f.path for f in os.scandir(fpath) if f.is_dir()]
-folder_paths.sort()
-folder_paths.append(folder_paths.pop(0))
 
 fig = plt.figure()
 # plt.grid(which='both')
 plt.xscale('log')
 plt.xlabel('contrast')
 plt.ylabel('dprime')
-plt.title(f"Sensor data - Comparison between various template data roundings")
-for i, p in enumerate(folder_paths, start=0):
-    if i <= 8:
-        appendix = f' rounded to {i} decimal'
-    elif i == 9:
-        appendix = ' not rounded'
+plt.title(f"Contrast calibration for circle signal")
+for i, p in enumerate(folder_paths):
+    if i == 0:
+        appendix = ' circle signal'
+    elif i == 1:
+        appendix = ' multiple locations'
     csv1 = os.path.join(p, 'results.csv')
     csv_svm = os.path.join(p, 'svm_results.csv')
-    fname = 'sensor_data_varous_rounding_points'+suff
+    fname = 'circle_signal_calibration'
     # fname = 'sensor_data_real_mean_to_1dec_rounded_mean'
 
-    oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast')
-    oo = get_csv_column(csv1, 'theoretical_d_index', sort_by='contrast')
-    oo[oo>7] = 7
-    nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast')
-    contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast')
+    oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast', exclude_from=10**-6)
+    nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast', exclude_from=10**-6)
+    contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast', exclude_from=10**-6)
     if include_oo:
         plt.plot(contrasts, oo, label='Ideal Observer'+appendix)
     if include_nn:
         plt.plot(contrasts, nn, label='ResNet18'+appendix)
     epsilon = 0.001
     if include_svm:
-        svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='contrast')
+        svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='contrast', exclude_from=10**-6)
         svm[svm >= (svm.max()-epsilon)] = oo.max()
         plt.plot(contrasts, svm, label='Support Vector Machine'+appendix)
 
-plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
-out_path = fpath
+plt.legend(frameon=True, loc='upper left', fontsize='x-small')
+out_path = p
 fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
 # fig.show()
 print('done!')

@@ -60,16 +60,12 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
-    fpath = '/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_2/'
-    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=False)
-    fpath = '/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_4/'
-    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=False)
-    fpath = '/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_8/'
-    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=False)
-    fpath = '/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_15/'
-    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=False)
-    fpath = '/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_32/'
-    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=False)
+    fpath = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_contrasts/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=True)
+    fpath = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_phase_shift/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=True, include_shift=True)
+    fpath = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_rotation/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=True, include_angle=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 
@@ -89,6 +85,20 @@ if __name__ == '__main__':
 
 '''
 Older runs for documentation purposes..
+###################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    fpath = '/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_2/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=False)
+    fpath = '/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_4/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=False)
+    fpath = '/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_8/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=False)
+    fpath = '/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_15/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=False)
+    fpath = '/share/wandell/data/reith/circle_fun/h5_data/white_circle_rad_32/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=False)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 ###################################################
 if __name__ == '__main__':
     full_start = time.time()

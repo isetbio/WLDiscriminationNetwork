@@ -15,20 +15,31 @@ def get_csv_column(csv_path, col_name, sort_by=None):
     return col
 
 
+shift = False
+angle = False
 
-csv1 = '/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_6/results.csv'
-fname = 'harmonic_contrast_curve'
+if shift:
+    metric = 'shift'
+elif angle:
+    metric = 'angle'
+else:
+    metric = 'contrast'
 
-oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast')
-nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast')
-contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast')
+
+folder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_contrasts/'
+fname = f'harmonic_curve_detection_{metric}'
+
+csv1 = os.path.join(folder, 'results.csv')
+oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by=metric)
+nn = get_csv_column(csv1, 'nn_dprime', sort_by=metric)
+contrasts = get_csv_column(csv1, metric, sort_by=metric)
 
 fig = plt.figure()
 # plt.grid(which='both')
 plt.xscale('log')
-plt.xlabel('contrast')
+plt.xlabel(metric)
 plt.ylabel('dprime')
-plt.title('Frequency 6 harmonic - dprime for various contrast values')
+plt.title(f'Frequency 1 harmonic - dprime for various {metric} values')
 
 plt.plot(contrasts, oo, label='Ideal Observer')
 plt.plot(contrasts, nn, label='ResNet18')

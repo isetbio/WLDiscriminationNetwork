@@ -60,12 +60,12 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
-    # fpath = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_contrasts/'
-    # run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=True)
-    fpath = '/share/wandell/data/reith/redo_experiments/newer/lock_escape/sensor_harmonic_phase_shift/'
-    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=True, include_shift=True)
-    fpath = '/share/wandell/data/reith/redo_experiments/newer/lock_escape/sensor_harmonic_rotation/'
-    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=True, include_angle=True)
+    fpath = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/sensor_harmonic_contrasts/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=True, svm=True, test_eval=True)
+    fpath = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/sensor_harmonic_phase_shift/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=True, svm=True, test_eval=True, include_shift=True)
+    fpath = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/sensor_harmonic_rotation/'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=True, svm=True, test_eval=True, include_angle=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 

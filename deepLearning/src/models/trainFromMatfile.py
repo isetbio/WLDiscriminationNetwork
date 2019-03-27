@@ -108,8 +108,17 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
     dimOut = len(meanData)
 
     if svm:
+        include_contrast_svm = not (include_shift or include_angle)
+        if include_contrast_svm:
+            metric_svm = 'contrast'
+        elif include_angle:
+            metric_svm = 'angle'
+        elif include_shift:
+            metric_svm = 'shift'
         svm_process = mp.Process(target=score_svm, args=[pathMat, lock],
-                                 kwargs={'them_cones': them_cones, 'includeContrast': True, 'separate_rgb': separate_rgb, 'meanData_rounding': meanData_rounding, 'shuffled_pixels': shuffled_pixels})
+                                 kwargs={'them_cones': them_cones, 'includeContrast': include_contrast_svm, 'separate_rgb': separate_rgb, 'metric_name': metric_svm,
+                                         'meanData_rounding': meanData_rounding, 'shuffled_pixels': shuffled_pixels, 'includeAngle': include_angle,
+                                         'includeShift': include_shift})
         svm_process.start()
 
     if train_nn:

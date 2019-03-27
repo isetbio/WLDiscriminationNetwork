@@ -49,7 +49,7 @@ if include_nn:
     plt.plot(contrasts, nn, label='ResNet18')
 epsilon = 0.001
 if include_svm:
-    svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
+    svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='dprime_accuracy')
     svm[svm >= (svm.max()-epsilon)] = oo.max()
     plt.plot(contrasts, svm, label='Support Vector Machine')
 plt.xscale('log')

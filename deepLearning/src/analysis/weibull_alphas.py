@@ -1,7 +1,5 @@
-from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
-import os
 from psychopy.data import FitWeibull
 
 
@@ -18,17 +16,6 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
         col = col[sort_val >= exclude_from]
     return col
 
-
-def cum_weibull(x, alpha, beta, scale):
-    return scale * (1 - np.exp(-(x / alpha) * beta))
-
-
-class FixedBetaFitWeibulli(FitWeibull):
-    def _eval(xx, alpha):
-        _chance = 0
-        xx = np.asarray(xx)
-        yy = _chance + (1.0 - _chance) * (1 - np.exp(-(xx / alpha) ** fixed_beta))
-        return yy
 
 class FixedBetaFitWeibull(FitWeibull):
     """
@@ -80,18 +67,3 @@ def get_alphas_fixed_beta(x, *ys):
     alphas = [new_fit.params[0] for new_fit in new_fits]
     return alphas, new_fits
 
-
-folder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_rotation/'
-metric = 'angle'
-csv1 = os.path.join(folder, 'results.csv')
-csv_svm = os.path.join(folder, 'svm_results.csv')
-oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by=metric)
-nn = get_csv_column(csv1, 'nn_dprime', sort_by=metric)
-svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
-contrasts = get_csv_column(csv1, metric, sort_by=metric)
-fitter = FitWeibull(contrasts, oo / oo.max(), expectedMin=0)
-get_alphas_fixed_beta(contrasts, oo, nn)
-print(fitter.params)
-plt.plot(contrasts, oo)
-plt.plot(contrasts, fitter.eval(contrasts) * oo.max())
-print('nice')

@@ -32,7 +32,7 @@ else:
     metric = 'contrast'
 
 
-folder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_phase_shift/'
+folder = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/sensor_harmonic_phase_shift/'
 fname = f'harmonic_curve_detection_{metric}'
 
 csv1 = os.path.join(folder, 'results.csv')
@@ -49,11 +49,11 @@ if include_nn:
     plt.plot(contrasts, nn, label='ResNet18')
 epsilon = 0.001
 if include_svm:
-    svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='dprime_accuracy')
+    svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
     svm[svm >= (svm.max()-epsilon)] = oo.max()
     plt.plot(contrasts, svm, label='Support Vector Machine')
 plt.xscale('log')
-plt.xlabel(metric)
+plt.xlabel(f"{metric} in pi")
 plt.ylabel('dprime')
 if metric != 'shift':
     plt.title(f'Frequency 1 harmonic - dprime for various {metric} values')

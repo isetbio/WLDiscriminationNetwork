@@ -19,11 +19,8 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
 
 
 include_svm = True
-include_oo = True
-include_nn = False
-folder_paths = ['/share/wandell/data/reith/coneMosaik/signal_location_experiment_bnfix/one_location_freq1/', '/share/wandell/data/reith/coneMosaik/signal_location_experiment_bnfix/multiple_locations_freq1/']
-#folder_paths = ['/share/wandell/data/reith/coneMosaik/sensor_sanity_real_mean/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_1decimal_mean/']
 
+folder_paths = ['/share/wandell/data/reith/coneMosaik/sanity_sensor_data/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_point5_rounded/']
 
 fig = plt.figure()
 # plt.grid(which='both')
@@ -31,24 +28,23 @@ plt.xscale('log')
 plt.xlabel('contrast')
 plt.ylabel('dprime')
 plt.title(f"Contrast calibration for cone mosaic")
-plt.title(f"Sensor data - one vs multiple signal locations")
+plt.title(f"Sensor data - rounded to rounded point 5 mean comparison")
 for i, p in enumerate(folder_paths):
     if i == 0:
-        appendix = ' one location'
+        appendix = ' rounded mean'
     elif i == 1:
-        appendix = ' multiple locations'
+        appendix = ' rounded to .5 mean'
     csv1 = os.path.join(p, 'results.csv')
     csv_svm = os.path.join(p, 'svm_results.csv')
-    fname = 'one_vs_multi_location_performance_svm'
-    # fname = 'sensor_data_real_mean_to_1dec_rounded_mean'
+    fname = 'cone_mosaic_contrasts_calibration_exclude_lower_vals_updated'
+    fname = 'sensor_data_point5_mean_to_rounded_mean'
 
     oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast', exclude_from=10**-6)
     nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast', exclude_from=10**-6)
     contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast', exclude_from=10**-6)
-    if include_oo:
-        plt.plot(contrasts, oo, label='Ideal Observer'+appendix)
-    if include_nn:
-        plt.plot(contrasts, nn, label='ResNet18'+appendix)
+
+    plt.plot(contrasts, oo, label='Ideal Observer'+appendix)
+    plt.plot(contrasts, nn, label='ResNet18'+appendix)
     epsilon = 0.001
     if include_svm:
         svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='contrast', exclude_from=10**-6)

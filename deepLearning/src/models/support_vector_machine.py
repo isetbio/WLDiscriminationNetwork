@@ -40,7 +40,7 @@ def get_svm_accuracy(path_mat, num_samples=15000, lock=None, **kwargs):
     testDataFull = testDataFull.reshape(testDataFull.shape[0], -1)
     svc = svm.SVC(kernel='linear', max_iter=1000)
     num_data = len(testDataFull)
-    num_train = int(num_data*0.8)
+    num_train = int(num_data-5000)
     x_train, y_train = testDataFull[:num_train], testLabelsFull[:num_train]
     x_test, y_test = testDataFull[num_train:], testLabelsFull[num_train:]
     svc.fit(x_train, y_train)

@@ -18,42 +18,55 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
     return col
 
 
-include_svm = True
+include_oo = True
+include_nn = True
+include_svm = False
 
-folder_paths = ['/share/wandell/data/reith/coneMosaik/sensor_sanity_real_mean/', '/share/wandell/data/reith/coneMosaik/shuffled_pixels/']
-#folder_paths = ['/share/wandell/data/reith/coneMosaik/sensor_sanity_real_mean/', '/share/wandell/data/reith/coneMosaik/sensor_sanity_1decimal_mean/']
+shift = False
+angle = True
 
+if shift:
+    metric = 'shift'
+elif angle:
+    metric = 'angle'
+else:
+    metric = 'contrast'
+
+
+folder_paths = ['/share/wandell/data/reith/redo_experiments/sensor_harmonic_rotation/', '/share/wandell/data/reith/redo_experiments/shuffled_pixels/sensor_harmonic_rotation/']
+fname = f'harmonic_curve_detection_{metric}_nn'
 
 fig = plt.figure()
 # plt.grid(which='both')
 plt.xscale('log')
-plt.xlabel('contrast')
+plt.xlabel(metric + " in pi")
 plt.ylabel('dprime')
 plt.title(f"Sensor data - harmonic curve pixel location vs randomized pixel location")
-for i, p in enumerate(folder_paths):
+plt.grid(which='both')
+for i, folder in enumerate(folder_paths):
     if i == 0:
-        appendix = ' harmonic curve pixel location'
+        appendix = ''
     elif i == 1:
         appendix = ' randomized pixel location'
-    csv1 = os.path.join(p, 'results.csv')
-    csv_svm = os.path.join(p, 'svm_results.csv')
-    fname = 'sensor_data_real_mean_vs_shuffled_pixels'
-    # fname = 'sensor_data_real_mean_to_1dec_rounded_mean'
+        include_oo = False
+    csv1 = os.path.join(folder, 'results.csv')
+    csv_svm = os.path.join(folder, 'svm_results.csv')
+    oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by=metric)
+    nn = get_csv_column(csv1, 'nn_dprime', sort_by=metric)
+    contrasts = get_csv_column(csv1, metric, sort_by=metric)
 
-    oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by='contrast', exclude_from=10**-6)
-    nn = get_csv_column(csv1, 'nn_dprime', sort_by='contrast', exclude_from=10**-6)
-    contrasts = get_csv_column(csv1, 'contrast', sort_by='contrast', exclude_from=10**-6)
-
-    plt.plot(contrasts, oo, label='Ideal Observer'+appendix)
-    plt.plot(contrasts, nn, label='ResNet18'+appendix)
+    if include_oo:
+        plt.plot(contrasts, oo, label='Ideal Observer'+appendix)
+    if include_nn:
+        plt.plot(contrasts, nn, label='ResNet18'+appendix)
     epsilon = 0.001
     if include_svm:
-        svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by='contrast', exclude_from=10**-6)
+        svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
         svm[svm >= (svm.max()-epsilon)] = oo.max()
         plt.plot(contrasts, svm, label='Support Vector Machine'+appendix)
+    out_path = folder
 
 plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
-out_path = p
 fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
 # fig.show()
 print('done!')

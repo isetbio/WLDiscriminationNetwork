@@ -4,6 +4,7 @@ import multiprocessing as mp
 from glob import glob
 import time
 import datetime
+import numpy as np
 
 def h5gen(folder):
     h5_files = glob(f"{folder}*.h5")
@@ -65,6 +66,50 @@ def num_iterations_gen(arr):
         yield a
 
 if __name__ == '__main__':
+    sub_folder = '/share/wandell/data/reith/redo_experiments/sample_number_contrast/svm/'
+    metric = 'contrast'
+    kwargs = {'includeContrast': True}
+    function_start = time.time()
+    parallel_folders = list(range(1))
+    num_cpus = 2
+    processes = {}
+    num_its = np.logspace(np.log10(1000), np.log10(60000), 8)+5000
+    iter_gen = num_iterations_gen(num_its[:-1])
+    while True:
+        try:
+            if processes == {}:
+                for f in parallel_folders:
+                    iterations = next(iter_gen)
+                    print(f"scoring {iterations}")
+                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric], kwargs={'includeContrast': True, 'num_samples': iterations})
+                    processes[f] = curr_p
+                    curr_p.start()
+            for f, proc in processes.items():
+                if not proc.is_alive():
+                    iterations = next(iter_gen)
+                    print(f"scoring {iterations}")
+                    curr_p = mp.Process(target=run_svm_on_h5, args=[sub_folder, num_cpus, metric], kwargs={'includeContrast': True, 'num_samples': iterations})
+                    processes[f] = curr_p
+                    curr_p.start()
+        except StopIteration:
+            break
+
+        time.sleep(5)
+
+    for proc in processes.values():
+        proc.join()
+    function_end = time.time()
+    with open(os.path.join(sub_folder, 'time_svm.txt'), 'w') as txt:
+        txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
+    print("done!")
+
+
+
+"""
+Older examples:
+##########################################################################
+if __name__ == '__main__':
     sub_folder = '/share/wandell/data/reith/svm_num_samples_freq1_contrast/'
     metric = 'contrast'
     kwargs = {'includeContrast': True}
@@ -102,10 +147,6 @@ if __name__ == '__main__':
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
     print("done!")
 
-
-
-"""
-Older examples:
 #####################################
 if __name__ == '__main__':
     super_folder = '/share/wandell/data/reith/2_class_MTF_angle_experiment/'

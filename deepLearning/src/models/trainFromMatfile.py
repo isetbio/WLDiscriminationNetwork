@@ -223,3 +223,8 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
 
     print(f"done! It took {str(datetime.timedelta(seconds=endTime-startTime))} hours:min:seconds")
     sys.stdout = sys.stdout.revert()
+
+
+if __name__ == '__main__':
+    mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_000010000000.h5'
+    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True)

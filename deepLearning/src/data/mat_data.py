@@ -2,6 +2,7 @@ import scipy.io as sio
 import numpy as np
 import h5py
 import torch
+from skimage.util import view_as_blocks
 
 def get_mat_data(pathMat, shuffle=False):
     matData = sio.loadmat(pathMat)
@@ -90,16 +91,8 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
             print(f"Rounding mean_data to {meanData_rounding} decimals..")
             experiment = np.round(experiment, meanData_rounding)
         # experiment -= 0.567891011121314
-        if shuffled_pixels:
-            np.random.seed(42)
-            rows = experiment.shape[-2]
-            cols = experiment.shape[-1]
-            shuff_args = np.random.permutation(np.arange(rows*cols))
-            result = []
-            for md in experiment:
-                result.append(md.flatten()[shuff_args].reshape(rows,cols))
-            experiment = np.stack(result)
-            print("nice")
+        if shuffled_pixels > 0:
+            shuffle_pixels(experiment, 1)
         args.append(experiment)
         #####################
         # args.append(h5Dict['noNoiseImg'])
@@ -111,6 +104,51 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
         if includeAngle:
             args.append(h5Dict['noNoiseImgAngle'])
     return args
+
+
+def shuffle_pixels(matrices, block_size):
+    np.random.seed(42)
+    rows = matrices.shape[-2]
+    cols = matrices.shape[-1]
+    shuffle_rows = rows // block_size
+    shuffle_cols = cols // block_size
+    padding_rows = rows % block_size
+    padding_cols = cols % block_size
+
+
+    shuff_args = np.random.permutation(np.arange(shuffle_rows * shuffle_cols))
+    result = []
+    for md in matrices:
+        # remove padding
+        pad_up = np.ceil(padding_rows/2).astype(np.int)
+        pad_down = np.floor(padding_rows/2).astype(np.int)
+        pad_left = np.ceil(padding_cols/2).astype(np.int)
+        pad_right = np.floor(padding_cols/2).astype(np.int)
+        pad_mat_up = md[:pad_up]
+        md = md[pad_up:]
+        if pad_down == 0:
+            pad_mat_down = md[:0]
+        else:
+            pad_mat_down = md[-pad_down:]
+            md = md[:-pad_down]
+        pad_mat_left = md[:, :pad_left]
+        md = md[:, pad_left:]
+        if pad_down == 0:
+            pad_mat_right = md[:, :0]
+        else:
+            pad_mat_right = md[:, -pad_right:]
+            md = md[:, :-pad_right]
+        md = view_as_blocks(md, (block_size, block_size))
+        height = md.shape[0]
+        width = md.shape[1]
+        res = md.reshape(-1, block_size, block_size)[shuff_args].reshape(height, width, block_size, block_size)
+        res = res.transpose(0, 2, 1, 3).reshape(-1, res.shape[1] * res.shape[3])
+
+        # reassamble
+        res = np.block([[pad_mat_up], [pad_mat_left, res, pad_mat_right], [pad_mat_down]])
+        result.append(res)
+    matrices = np.stack(result)
+    return matrices
 
 
 def mat_data_loader(data, labels, batchSize, shuffle=True):

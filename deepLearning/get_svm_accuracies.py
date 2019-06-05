@@ -77,10 +77,10 @@ if __name__ == '__main__':
     kwargs = {'includeContrast': True}
     function_start = time.time()
     parallel_folders = list(range(1))
-    num_cpus = 6
+    num_cpus = 3
     processes = {}
     num_its = np.logspace(np.log10(1000), np.log10(60000), 8).astype(np.int)+5000
-    iter_gen = num_iterations_gen(num_its[-2:-1])
+    iter_gen = num_iterations_gen(num_its[-1:])
     while True:
         try:
             if processes == {}:

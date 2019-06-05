@@ -71,14 +71,14 @@ def num_iterations_gen(arr):
         yield a
 
 if __name__ == '__main__':
-    sub_folder = '/share/wandell/data/reith/redo_experiments/sample_number_contrast/svm/'
+    sub_folder = r'C:\Users\Fabian\Documents\data\svm_test'
     metric = 'contrast'
     kwargs = {'includeContrast': True}
     function_start = time.time()
     parallel_folders = list(range(1))
     num_cpus = 25
     processes = {}
-    num_its = np.logspace(np.log10(1000), np.log10(60000), 8)+5000
+    num_its = np.logspace(np.log10(1000), np.log10(60000), 8).astype(np.int)+5000
     iter_gen = num_iterations_gen(num_its[:-2])
     while True:
         try:

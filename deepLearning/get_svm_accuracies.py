@@ -1,3 +1,8 @@
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
+
 from deepLearning.src.models.support_vector_machine import write_svm_csv, get_svm_accuracy
 import os
 import multiprocessing as mp

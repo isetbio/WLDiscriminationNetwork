@@ -80,7 +80,7 @@ if __name__ == '__main__':
     num_cpus = 6
     processes = {}
     num_its = np.logspace(np.log10(1000), np.log10(60000), 8).astype(np.int)+5000
-    iter_gen = num_iterations_gen(num_its[-2])
+    iter_gen = num_iterations_gen(num_its[-2:-1])
     while True:
         try:
             if processes == {}:

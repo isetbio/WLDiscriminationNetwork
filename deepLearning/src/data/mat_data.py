@@ -92,7 +92,7 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
             experiment = np.round(experiment, meanData_rounding)
         # experiment -= 0.567891011121314
         if shuffled_pixels > 0:
-            shuffle_pixels(experiment, 1)
+            shuffle_pixels(experiment, shuffled_pixels)
         args.append(experiment)
         #####################
         # args.append(h5Dict['noNoiseImg'])
@@ -107,6 +107,7 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
 
 
 def shuffle_pixels(matrices, block_size):
+    block_size = int(block_size)
     np.random.seed(42)
     rows = matrices.shape[-2]
     cols = matrices.shape[-1]
@@ -144,7 +145,7 @@ def shuffle_pixels(matrices, block_size):
         res = md.reshape(-1, block_size, block_size)[shuff_args].reshape(height, width, block_size, block_size)
         res = res.transpose(0, 2, 1, 3).reshape(-1, res.shape[1] * res.shape[3])
 
-        # reassamble
+        # reassemble
         res = np.block([[pad_mat_up], [pad_mat_left, res, pad_mat_right], [pad_mat_down]])
         result.append(res)
     matrices = np.stack(result)

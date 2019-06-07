@@ -72,7 +72,7 @@ def num_iterations_gen(arr):
 
 if __name__ == '__main__':
     sub_folder = r'C:\Users\Fabian\Documents\data\svm_test'
-    sub_folder = '/share/wandell/data/reith/redo_experiments/sample_number_contrast/svm/'
+    sub_folder = '/share/wandell/data/reith/redo_experiments/sample_number_contrast/svm_1_sample/'
     metric = 'contrast'
     kwargs = {'includeContrast': True}
     function_start = time.time()
@@ -80,8 +80,10 @@ if __name__ == '__main__':
     num_cpus = 3
     processes = {}
     num_its = np.logspace(np.log10(1000), np.log10(60000), 8).astype(np.int)+5000
-    # mult_factor = 1.7948229213792886
-    # num_its = [60000*mult_factor+5000]
+    mult_factor = 1.7948229213792886
+    num_its = [60000*mult_factor+5000]
+    num_its.append((num_its[0]-5000)*mult_factor+5000)
+    num_its = np.array(num_its).astype(np.int)
     iter_gen = num_iterations_gen(num_its[-1:])
     while True:
         try:

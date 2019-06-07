@@ -84,7 +84,7 @@ if __name__ == '__main__':
     num_its = [60000*mult_factor+5000]
     num_its.append((num_its[0]-5000)*mult_factor+5000)
     num_its = np.array(num_its).astype(np.int)
-    iter_gen = num_iterations_gen(num_its[-1:])
+    iter_gen = num_iterations_gen(num_its)
     while True:
         try:
             if processes == {}:

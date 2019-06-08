@@ -32,7 +32,7 @@ else:
     metric = 'contrast'
 
 
-folder = r'C:\Users\Fabian\Documents\data\svm_2\svm'
+folder = r'C:\Users\Fabian\Documents\data\rsync\sample_number_contrast\svm'
 fname = f'svm_accuracies_{metric}'
 
 csv1 = os.path.join(folder, 'results.csv')
@@ -42,7 +42,7 @@ nn = get_csv_column(csv1, 'nn_dprime', sort_by=metric)
 contrasts = get_csv_column(csv1, metric, sort_by=metric)
 
 fig = plt.figure()
-# plt.grid(which='both')
+plt.grid(which='both')
 if include_oo:
     plt.plot(contrasts, oo, label='Ideal Observer')
 if include_nn:
@@ -63,7 +63,6 @@ if metric != 'shift':
 else:
     plt.title(f'Frequency 1 harmonic - dprime for various {metric} values')
 plt.legend(frameon=True)
-
 out_path = os.path.dirname(csv1)
 fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
 # fig.show()

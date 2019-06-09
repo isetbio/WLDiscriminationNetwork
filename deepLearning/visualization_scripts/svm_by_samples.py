@@ -56,7 +56,7 @@ if include_svm:
         svm_samples = svm[num_samples == num]
         plt.plot(contrasts, svm_samples, label=f'SVM for {num-5000} samples', alpha=0.3)
 plt.xscale('log')
-plt.xlabel(f"{metric} in pi")
+plt.xlabel(f"{metric}")
 plt.ylabel('dprime')
 if metric != 'shift':
     plt.title(f'Frequency 1 harmonic - dprime for various {metric} values')

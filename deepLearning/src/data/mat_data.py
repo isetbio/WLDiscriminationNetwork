@@ -92,7 +92,7 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
             experiment = np.round(experiment, meanData_rounding)
         # experiment -= 0.567891011121314
         if shuffled_pixels > 0:
-            shuffle_pixels(experiment, shuffled_pixels)
+            experiment = shuffle_pixels(experiment, shuffled_pixels)
         args.append(experiment)
         #####################
         # args.append(h5Dict['noNoiseImg'])

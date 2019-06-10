@@ -66,7 +66,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 if __name__ == '__main__':
     full_start = time.time()
     super_path = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/different_patch_sizes'
-    super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\different_patch_sizes'
+    # super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\different_patch_sizes'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     for fpath in fpaths:
         if int(fpath.split('x')[-1]) not in [1, 2, 4, 7, 21, 35]:

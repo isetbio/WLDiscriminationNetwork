@@ -1,3 +1,8 @@
+import os, sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
+
 from deepLearning.src.models.trainFromMatfile import autoTrain_Resnet_optimalObserver
 from deepLearning.src.models.Resnet import PretrainedResnetFrozen, NotPretrainedResnet
 from glob import glob
@@ -18,7 +23,7 @@ def matfile_gen(pathMatDir):
 def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None, **kwargs):
     kword_args = {'train_nn': True, 'include_shift': False, 'NetClass': NetClass, 'deeper_pls': deeper_pls,
                   'NetClass_param': NetClass_param, 'include_angle': False}
-    deviceIDs = GPUtil.getAvailable(order='first', limit=6, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
+    deviceIDs = GPUtil.getAvailable(order='first', limit=4, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
     print(deviceIDs)
     function_start = time.time()
     pathGen = matfile_gen(dirname)
@@ -61,9 +66,11 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 if __name__ == '__main__':
     full_start = time.time()
     super_path = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/different_patch_sizes'
-    # super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\different_patch_sizes'
+    super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\different_patch_sizes'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     for fpath in fpaths:
+        if int(fpath.split('x')[-1]) in [1, 2, 4, 7, 21, 35]:
+            continue
         run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=int(fpath.split('x')[-1]), svm=True, test_eval=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 

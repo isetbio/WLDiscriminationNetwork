@@ -81,7 +81,7 @@ def pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_co
     fig = plt.figure()
     plt.grid(which='both')
     plt.xscale('log')
-    plt.yscale('log')
+    # plt.yscale('log')
     plt.xlabel('Block size')
     plt.ylabel('dprime')
     block_sizes = []
@@ -104,6 +104,7 @@ def pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_co
         nn_val = nn_vals[np.isclose(c_vals, selected_contrast)]
         svm_val = svm_col_vals[np.isclose(c_vals, selected_contrast)]
         oo_val = oo_col_vals[np.isclose(c_vals, selected_contrast)]
+        print(oo_val, block_sizes[-1])
         resnet_vals.append(nn_val)
         svm_vals.append(svm_val)
         oo_vals.append(oo_val)
@@ -113,7 +114,7 @@ def pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_co
     resnet_vals = np.array(resnet_vals)[sort_idxs]
     oo_vals = np.array(oo_vals)[sort_idxs]
 
-    plt.title(f"ResNet18, Ideal Observer and SVM performance for various contrasts")
+    plt.title(f"ResNet18, Ideal Observer and SVM performance for various block sizes")
     if include_oo:
         plt.plot(block_sizes, oo_vals, label='Ideal Observer')
     if include_nn:

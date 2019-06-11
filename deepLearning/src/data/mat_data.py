@@ -170,7 +170,7 @@ def mat_data_loader(data, labels, batchSize, shuffle=True):
 
 
 def poisson_noise_loader(meanData, size, numpyData=False):
-    np.random.seed(42)
+    # np.random.seed(42)
     if numpyData:
         # more data means all data after #0 are signal cases
         data = []

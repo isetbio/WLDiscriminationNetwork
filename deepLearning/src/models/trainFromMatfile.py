@@ -18,7 +18,7 @@ from scipy.stats import norm
 import multiprocessing as mp
 
 
-def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=False, include_shift=False,
+def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=True, include_shift=False,
                                      deeper_pls=False, oo=True, svm=False, NetClass=None, NetClass_param=None,
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,

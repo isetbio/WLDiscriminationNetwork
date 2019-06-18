@@ -4,7 +4,7 @@ import torch
 
 from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel, calculate_dprime
 
-from deepLearning.src.data.mat_data import poisson_noise_loader, mat_data_loader
+from deepLearning.src.data.mat_data import poisson_noise_loader, mat_data_loader, PoissonNoiseLoaderClass
 
 
 def test(batchSize, testData, testLabels, Net, dimIn, includePredictionLabels=False, test_eval=False):
@@ -79,12 +79,15 @@ def train(epochs, batchSize, trainData, trainLabels, testData, testLabels, Net, 
                 bestTestAcc = testAcc
     return Net, testAcc
 
-def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log=None, test_eval=False):
+
+def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion,
+                  dimIn, mean_norm, std_norm, train_test_log=None, test_eval=False, PoissonDataObject=None):
     bestTestAcc = 0
     testAcc = 0
     meanData = torch.from_numpy(meanData).type(torch.float32).cuda()
     Net.train()
-    torch.random.manual_seed(42)
+    if PoissonDataObject is None:
+        PoissonDataObject = PoissonNoiseLoaderClass(meanData, batchSize)
     for epoch in range(epochs):
         epochAcc = []
         lossArr = []
@@ -94,7 +97,7 @@ def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLa
         labels = []
         print(f"One epoch simulates {numSamplesEpoch} samples.")
         for batch_idx in range(int(np.round(numSamplesEpoch/batchSize))):
-            data, target = poisson_noise_loader(meanData, batchSize, numpyData=False)
+            data, target = PoissonDataObject.get_batches()
             data, target = data.cuda(), target.cuda()
             data -= mean_norm
             data /= std_norm

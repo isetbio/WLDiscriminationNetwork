@@ -169,8 +169,9 @@ def mat_data_loader(data, labels, batchSize, shuffle=True):
         j += batchSize
 
 
-def poisson_noise_loader(meanData, size, numpyData=False):
-    # np.random.seed(42)
+def poisson_noise_loader(meanData, size, numpyData=False, seed=False):
+    if seed:
+        np.random.seed(42)
     if numpyData:
         # more data means all data after #0 are signal cases
         data = []
@@ -206,6 +207,89 @@ def poisson_noise_loader(meanData, size, numpyData=False):
         return data, labels
 
 
+class PoissonNoiseLoaderClass:
+    def __init__(self, mean_data, batch_size, train_set_size=-1, numpy_data=False, use_data_seed=False, data_seed=42):
+        if type(mean_data) == np.ndarray:
+            mean_data = torch.from_numpy(mean_data).type(torch.float32).cuda()
+        self.mean_data = mean_data
+        self.train_set_size = train_set_size
+        self.numpy_data = numpy_data
+        self.use_data_seed = use_data_seed
+        self.data_seed = data_seed
+        self.dataset, self.labels = self.get_data()
+        self.ii, self.jj = -1, -1
+        self.batch_size = batch_size
+        self.epoch_data = -1
+        self.epoch_labels = -1
+
+    def get_data(self):
+        if self.train_set_size == -1:
+            dataset = -1
+            labels = -1
+
+        else:
+            dataset, labels = self.poisson_noise_loader(self.train_set_size, self.numpy_data, self.use_data_seed)
+        return dataset, labels
+
+    def get_batches(self, batch_size=-1, shuffle=True, reset=False):
+        if batch_size == -1:
+            batch_size = self.batch_size
+        if self.train_set_size == -1:
+            batch_data, batch_labels = self.poisson_noise_loader(batch_size, self.numpy_data)
+        else:
+            if not self.jj < self.train_set_size or self.jj == -1 or reset:
+                self.epoch_data = self.dataset.clone()
+                self.epoch_labels = self.labels.clone()
+                if shuffle:
+                    selector = np.random.permutation(len(self.epoch_data))
+                    self.epoch_data = self.epoch_data[selector]
+                    self.epoch_labels = self.epoch_labels[selector]
+                self.ii, self.jj = 0, batch_size
+            batch_data = self.epoch_data[self.ii:min(self.jj, self.train_set_size)]
+            batch_labels = self.epoch_labels[self.ii:min(self.jj, self.train_set_size)]
+            self.ii += batch_size
+            self.jj += batch_size
+        return batch_data, batch_labels
+
+    def poisson_noise_loader(self, size, numpyData=False, seed=False):
+        if seed:
+            if numpyData:
+                np.random.seed(self.data_seed)
+            else:
+                torch.random.manual_seed(self.data_seed)
+        if numpyData:
+            # more data means all data after #0 are signal cases
+            data = []
+            if len(self.mean_data) > 2:
+                labels = np.random.randint(2, size=size)
+                for l in labels:
+                    if l == 0:
+                        data.append(np.random.poisson(self.mean_data[l]))
+                    else:
+                        selector = np.random.randint(1, len(self.mean_data))
+                        data.append(np.random.poisson(self.mean_data[selector]))
+            else:
+                labels = np.random.randint(len(self.mean_data), size=size)
+                for l in labels:
+                    data.append(np.random.poisson(self.mean_data[l]))
+            data = np.stack(data)
+            return data, labels
+        else:
+            data = []
+            if len(self.mean_data) > 2:
+                labels = torch.randint(2, (size,)).type(torch.long)
+                for l in labels:
+                    if l == 0:
+                        data.append(torch.poisson(self.mean_data[l]))
+                    else:
+                        selector = np.random.randint(1, len(self.mean_data))
+                        data.append(torch.poisson(self.mean_data[selector]))
+            else:
+                labels = torch.randint(len(self.mean_data), (size,)).type(torch.long)
+                for l in labels:
+                    data.append(torch.poisson(self.mean_data[l]))
+            data = torch.stack(data)
+            return data, labels
 
 
 if __name__ == '__main__':

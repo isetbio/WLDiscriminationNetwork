@@ -1,7 +1,7 @@
 from deepLearning.src.models.resnet_train_test import train_poisson, test
 from deepLearning.src.models.GrayResNet import GrayResnet18, GrayResnet101
 from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel, calculate_dprime
-from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader
+from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader, PoissonNoiseLoaderClass
 from deepLearning.src.data.logger import Logger, CsvWriter
 from deepLearning.src.models.support_vector_machine import score_svm
 import torch
@@ -22,7 +22,8 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
                                      deeper_pls=False, oo=True, svm=False, NetClass=None, NetClass_param=None,
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,
-                                     shuffled_pixels=False, test_eval=True):
+                                     shuffled_pixels=False, test_eval=True, random_seed_nn=True, train_set_size=-1,
+                                     test_size=5000):
 
 
     # relevant variables
@@ -65,7 +66,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         train_test_log = [TrainWrt, TestWrt]
     else:
         train_test_log = None
-    testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=5000, numpyData=True)
+    testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=True)
     #normalization values
     mean_norm = meanData.mean()
     std_norm = testDataFull.std()
@@ -129,6 +130,8 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         svm_process.start()
 
     if train_nn:
+        if random_seed_nn:
+            torch.random.manual_seed(42)
         if NetClass is None:
             if deeper_pls:
                 Net = GrayResnet101(dimOut)
@@ -155,10 +158,14 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
         testData = torch.from_numpy(testData).type(torch.float32)
         testData -= mean_norm
         testData /= std_norm
+        PoissonDataObject = PoissonNoiseLoaderClass(meanData, batchSize, train_set_size=train_set_size, data_seed=12,
+                                                    use_data_seed=True)
         for i in range(lr_epoch_reps):
             print(f"Trainig for {num_epochs/lr_epoch_reps} epochs with a learning rate of {learning_rate}..")
             optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
-            Net, testAcc = train_poisson(round(num_epochs/lr_epoch_reps), numSamplesEpoch, batchSize, meanData, testData, testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm, train_test_log, test_eval)
+            Net, testAcc = train_poisson(round(num_epochs/lr_epoch_reps), numSamplesEpoch, batchSize, meanData, testData,
+                                         testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm,
+                                         train_test_log, test_eval, PoissonDataObject)
             print(f"Test accuracy is {testAcc*100:.2f} percent")
             learning_rate = learning_rate*lr_deviation
 
@@ -227,4 +234,4 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=F
 
 if __name__ == '__main__':
     mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_000010000000.h5'
-    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True)
+    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=False, train_set_size=150, oo=False, svm=False, test_size=60, train_nn=True)

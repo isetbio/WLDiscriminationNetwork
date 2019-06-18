@@ -1,7 +1,7 @@
 import os, sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
 
 from deepLearning.src.models.trainFromMatfile import autoTrain_Resnet_optimalObserver
 from deepLearning.src.models.Resnet import PretrainedResnetFrozen, NotPretrainedResnet
@@ -22,7 +22,7 @@ def matfile_gen(pathMatDir):
 
 def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None, **kwargs):
     kword_args = {'train_nn': True, 'include_shift': False, 'NetClass': NetClass, 'deeper_pls': deeper_pls,
-                  'NetClass_param': NetClass_param, 'include_angle': False}
+                  'NetClass_param': NetClass_param, 'include_angle': False, 'svm': True}
     deviceIDs = GPUtil.getAvailable(order='first', limit=4, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
     print(deviceIDs)
     function_start = time.time()
@@ -65,8 +65,12 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
-    fpath = '/share/wandell/data/reith/redo_experiments/sanity_test_random_data_generation'
-    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=True)
+    super_path = '/share/wandell/data/reith/redo_experiments/sample_number_contrast/resnet'
+    # super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sample_number_contrast\resnet'
+    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    for fpath in fpaths:
+        train_set_size = int(fpath.split('_')[-1])
+        run_on_folder(fpath, train_set_size=train_set_size)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 
@@ -86,6 +90,12 @@ if __name__ == '__main__':
 
 r"""
 Older runs for documentation purposes..
+############################################################################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    fpath = '/share/wandell/data/reith/redo_experiments/sanity_test_random_data_generation'
+    run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, svm=True, test_eval=True)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 ############################################################################################################
 if __name__ == '__main__':
     full_start = time.time()

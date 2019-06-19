@@ -68,6 +68,7 @@ if __name__ == '__main__':
     super_path = '/share/wandell/data/reith/redo_experiments/sample_number_contrast/resnet'
     # super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sample_number_contrast\resnet'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    fpaths.sort(key=lambda k: int(k.split("_")[-1]))
     for fpath in fpaths:
         train_set_size = int(fpath.split('_')[-1])
         if train_set_size in [1000, 1794, 3221, 5781]:

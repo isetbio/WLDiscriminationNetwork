@@ -249,7 +249,7 @@ class PoissonNoiseLoaderClass:
             batch_labels = self.labels[self.ii:min(self.jj, self.train_set_size)]
             self.ii += batch_size
             self.jj += batch_size
-        return batch_data, batch_labels
+        return batch_data.cuda(), batch_labels.cuda()
 
     def poisson_noise_loader(self, size, numpyData=False, seed=False):
         if seed:

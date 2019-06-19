@@ -210,7 +210,9 @@ def poisson_noise_loader(meanData, size, numpyData=False, seed=False):
 class PoissonNoiseLoaderClass:
     def __init__(self, mean_data, batch_size, train_set_size=-1, numpy_data=False, use_data_seed=False, data_seed=42):
         if type(mean_data) == np.ndarray:
-            mean_data = torch.from_numpy(mean_data).type(torch.float32).cuda()
+            mean_data = torch.from_numpy(mean_data).type(torch.float32)
+        elif mean_data.is_cuda:
+            mean_data = mean_data.cpu()
         self.mean_data = mean_data
         self.train_set_size = train_set_size
         self.numpy_data = numpy_data
@@ -219,8 +221,7 @@ class PoissonNoiseLoaderClass:
         self.dataset, self.labels = self.get_data()
         self.ii, self.jj = -1, -1
         self.batch_size = batch_size
-        self.epoch_data = -1
-        self.epoch_labels = -1
+        self.original_sorting = list(range(train_set_size))
 
     def get_data(self):
         if self.train_set_size == -1:
@@ -238,15 +239,14 @@ class PoissonNoiseLoaderClass:
             batch_data, batch_labels = self.poisson_noise_loader(batch_size, self.numpy_data)
         else:
             if not self.jj < self.train_set_size or self.jj == -1 or reset:
-                self.epoch_data = self.dataset.clone()
-                self.epoch_labels = self.labels.clone()
                 if shuffle:
-                    selector = np.random.permutation(len(self.epoch_data))
-                    self.epoch_data = self.epoch_data[selector]
-                    self.epoch_labels = self.epoch_labels[selector]
+                    selector = np.random.permutation(len(self.dataset))
+                    self.dataset = self.dataset[selector]
+                    self.labels = self.labels[selector]
+                    self.original_sorting = self.original_sorting[selector]
                 self.ii, self.jj = 0, batch_size
-            batch_data = self.epoch_data[self.ii:min(self.jj, self.train_set_size)]
-            batch_labels = self.epoch_labels[self.ii:min(self.jj, self.train_set_size)]
+            batch_data = self.dataset[self.ii:min(self.jj, self.train_set_size)]
+            batch_labels = self.labels[self.ii:min(self.jj, self.train_set_size)]
             self.ii += batch_size
             self.jj += batch_size
         return batch_data, batch_labels

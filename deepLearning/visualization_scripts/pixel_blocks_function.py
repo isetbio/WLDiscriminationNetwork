@@ -76,7 +76,7 @@ def pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_co
     else:
         metric = 'contrast'
     if fname == 'default':
-        fname = f'harmonic_curve_detection_{metric}_block_comparison'
+        fname = f'{selected_contrast}_{metric}_block_comparison'
 
     fig = plt.figure()
     plt.grid(which='both')
@@ -130,7 +130,7 @@ def pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_co
 
 
 if __name__ == "__main__":
-    selected_contrast = 1.25892541e-03
+    selected_contrast = 6.30957344e-04
     block_folders = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\different_patch_sizes') if f.is_dir()]
     comparison_folder = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\experiment_patches_238x238'
     pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_contrast)

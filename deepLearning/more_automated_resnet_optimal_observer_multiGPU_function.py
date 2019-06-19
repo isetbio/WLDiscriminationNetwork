@@ -66,10 +66,12 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 if __name__ == '__main__':
     full_start = time.time()
     super_path = '/share/wandell/data/reith/redo_experiments/sample_number_contrast/resnet'
-    # super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sample_number_contrast\resnet'
+    super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sample_number_contrast\resnet'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     for fpath in fpaths:
         train_set_size = int(fpath.split('_')[-1])
+        if train_set_size in [1000, 1794, 3221, 5781]:
+            continue
         run_on_folder(fpath, train_set_size=train_set_size)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 

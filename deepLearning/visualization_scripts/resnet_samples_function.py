@@ -35,7 +35,7 @@ def visualize_pixel_blocks(comparison_folder, sample_folder, shift=False, angle=
     plt.xlabel(metric)
     plt.ylabel('dprime')
     train_size = int(sample_folder.split('_')[-1])
-    plt.title(f"Standard ReseNet18 training in comparison with limited training set size training")
+    plt.title(f"ReseNet18 training in comparison with limited training set size training")
     plt.grid(which='both')
     folder_paths = [comparison_folder, sample_folder]
     for i, folder in enumerate(folder_paths):

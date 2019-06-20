@@ -23,7 +23,7 @@ def matfile_gen(pathMatDir):
 def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None, **kwargs):
     kword_args = {'train_nn': True, 'include_shift': False, 'NetClass': NetClass, 'deeper_pls': deeper_pls,
                   'NetClass_param': NetClass_param, 'include_angle': False, 'svm': True}
-    deviceIDs = GPUtil.getAvailable(order='first', limit=6, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
+    deviceIDs = GPUtil.getAvailable(order='first', limit=2, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
     print(deviceIDs)
     function_start = time.time()
     pathGen = matfile_gen(dirname)
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     fpaths.sort(key=lambda k: int(k.split("_")[-1]))
     for fpath in fpaths:
         train_set_size = int(fpath.split('_')[-1])
-        if train_set_size in [1000, 1794, 3221, 5781]:
+        if train_set_size not in [107689]:
             continue
         run_on_folder(fpath, train_set_size=train_set_size)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")

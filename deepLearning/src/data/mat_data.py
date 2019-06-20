@@ -111,8 +111,8 @@ def shuffle_pixels(matrices, block_size, shuffle_scope):
     np.random.seed(42)
     original_width = matrices.shape[-1]
     original_height = matrices.shape[-2]
-    start_width = original_width // 2 - shuffle_scope // 2 - 1
-    start_height = original_height // 2 - shuffle_scope // 2 - 1
+    start_width = original_width // 2 - shuffle_scope // 2
+    start_height = original_height // 2 - shuffle_scope // 2
     if not shuffle_scope == -1:
         original_matrices = matrices.copy()
         matrices = matrices[:, start_height:start_height+shuffle_scope, start_width:start_width+shuffle_scope]

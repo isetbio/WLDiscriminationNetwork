@@ -34,7 +34,7 @@ def get_h5data(pathMat, shuffle=False):
 
 
 def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeAngle=False, them_cones=False,
-                    separate_rgb=False, meanData_rounding=None, shuffled_pixels=False):
+                    separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, shuffle_scope=-1):
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
     args = []
@@ -92,7 +92,7 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
             experiment = np.round(experiment, meanData_rounding)
         # experiment -= 0.567891011121314
         if shuffled_pixels > 0:
-            experiment = shuffle_pixels(experiment, shuffled_pixels)
+            experiment = shuffle_pixels(experiment, shuffled_pixels, shuffle_scope)
         args.append(experiment)
         #####################
         # args.append(h5Dict['noNoiseImg'])
@@ -106,17 +106,22 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
     return args
 
 
-def shuffle_pixels(matrices, block_size):
+def shuffle_pixels(matrices, block_size, shuffle_scope):
     block_size = int(block_size)
     np.random.seed(42)
+    original_width = matrices.shape[-1]
+    original_height = matrices.shape[-2]
+    start_width = original_width // 2 - shuffle_scope // 2
+    start_height = original_height // 2 - shuffle_scope // 2
+    if not shuffle_scope == -1:
+        original_matrices = matrices.copy()
+        matrices = matrices[:, start_height:start_height+shuffle_scope, start_width:start_width+shuffle_scope]
     rows = matrices.shape[-2]
     cols = matrices.shape[-1]
     shuffle_rows = rows // block_size
     shuffle_cols = cols // block_size
     padding_rows = rows % block_size
     padding_cols = cols % block_size
-
-
     shuff_args = np.random.permutation(np.arange(shuffle_rows * shuffle_cols))
     result = []
     for md in matrices:
@@ -149,6 +154,9 @@ def shuffle_pixels(matrices, block_size):
         res = np.block([[pad_mat_up], [pad_mat_left, res, pad_mat_right], [pad_mat_down]])
         result.append(res)
     matrices = np.stack(result)
+    if not shuffle_scope == -1:
+        original_matrices[:, start_height:start_height+shuffle_scope, start_width:start_width+shuffle_scope] = matrices
+        matrices = original_matrices
     return matrices
 
 

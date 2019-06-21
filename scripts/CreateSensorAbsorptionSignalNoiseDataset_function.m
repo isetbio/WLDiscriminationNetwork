@@ -45,8 +45,8 @@ noNoiseImgContrast = zeros(length(scanFreq)+1, 1);
 
 %% Run a loop over all frequencies (1), all contrast strengths (1) and over the number of samples
 k = 1;
-p.row = 256;
-p.col = 256;
+p.row = 512;
+p.col = 512;
 for cc = 1:length(scanContrast)
     p.contrast = scanContrast(cc);
     for ff = 0 : length(scanFreq)
@@ -56,7 +56,7 @@ for cc = 1:length(scanContrast)
             p.freq = scanFreq(ff);
         end
         scene = sceneCreate('harmonic',p);  % sceneWindow(scene);
-        scene = sceneSet(scene,'fov',fov);  
+        % scene = sceneSet(scene,'fov',fov);  
         oi = oiCreate;
         oi = oiCompute(oi,scene);           % oiWindow(oi);
         sensor = sensorSet(sensor,'noise flag',1);
@@ -69,9 +69,12 @@ for cc = 1:length(scanContrast)
             
             % Calculate without noise
             if nn == 1
-                sensor = sensorSet(sensor,'noise flag',0);  % The proper noise flag is in question.  Maybe -1 is better.
+                sensor = sensorSet(sensor,'noise flag',-1);  % The proper noise flag is in question.  Maybe -1 is better.
                 sensor = sensorCompute(sensor,oi);
-                noNoiseImg(:,:,ff+1) = sensorGet(sensor, 'electrons');
+                pixel = sensorGet(sensor,'pixel');
+                meanVal = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
+                % noNoiseImg(:,:,ff+1) = sensorGet(sensor, 'electrons');
+                noNoiseImg(:,:,ff+1) = meanVal;
                 noNoiseImgFreq(ff+1) = p.freq;
                 noNoiseImgContrast(ff+1) = p.contrast;
                 sensor = sensorSet(sensor,'noise flag',1);

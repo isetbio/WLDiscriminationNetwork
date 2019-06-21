@@ -27,12 +27,12 @@
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
 % Values to set
-outputFolder = '/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_1';
+outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_contrasts';
 mkdir(outputFolder);
-numSamples = 5;
+numSamples = 1;
 frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
-contrastValues = logspace(-7.5, -0.5, 18);
+contrastValues = logspace(-5, -1.7, 12);
 contrastFreqPairs = [];
 
 

@@ -28,13 +28,13 @@
 
 % Values to set
 
-imageDir = '/share/wandell/data/reith/matlabData/generated_circles/';
+imageDir = '/share/wandell/data/reith/circle_fun/';
 imageNames = dir([imageDir '*.bmp']);
 imagePaths = fullfile(imageDir, {imageNames.name});
 numSamples = 2;
-frequencies = 4;
+frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
-contrastValues = logspace(-4.5, 0, 20);
+contrastValues = logspace(-4.5, -1.5, 12);
 contrastFreqPairs = [];
 shiftValues = 0;
 
@@ -47,17 +47,19 @@ for i = 1:length(contrastValues)
 end
 
 for i = 1:length(imagePaths)
-    imagePath = imagePaths(i);
-    imagePath = imagePath{1};
-    [~,fname,~] = fileparts(imagePath);
-    outputFolder = ['/share/wandell/data/reith/circles_experiment_v4/' fname '/'];
-    status = mkdir(outputFolder);
-    % This creates the resulting datasets
-    fprintf('starting at %s\n', datetime('now'))
-    contrast = contrastValues;
-    shiftValue = shiftValues;
-    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_image_%s',numSamples, join(string(frequencies),'-'), 'x', fname);
-    disp(fileName);
-    CreateContrastDatasetFromImage_function(frequencies, contrast, shiftValue, numSamples, fileName, outputFolder, imagePath)
-    fprintf('ending at %s\n', datetime('now'))
+    for j = 1:length(contrastValues)
+        imagePath = imagePaths(i);
+        imagePath = imagePath{1};
+        [~,fname,~] = fileparts(imagePath);
+        outputFolder = ['/share/wandell/data/reith/circle_fun/h5_data/' fname '/'];
+        status = mkdir(outputFolder);
+        % This creates the resulting datasets
+        fprintf('starting at %s\n', datetime('now'))
+        contrast = contrastValues(j);
+        shiftValue = shiftValues;
+        fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_image_%s',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.12f", contrast), '.', '_'), fname);
+        disp(fileName);
+        CreateContrastDatasetFromImage_function(frequencies, contrast, shiftValue, numSamples, fileName, outputFolder, imagePath)
+        fprintf('ending at %s\n', datetime('now'))
+    end
 end

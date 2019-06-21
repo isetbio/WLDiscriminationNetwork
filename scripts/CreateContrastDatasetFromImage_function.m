@@ -10,6 +10,8 @@ saveFlag = true;
 
 resolution = [256 256];
 p = harmonicP;
+p.col = 256;
+p.row = 256;
 eTime = 1e-3;
 % fov = 5;
 sensor = sensorCreate('monochrome');
@@ -73,7 +75,12 @@ for cc = 0:length(scanContrast)
                 if nn == 1
                     sensor = sensorSet(sensor,'noise flag',0);
                     sensor = sensorCompute(sensor,oi);
-                    noNoiseImg(:,:,cc+1) = sensorGet(sensor, 'electrons');
+                    % electrons are integers. We need mean electron
+                    % values..
+                    % noNoiseImg(:,:,cc+1) = sensorGet(sensor, 'electrons');
+                    pixel = sensorGet(sensor,'pixel');
+                    meanVal = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
+                    noNoiseImg(:,:,cc+1) = meanVal;
                     noNoiseImgFreq(1+cc) = p.freq;
                     noNoiseImgContrast(1+cc) = p.contrast;
                     noNoiseImgPhase(1+cc) = p.ph-originalPhase;

@@ -43,6 +43,8 @@ noNoiseImgPhase = zeros(length(scanFreq)*length(shiftValues)+1, 1);
 
 %% Run a loop over all frequencies (1), all contrast strengths (1) and over the number of samples
 k = 1;
+p.row = 256;
+p.col = 256;
 originalPhase = p.ph;
 for cc = 1:length(scanContrast)
     p.contrast = scanContrast(cc);
@@ -75,7 +77,10 @@ for cc = 1:length(scanContrast)
                 if nn == 1
                     sensor = sensorSet(sensor,'noise flag',0);
                     sensor = sensorCompute(sensor,oi);
-                    noNoiseImg(:,:,an+1) = sensorGet(sensor, 'electrons');
+                    pixel = sensorGet(sensor,'pixel');
+                    meanVal = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
+                    noNoiseImg(:,:,an+1) = meanVal;
+                    % noNoiseImg(:,:,ff+1) = sensorGet(sensor, 'electrons');
                     noNoiseImgFreq(1+an) = p.freq;
                     noNoiseImgContrast(1+an) = p.contrast;
                     noNoiseImgPhase(1+an) = p.ph-originalPhase;

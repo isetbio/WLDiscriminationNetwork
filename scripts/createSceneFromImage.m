@@ -29,10 +29,12 @@ img = imread(path);
 img = imresize(img, [parms.row, parms.col]);
 % normalize to same range as sine pattern
 img = double(img);
-img = img - mean(img(:));
-s = abs(min(img(:)));
+% don't normalize the mean anymore!
+% img = img - mean(img(:));
+% s = abs(min(img(:)));
 background = 1;
-img = img/s*parms.contrast+background;
+% simply add contrast to 1.0 background
+img = (img/255)*parms.contrast+background;
 disp(parms.contrast)
 
 

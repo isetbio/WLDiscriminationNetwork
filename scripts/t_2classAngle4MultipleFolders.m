@@ -28,6 +28,7 @@
 
 
 frequencyVals = unique(round(logspace(0, log(50)/log(10), 20)));
+frequencyVals = 1;
 % frequencyVals = 1;
 for f = 1:length(frequencyVals)
     % Values to set
@@ -38,9 +39,10 @@ for f = 1:length(frequencyVals)
     frequencies = freq;
     % contrastValues = [0.0003, 0.0002, 0.0004];
     contrastValues = 0.1;
-    angleValues = logspace(-6, log(0.05)/log(10), 18);
-
-
+    angleValues = logspace(-5, -2, 12);
+    
+    outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_rotation/';
+    mkdir(outputFolder);
     % This creates the resulting datasets
     for an = 1:length(angleValues)
         fprintf('starting at %s\n', datetime('now'))

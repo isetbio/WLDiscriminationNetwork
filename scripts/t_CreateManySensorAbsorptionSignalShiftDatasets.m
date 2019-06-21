@@ -27,13 +27,14 @@
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
 % Values to set
-outputFolder = '/share/wandell/data/reith/matlabData/harmonic_shift_experiment/';
+outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_phase_shift/';
+mkdir(outputFolder);
 numSamples = 2;
 frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = 0.1;
 contrastFreqPairs = [];
-shiftValues = logspace(-3.5, 2.5, 18);
+shiftValues = logspace(-4, -1, 12);
 
 for i = 1:length(contrastValues)
     for j = 1:length(frequencies)       
@@ -48,7 +49,7 @@ for i = 1:length(shiftValues)
     fprintf('starting at %s\n', datetime('now'))
     contrast = contrastValues;
     shiftValue = shiftValues(i);
-    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_shift_%s_pi_per_3000_oo',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.2f", contrast), '.', '_'), strrep(sprintf("%.9f", shiftValue), '.', '_'));
+    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_shift_%s_pi',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.2f", contrast), '.', '_'), strrep(sprintf("%.9f", shiftValue), '.', '_'));
     disp(fileName);
     CreateSensorAbsorptionSignalShiftDataset_function(frequencies, contrast, shiftValue, numSamples, fileName, outputFolder)
     fprintf('ending at %s\n', datetime('now'))

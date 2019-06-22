@@ -73,7 +73,7 @@ def num_iterations_gen(arr):
 if __name__ == '__main__':
     sub_folder = r'C:\Users\Fabian\Documents\data\svm_test'
     sub_folder = '/share/wandell/data/reith/redo_experiments/sample_number_contrast/svm_1_sample/'
-    sub_folder = '/share/wandell/data/reith/redo_experiments/sample_number_contrast/svm_1_sample_lower_contrast/'
+    sub_folder = '/share/wandell/data/reith/redo_experiments/sample_number_contrast/svm_1_sample_lowerer_contrast/'
     metric = 'contrast'
     kwargs = {'includeContrast': True}
     function_start = time.time()

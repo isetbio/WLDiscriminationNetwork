@@ -97,7 +97,6 @@ function [img, parms] = imageHarmonic(parms)
     % Now, for a sum of two harmonics
     clear params;
     parms.GaborFlag = .2;
-
     parms.freq = [6, 2];
     parms.ang = [0, pi / 2];
     parms.contrast = [0.7 0.5];

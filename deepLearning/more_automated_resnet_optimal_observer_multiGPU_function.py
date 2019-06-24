@@ -65,16 +65,19 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
-    super_path = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/different_shuffle_scope'
-    # super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\different_shuffle_scope'
+    super_path = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/different_shuffle_portion_inverse'
+    super_path = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/different_shuffle_portion'
+    # super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\different_shuffle_portion'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]))
     for fpath in fpaths:
         # if int(fpath.split('x')[-1]) not in [1, 2, 4, 7, 21, 35]:
         #     continue
-        shuffle_scope = int(fpath.split('_')[-1])
-        run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=True, shuffle_scope=shuffle_scope, svm=True, test_eval=True)
+        shuffle_portion = int(fpath.split('_')[-1])
+        run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=True, shuffle_portion=shuffle_portion, svm=True, test_eval=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+
 
 
 """
@@ -93,6 +96,19 @@ if __name__ == '__main__':
 
 r"""
 Older runs for documentation purposes..
+###########################################################################
+if __name__ == '__main__' and False:
+    full_start = time.time()
+    super_path = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/different_shuffle_scope'
+    # super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\different_shuffle_scope'
+    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    for fpath in fpaths:
+        # if int(fpath.split('x')[-1]) not in [1, 2, 4, 7, 21, 35]:
+        #     continue
+        shuffle_scope = int(fpath.split('_')[-1])
+        run_on_folder(fpath, them_cones=False, separate_rgb=False, meanData_rounding=None, shuffled_pixels=True, shuffle_scope=shuffle_scope, svm=True, test_eval=True)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 ##########################################################################################################
 if __name__ == '__main__':
     full_start = time.time()
@@ -102,7 +118,7 @@ if __name__ == '__main__':
     fpaths.sort(key=lambda k: int(k.split("_")[-1]))
     for fpath in fpaths:
         train_set_size = int(fpath.split('_')[-1])
-        if train_set_size not in [107689]:
+        if train_set_size not in [107689, 193283]:
             continue
         run_on_folder(fpath, train_set_size=train_set_size)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")

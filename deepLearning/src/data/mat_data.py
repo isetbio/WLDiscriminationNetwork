@@ -4,6 +4,7 @@ import h5py
 import torch
 from skimage.util import view_as_blocks
 
+
 def get_mat_data(pathMat, shuffle=False):
     matData = sio.loadmat(pathMat)
     data = np.transpose(matData['imgNoise'], (2, 0, 1))
@@ -34,7 +35,8 @@ def get_h5data(pathMat, shuffle=False):
 
 
 def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeAngle=False, them_cones=False,
-                    separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, shuffle_scope=-1):
+                    separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, shuffle_scope=-1,
+                    shuffle_portion=-1):
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
     args = []
@@ -92,7 +94,7 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
             experiment = np.round(experiment, meanData_rounding)
         # experiment -= 0.567891011121314
         if shuffled_pixels > 0:
-            experiment = shuffle_pixels(experiment, shuffled_pixels, shuffle_scope)
+            experiment = shuffle_pixels(experiment, shuffled_pixels, shuffle_scope, shuffle_portion)
         args.append(experiment)
         #####################
         # args.append(h5Dict['noNoiseImg'])
@@ -106,7 +108,7 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
     return args
 
 
-def shuffle_pixels(matrices, block_size, shuffle_scope):
+def shuffle_pixels(matrices, block_size, shuffle_scope, shuffle_portion):
     block_size = int(block_size)
     np.random.seed(42)
     original_width = matrices.shape[-1]
@@ -147,7 +149,14 @@ def shuffle_pixels(matrices, block_size, shuffle_scope):
         md = view_as_blocks(md, (block_size, block_size))
         height = md.shape[0]
         width = md.shape[1]
-        res = md.reshape(-1, block_size, block_size)[shuff_args].reshape(height, width, block_size, block_size)
+        if not shuffle_portion == -1:
+            points_to_change = shuff_args[:shuffle_portion]
+            change_points = md.reshape(-1, block_size, block_size)[points_to_change]
+            np.random.shuffle(change_points)
+            md.reshape(-1, block_size, block_size)[points_to_change] = change_points
+            res = md
+        else:
+            res = md.reshape(-1, block_size, block_size)[shuff_args].reshape(height, width, block_size, block_size)
         res = res.transpose(0, 2, 1, 3).reshape(-1, res.shape[1] * res.shape[3])
 
         # reassemble

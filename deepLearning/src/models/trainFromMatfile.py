@@ -23,7 +23,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,
                                      shuffled_pixels=False, shuffle_scope=-1, test_eval=True, random_seed_nn=True, train_set_size=-1,
-                                     test_size=5000):
+                                     test_size=5000, shuffle_portion=-1):
 
 
     # relevant variables
@@ -39,13 +39,19 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
     sys.stdout = Logger(f"{os.path.join(outPath, fileName)}_log.txt")
     if include_shift:
         meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True,
-                                                                            them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding, shuffled_pixels=shuffled_pixels, shuffle_scope=shuffle_scope)
+                                                                            them_cones=them_cones, separate_rgb=separate_rgb,
+                                                                            meanData_rounding=meanData_rounding, shuffled_pixels=shuffled_pixels,
+                                                                            shuffle_scope=shuffle_scope, shuffle_portion=shuffle_portion)
     elif include_angle:
         meanData, meanDataLabels, dataContrast, dataAngle = get_h5mean_data(pathMat, includeContrast=True, includeAngle=True,
-                                                                            them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding, shuffled_pixels=shuffled_pixels, shuffle_scope=shuffle_scope)
+                                                                            them_cones=them_cones, separate_rgb=separate_rgb,
+                                                                            meanData_rounding=meanData_rounding, shuffled_pixels=shuffled_pixels,
+                                                                            shuffle_scope=shuffle_scope, shuffle_portion=shuffle_portion)
     else:
         meanData, meanDataLabels, dataContrast = get_h5mean_data(pathMat, includeContrast=True,
-                                                                 them_cones=them_cones, separate_rgb=separate_rgb, meanData_rounding=meanData_rounding, shuffled_pixels=shuffled_pixels, shuffle_scope=shuffle_scope)
+                                                                 them_cones=them_cones, separate_rgb=separate_rgb,
+                                                                 meanData_rounding=meanData_rounding, shuffled_pixels=shuffled_pixels,
+                                                                 shuffle_scope=shuffle_scope, shuffle_portion=shuffle_portion)
     # data =    torch.from_numpy(data).type(torch.float32)
     # pickle.dump([data, labels, dataNoNoise], open('mat1PercentNoNoiseData.p', 'wb'))
     # data, labels, dataNoNoise = pickle.load(open("mat1PercentData.p", 'rb'))
@@ -233,5 +239,5 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
 
 if __name__ == '__main__':
-    mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_000010000000.h5'
-    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True, shuffle_scope=66, train_set_size=150, oo=False, svm=False, test_size=60, train_nn=True)
+    mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_019952623150.h5'
+    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True, shuffle_scope=100, train_set_size=150, oo=False, svm=False, test_size=60, train_nn=True, shuffle_portion=2000)

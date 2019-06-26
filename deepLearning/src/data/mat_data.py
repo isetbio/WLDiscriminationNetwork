@@ -3,6 +3,7 @@ import numpy as np
 import h5py
 import torch
 from skimage.util import view_as_blocks
+from deepLearning.src.data.create_complex_pattern import create_automaton
 
 
 def get_mat_data(pathMat, shuffle=False):
@@ -36,7 +37,7 @@ def get_h5data(pathMat, shuffle=False):
 
 def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeAngle=False, them_cones=False,
                     separate_rgb=False, meanData_rounding=None, shuffled_pixels=False, shuffle_scope=-1,
-                    shuffle_portion=-1):
+                    shuffle_portion=-1, ca_rule=-1):
     h5Data = h5py.File(pathMat)
     h5Dict = {k:np.array(h5Data[k]) for k in h5Data.keys()}
     args = []
@@ -88,6 +89,12 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
         experiment = h5Dict['noNoiseImg']
         # rotate 90 degrees
         experiment = np.transpose(experiment, (0, 2, 1))
+        if ca_rule != -1:
+            automaton = create_automaton(rule=ca_rule, size=experiment.shape[1:], seed=1337)
+            pure_signal = experiment[1] - experiment[0]
+
+
+
         # experiment += 0.567891011121314
         if meanData_rounding is not None:
             print(f"Rounding mean_data to {meanData_rounding} decimals..")

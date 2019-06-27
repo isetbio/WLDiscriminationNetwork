@@ -132,6 +132,8 @@ def shuffle_pixels(matrices, block_size, shuffle_scope, shuffle_portion):
     padding_rows = rows % block_size
     padding_cols = cols % block_size
     shuff_args = np.random.permutation(np.arange(shuffle_rows * shuffle_cols))
+    if not shuffle_portion == -1:
+        shuff_idxs_change_points = np.random.permutation(np.arange(shuffle_portion))
     result = []
     for md in matrices:
         # remove padding
@@ -159,7 +161,8 @@ def shuffle_pixels(matrices, block_size, shuffle_scope, shuffle_portion):
         if not shuffle_portion == -1:
             points_to_change = shuff_args[:shuffle_portion]
             change_points = md.reshape(-1, block_size, block_size)[points_to_change]
-            np.random.shuffle(change_points)
+            # simply shuffling shuffles each individual md slice differently and messes everything up.
+            change_points = change_points[shuff_idxs_change_points]
             md.reshape(-1, block_size, block_size)[points_to_change] = change_points
             res = md
         else:

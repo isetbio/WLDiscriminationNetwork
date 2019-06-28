@@ -45,6 +45,8 @@ noNoiseImgContrast = zeros(length(scanFreq)+1, 1);
 
 %% Run a loop over all frequencies (1), all contrast strengths (1) and over the number of samples
 k = 1;
+% p.row & p.row are not necessarily the resulting image size, as # scene pixesl > # pixels of
+% sensor, which captures its pixels..
 p.row = 512;
 p.col = 512;
 for cc = 1:length(scanContrast)

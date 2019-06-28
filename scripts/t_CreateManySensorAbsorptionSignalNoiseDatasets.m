@@ -27,29 +27,35 @@
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
 % Values to set
-outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_contrasts';
-mkdir(outputFolder);
+% outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_contrasts';
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf\';
+mkdir(superOutputFolder);
 numSamples = 1;
 frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = logspace(-5, -1.7, 12);
 contrastFreqPairs = [];
+frequencyValues = round(logspace(log10(1), log10(200), 12));
 
-
-for i = 1:length(contrastValues)
-    for j = 1:length(frequencies)       
-        contrast = contrastValues(i);
-        freq = frequencies(j);
-        contrastFreqPairs = cat(1, contrastFreqPairs, [contrast, freq]);
-    end
-end
+% % for i = 1:length(contrastValues)
+% %     for j = 1:length(frequencies)       
+% %         contrast = contrastValues(i);
+% %         freq = frequencies(j);
+% %         contrastFreqPairs = cat(1, contrastFreqPairs, [contrast, freq]);
+% %     end
+% % end
 
 % This creates the resulting datasets
-for i = 1:length(contrastValues)
-    fprintf('starting at %s\n', datetime('now'))
-    contrast = contrastValues(i);
-    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_oo_%s',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.12f", contrast), '.', '_'));
-    disp(fileName);
-    CreateSensorAbsorptionSignalNoiseDataset_function(frequencies, contrast, numSamples, fileName, outputFolder)
-    fprintf('ending at %s\n', datetime('now'))
+for f = 1:length(frequencyValues)
+    frequencies = frequencyValues(f);
+    outputFolder = [superOutputFolder sprintf('harmonic_frequency_of_%s', string(frequencies))];
+    mkdir(outputFolder);
+    for i = 1:length(contrastValues)
+        fprintf('starting at %s\n', datetime('now'))
+        contrast = contrastValues(i);
+        fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.12f", contrast), '.', '_'));
+        disp(fileName);
+        CreateSensorAbsorptionSignalNoiseDataset_function(frequencies, contrast, numSamples, fileName, outputFolder)
+        fprintf('ending at %s\n', datetime('now'))
+    end
 end

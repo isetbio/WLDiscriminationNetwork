@@ -39,7 +39,7 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
     else:
         metric = 'contrast'
     if fname == 'default':
-        fname = f'harmonic_curve_detection_{metric}_portion_comparison'
+        fname = f'harmonic_curve_detection_{metric}_comparison'
     line_style = line_styler()
     fig = plt.figure()
     # plt.grid(which='both')
@@ -47,7 +47,7 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
     plt.xlabel(metric)
     plt.ylabel('dprime')
     num = block_folder.split('_')[-1]
-    plt.title(f"Harmonic frequency of {num} performance for various contrasts")
+    plt.title(f"Harmonic frequency of {num} performance for various {metric} values")
     plt.grid(which='both')
     folder_paths = [block_folder]
     for i, folder in enumerate(folder_paths):
@@ -82,19 +82,25 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
 
 def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, include_nn=True,
              include_svm=True):
-    fname = f'Modulation_transfer_function_frequencies_svm_target_d_{target_d}'
     line_style = line_styler()
     out_path = os.path.dirname(mtf_paths[0])
     freqs = []
     nn_dprimes = []
     oo_dprimes = []
 
+    if shift:
+        metric = 'shift'
+    else:
+        metric = 'contrast'
+
+    fname = f'Modulation_transfer_function_{metric}_values_frequencies_target_d_{target_d}'
+
     for p in mtf_paths:
         freq = int(p.split('_')[-1])
         freqs.append(freq)
-        nn_dprimes.append(get_csv_column(os.path.join(p, 'results.csv'), 'nn_dprime', sort_by='contrast'))
+        nn_dprimes.append(get_csv_column(os.path.join(p, 'results.csv'), 'nn_dprime', sort_by=metric))
         oo_dprimes.append(
-            get_csv_column(os.path.join(p, 'results.csv'), 'optimal_observer_d_index', sort_by='contrast'))
+            get_csv_column(os.path.join(p, 'results.csv'), 'optimal_observer_d_index', sort_by=metric))
 
     sort_idxs = np.argsort(freqs)
     freqs, nn_dprimes, oo_dprimes = np.array(freqs), np.array(nn_dprimes), np.array(oo_dprimes)
@@ -104,7 +110,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
     nn_dprimes = nn_dprimes[sort_idxs]
     oo_dprimes = oo_dprimes[sort_idxs]
 
-    contrasts = get_csv_column(os.path.join(mtf_paths[0], 'results.csv'), 'contrast', sort_by='contrast')
+    metric_values = get_csv_column(os.path.join(mtf_paths[0], 'results.csv'), metric, sort_by=metric)
     nn_bilinear_targets = []
     oo_bilinear_targets = []
 
@@ -115,7 +121,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
             continue
         left_target = right_target - 1
         p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
-        interpolated_val = (1 - p_val) * contrasts[left_target] + p_val * contrasts[right_target]
+        interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
         nn_bilinear_targets.append(interpolated_val)
 
     for i, dprimes in enumerate(oo_dprimes):
@@ -125,8 +131,8 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
             continue
         left_target = right_target - 1
         p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
-        print(p_val, contrasts[left_target])
-        interpolated_val = (1 - p_val) * contrasts[left_target] + p_val * contrasts[right_target]
+        print(p_val, metric_values[left_target])
+        interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
         oo_bilinear_targets.append(interpolated_val)
 
     nn_bilinear_targets = np.array(nn_bilinear_targets)
@@ -151,7 +157,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
             freq = int(p.split('_')[-1])
             svm_freqs.append(freq)
             svm_dprimes.append(
-                get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by='contrast'))
+                get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by=metric))
         svm_dprimes, svm_freqs = np.array(svm_dprimes), np.array(svm_freqs)
         sort_idxs = np.argsort(svm_freqs)
         svm_dprimes = svm_dprimes[sort_idxs]
@@ -163,7 +169,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
                 continue
             left_target = right_target - 1
             p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
-            interpolated_val = (1 - p_val) * contrasts[left_target] + p_val * contrasts[right_target]
+            interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
             svm_bilinear_targets.append(interpolated_val)
         svm_bilinear_targets = np.array(svm_bilinear_targets)
         plt.plot(svm_freqs, 1 / svm_bilinear_targets, label='Support Vector Machine', linestyle=next(line_style))
@@ -233,6 +239,19 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
 
 
 if __name__ == "__main__":
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_shift') if f.is_dir()]
+    for scope_folder in mtf_paths:
+        visualize_pixel_blocks(scope_folder, shift=True)
+    mtf_calc(mtf_paths, target_d=1.5, shift=True)
+    mtf_calc(mtf_paths, target_d=2, shift=True)
+    mtf_calc(mtf_paths, target_d=1, shift=True)
+    mtf_calc(mtf_paths, target_d=3, shift=True)
+
+
+"""
+Older runs:
+########################################################################
+if __name__ == "__main__":
     mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf') if f.is_dir()]
     for scope_folder in mtf_paths:
         visualize_pixel_blocks(scope_folder)
@@ -240,5 +259,6 @@ if __name__ == "__main__":
     mtf_calc(mtf_paths, target_d=2)
     mtf_calc(mtf_paths, target_d=1)
     mtf_calc(mtf_paths, target_d=3)
+#######################################################################
 
-
+"""

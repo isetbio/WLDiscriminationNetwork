@@ -1,0 +1,244 @@
+import pandas as pd
+from matplotlib import pyplot as plt
+import numpy as np
+import os
+import bisect
+
+
+def line_styler(offset_default=2, style=(2, 2)):
+    offset = offset_default
+    yield '-'
+    while True:
+        if offset == 0:
+            offset = offset_default
+        else:
+            offset = 0
+        yield (offset, style)
+
+
+def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
+    df = pd.read_csv(csv_path, delimiter=';')
+    col = df[col_name].tolist()
+    col = np.array(col)
+    if sort_by is not None:
+        sort_val = get_csv_column(csv_path, sort_by)
+        sort_idxs = np.argsort(sort_val)
+        col = col[sort_idxs]
+    if exclude_from is not None:
+        sort_val = sort_val[sort_idxs]
+        col = col[sort_val >= exclude_from]
+    return col
+
+
+def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=True, include_nn=True,
+                           include_svm=True, fname='default'):
+    if shift:
+        metric = 'shift'
+    elif angle:
+        metric = 'angle'
+    else:
+        metric = 'contrast'
+    if fname == 'default':
+        fname = f'harmonic_curve_detection_{metric}_portion_comparison'
+    line_style = line_styler()
+    fig = plt.figure()
+    # plt.grid(which='both')
+    plt.xscale('log')
+    plt.xlabel(metric)
+    plt.ylabel('dprime')
+    num = block_folder.split('_')[-1]
+    plt.title(f"Harmonic frequency of {num} performance for various contrasts")
+    plt.grid(which='both')
+    folder_paths = [block_folder]
+    for i, folder in enumerate(folder_paths):
+        if i == 0:
+            appendix = ''
+        elif i == 1:
+            appendix = f' {num} random pixels were shuffled'
+            include_oo = False
+        csv1 = os.path.join(folder, 'results.csv')
+        csv_svm = os.path.join(folder, 'svm_results.csv')
+        oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by=metric)
+        nn = get_csv_column(csv1, 'nn_dprime', sort_by=metric)
+        contrasts = get_csv_column(csv1, metric, sort_by=metric)
+
+        if include_oo:
+            plt.plot(contrasts, oo, label='Ideal Observer'+appendix, linestyle=next(line_style))
+        if include_nn:
+            plt.plot(contrasts, nn, label='ResNet18'+appendix, linestyle=next(line_style))
+        epsilon = 0.001
+        if include_svm:
+            svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
+            if (svm>oo.max()-epsilon).any():
+                svm[svm >= (svm.max()-epsilon)] = oo.max()
+            plt.plot(contrasts, svm, label='Support Vector Machine'+appendix, linestyle=next(line_style))
+
+    out_path = block_folder
+    plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
+    fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
+    # fig.show()
+    print('done!')
+
+
+def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, include_nn=True,
+             include_svm=True):
+    fname = f'Modulation_transfer_function_frequencies_svm_target_d_{target_d}'
+    line_style = line_styler()
+    out_path = os.path.dirname(mtf_paths[0])
+    freqs = []
+    nn_dprimes = []
+    oo_dprimes = []
+
+    for p in mtf_paths:
+        freq = int(p.split('_')[-1])
+        freqs.append(freq)
+        nn_dprimes.append(get_csv_column(os.path.join(p, 'results.csv'), 'nn_dprime', sort_by='contrast'))
+        oo_dprimes.append(
+            get_csv_column(os.path.join(p, 'results.csv'), 'optimal_observer_d_index', sort_by='contrast'))
+
+    sort_idxs = np.argsort(freqs)
+    freqs, nn_dprimes, oo_dprimes = np.array(freqs), np.array(nn_dprimes), np.array(oo_dprimes)
+    freqs = freqs[sort_idxs]
+    nn_freqs = np.copy(freqs)
+    oo_freqs = np.copy(freqs)
+    nn_dprimes = nn_dprimes[sort_idxs]
+    oo_dprimes = oo_dprimes[sort_idxs]
+
+    contrasts = get_csv_column(os.path.join(mtf_paths[0], 'results.csv'), 'contrast', sort_by='contrast')
+    nn_bilinear_targets = []
+    oo_bilinear_targets = []
+
+    for i, dprimes in enumerate(nn_dprimes):
+        right_target = bisect.bisect(dprimes, target_d)
+        if right_target >= 12:
+            nn_freqs = np.delete(nn_freqs, i)
+            continue
+        left_target = right_target - 1
+        p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
+        interpolated_val = (1 - p_val) * contrasts[left_target] + p_val * contrasts[right_target]
+        nn_bilinear_targets.append(interpolated_val)
+
+    for i, dprimes in enumerate(oo_dprimes):
+        right_target = bisect.bisect(dprimes, target_d)
+        if right_target >= 12:
+            oo_freqs = np.delete(oo_freqs, i)
+            continue
+        left_target = right_target - 1
+        p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
+        print(p_val, contrasts[left_target])
+        interpolated_val = (1 - p_val) * contrasts[left_target] + p_val * contrasts[right_target]
+        oo_bilinear_targets.append(interpolated_val)
+
+    nn_bilinear_targets = np.array(nn_bilinear_targets)
+    oo_bilinear_targets = np.array(oo_bilinear_targets)
+
+    fig = plt.figure()
+    plt.grid(which='both')
+    # plt.yscale('log')
+    plt.xscale('log')
+    plt.xlabel('frequency')
+    plt.ylabel('1 over contrast')
+    plt.title(f'Modulation Transfer Function - target dprime is {target_d}')
+
+    plt.plot(oo_freqs, 1 / oo_bilinear_targets, label='Optimal Observer', linestyle=next(line_style))
+    plt.plot(nn_freqs, 1 / nn_bilinear_targets, label='ResNet', linestyle=next(line_style))
+    ############SVM SUPPORT#######################################
+    if include_svm:
+        svm_bilinear_targets = []
+        svm_dprimes = []
+        svm_freqs = []
+        for p in mtf_paths:
+            freq = int(p.split('_')[-1])
+            svm_freqs.append(freq)
+            svm_dprimes.append(
+                get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by='contrast'))
+        svm_dprimes, svm_freqs = np.array(svm_dprimes), np.array(svm_freqs)
+        sort_idxs = np.argsort(svm_freqs)
+        svm_dprimes = svm_dprimes[sort_idxs]
+        svm_freqs = svm_freqs[sort_idxs]
+        for i, dprimes in enumerate(svm_dprimes):
+            right_target = bisect.bisect(dprimes, target_d)
+            if right_target >= 12:
+                svm_freqs = np.delete(svm_freqs, i)
+                continue
+            left_target = right_target - 1
+            p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
+            interpolated_val = (1 - p_val) * contrasts[left_target] + p_val * contrasts[right_target]
+            svm_bilinear_targets.append(interpolated_val)
+        svm_bilinear_targets = np.array(svm_bilinear_targets)
+        plt.plot(svm_freqs, 1 / svm_bilinear_targets, label='Support Vector Machine', linestyle=next(line_style))
+    ################################################################
+    plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
+    fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)    ###############
+    ###############
+    ############333
+    #
+    #
+    #
+    #
+    # if shift:
+    #     metric = 'shift'
+    # elif angle:
+    #     metric = 'angle'
+    # else:
+    #     metric = 'contrast'
+    # if fname == 'default':
+    #     fname = f'{selected_contrast}_{metric}_portion_comparison'
+    #
+    # line_style = line_styler()
+    # fig = plt.figure()
+    # plt.grid(which='both')
+    # plt.xscale('log')
+    # # plt.yscale('log')
+    # plt.xlabel('Number of shuffled pixels')
+    # plt.ylabel('dprime')
+    # block_sizes = []
+    # resnet_vals = []
+    # svm_vals = []
+    # oo_vals = []
+    # for bf in block_folders:
+    #     block_sizes.append(int(bf.split('_')[-1]))
+    #     bf_csv  = os.path.join(bf, 'results.csv')
+    #     bf_svm_csv = os.path.join(bf, 'svm_results.csv')
+    #     c_vals = get_csv_column(bf_csv, metric, sort_by=metric)
+    #     nn_vals = get_csv_column(bf_csv, 'nn_dprime', sort_by=metric)
+    #     svm_col_vals = get_csv_column(bf_svm_csv, 'dprime_accuracy', sort_by=metric)
+    #     oo_col_vals = get_csv_column(bf_csv, 'optimal_observer_d_index', sort_by=metric)
+    #     nn_val = nn_vals[np.isclose(c_vals, selected_contrast)]
+    #     svm_val = svm_col_vals[np.isclose(c_vals, selected_contrast)]
+    #     oo_val = oo_col_vals[np.isclose(c_vals, selected_contrast)]
+    #     print(oo_val, block_sizes[-1])
+    #     resnet_vals.append(nn_val)
+    #     svm_vals.append(svm_val)
+    #     oo_vals.append(oo_val)
+    # sort_idxs = np.argsort(block_sizes)
+    # block_sizes = np.array(block_sizes)[sort_idxs]
+    # svm_vals = np.array(svm_vals)[sort_idxs]
+    # resnet_vals = np.array(resnet_vals)[sort_idxs]
+    # oo_vals = np.array(oo_vals)[sort_idxs]
+    #
+    # plt.title(f"Performance for a random portion of pixels being randomized")
+    # if include_oo:
+    #     plt.plot(block_sizes, oo_vals, label='Ideal Observer', linestyle=next(line_style))
+    # if include_nn:
+    #     plt.plot(block_sizes, resnet_vals, label='ResNet18', linestyle=next(line_style))
+    # if include_svm:
+    #     plt.plot(block_sizes, svm_vals, label='Support Vector Machine', linestyle=next(line_style))
+    #
+    # out_path = os.path.dirname(block_folders[0])
+    # plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
+    # fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
+    # # fig.show()
+    # print('done!')
+
+
+if __name__ == "__main__":
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf') if f.is_dir()]
+    for scope_folder in mtf_paths:
+        visualize_pixel_blocks(scope_folder)
+    mtf_calc(mtf_paths, target_d=1.5)
+    mtf_calc(mtf_paths, target_d=2)
+    mtf_calc(mtf_paths, target_d=1)
+    mtf_calc(mtf_paths, target_d=3)
+
+

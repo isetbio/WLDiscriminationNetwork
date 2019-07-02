@@ -28,31 +28,33 @@
 
 % Values to set
 
-imageDir = '/share/wandell/data/reith/circle_fun/';
-imageNames = dir([imageDir '*.bmp']);
+imageDir = 'C:\Users\Fabian\Documents\data\faces\';
+imageNames = dir([imageDir '*.png']);
+imageNames = dir([imageDir '*.h5']);
 imagePaths = fullfile(imageDir, {imageNames.name});
 numSamples = 2;
 frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
-contrastValues = logspace(-4.5, -1.5, 12);
-contrastFreqPairs = [];
+contrastValues = logspace(-5, -1.7, 12);
+% contrastFreqPairs = [];
 shiftValues = 0;
 
-for i = 1:length(contrastValues)
-    for j = 1:length(frequencies)       
-        contrast = contrastValues(i);
-        freq = frequencies(j);
-        contrastFreqPairs = cat(1, contrastFreqPairs, [contrast, freq]);
-    end
-end
+% for i = 1:length(contrastValues)
+%     for j = 1:length(frequencies)       
+%         contrast = contrastValues(i);
+%         freq = frequencies(j);
+%         contrastFreqPairs = cat(1, contrastFreqPairs, [contrast, freq]);
+%     end
+% end
 
 for i = 1:length(imagePaths)
+    imagePath = imagePaths(i);
+    imagePath = imagePath{1};
+    [~,fname,~] = fileparts(imagePath);
+    % outputFolder = ['/share/wandell/data/reith/circle_fun/h5_data/' fname '/'];
+    outputFolder = ['C:\Users\Fabian\Documents\data\faces\' fname '\'];
+    status = mkdir(outputFolder);
     for j = 1:length(contrastValues)
-        imagePath = imagePaths(i);
-        imagePath = imagePath{1};
-        [~,fname,~] = fileparts(imagePath);
-        outputFolder = ['/share/wandell/data/reith/circle_fun/h5_data/' fname '/'];
-        status = mkdir(outputFolder);
         % This creates the resulting datasets
         fprintf('starting at %s\n', datetime('now'))
         contrast = contrastValues(j);

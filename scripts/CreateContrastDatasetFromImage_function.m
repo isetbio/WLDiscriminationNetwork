@@ -10,8 +10,8 @@ saveFlag = true;
 
 resolution = [256 256];
 p = harmonicP;
-p.col = 256;
-p.row = 256;
+p.col = 512;
+p.row = 512;
 eTime = 1e-3;
 % fov = 5;
 sensor = sensorCreate('monochrome');

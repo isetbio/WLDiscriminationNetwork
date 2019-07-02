@@ -34,7 +34,7 @@ frequencies = linspace(1,20,20);
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = 0.1;
 contrastFreqPairs = [];
-shiftValues = logspace(-2.5, 2, 20);
+shiftValues = logspace(-4, -1, 12);
 
 for i = 1:length(contrastValues)
     for j = 1:length(frequencies)       

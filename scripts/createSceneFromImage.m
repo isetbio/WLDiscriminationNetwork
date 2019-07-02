@@ -1,6 +1,10 @@
 function scene = createSceneFromImage(params, path)
 % This creates a scene, similar to harmonic, but with an input image as
-% pattern, instead of a wave.
+% pattern, instead of a wave. Instead of returning a wave pattern image as
+% template for the scene (one that has a mean of one and the biggest wave
+% deviation being 1*params.contrast), this function tries to make the same
+% out of an input image. If the input image is of color, the color values
+% are being averaged. 
 
 
 parms = params;
@@ -24,17 +28,32 @@ nWave = sceneGet(scene,'nwave');
 % other cases, they are simply attached to the global parameters in
 % vcSESSION.  We can get them by a getappdata call in here, but not if we
 % close the window as part of imageSetHarmonic
+if endsWith(path, ".h5")
+    % matlab messes the axes up here, because fortran bin encoding of arr
+    % instead of C endoding. The updated version h5read() doesn't seem to
+    % improve this compatability issue..
+    % will transpose here, as python code transposes this back
+    % automatically already.
+    img = h5read(path, '/face_mat');
+    img = transpose(img);
+    background = 1;
+    img = img*params.contrast+background;
+else    
+    img = imread(path);
+    if length(size(img)) == 3
+        img = mean(img,3);
+    end
+    img = imresize(img, [parms.row, parms.col]);
 
-img = imread(path);
-img = imresize(img, [parms.row, parms.col]);
-% normalize to same range as sine pattern
-img = double(img);
-% don't normalize the mean anymore!
-% img = img - mean(img(:));
-% s = abs(min(img(:)));
-background = 1;
-% simply add contrast to 1.0 background
-img = (img/255)*parms.contrast+background;
+    % normalize to same range as sine pattern
+    img = double(img);
+    % don't normalize the mean anymore!
+    % img = img - mean(img(:));
+    % s = abs(min(img(:)));
+    background = 1;
+    % simply add contrast to 1.0 background
+    img = (img/255)*parms.contrast+background;
+end
 disp(parms.contrast)
 
 

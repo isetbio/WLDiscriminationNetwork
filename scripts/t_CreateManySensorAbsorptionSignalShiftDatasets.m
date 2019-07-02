@@ -27,30 +27,42 @@
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
 % Values to set
-outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_phase_shift/';
-mkdir(outputFolder);
+superOutputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_phase_shift/';
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_shift\';
+mkdir(superOutputFolder);
 numSamples = 2;
-frequencies = 1;
+% frequencies = 1;
+frequencyValues = round(logspace(log10(1), log10(200), 12));
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = 0.1;
 contrastFreqPairs = [];
 shiftValues = logspace(-4, -1, 12);
 
-for i = 1:length(contrastValues)
-    for j = 1:length(frequencies)       
-        contrast = contrastValues(i);
-        freq = frequencies(j);
-        contrastFreqPairs = cat(1, contrastFreqPairs, [contrast, freq]);
-    end
-end
+% for i = 1:length(contrastValues)
+%     for j = 1:length(frequencies)       
+%         contrast = contrastValues(i);
+%         freq = frequencies(j);
+%         contrastFreqPairs = cat(1, contrastFreqPairs, [contrast, freq]);
+%     end
+% end
 
 % This creates the resulting datasets
-for i = 1:length(shiftValues)
-    fprintf('starting at %s\n', datetime('now'))
-    contrast = contrastValues;
-    shiftValue = shiftValues(i);
-    fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_shift_%s_pi',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.2f", contrast), '.', '_'), strrep(sprintf("%.9f", shiftValue), '.', '_'));
-    disp(fileName);
-    CreateSensorAbsorptionSignalShiftDataset_function(frequencies, contrast, shiftValue, numSamples, fileName, outputFolder)
-    fprintf('ending at %s\n', datetime('now'))
+for f = 1:length(frequencyValues)
+    frequencies = frequencyValues(f);
+    outputFolder = [superOutputFolder sprintf('harmonic_frequency_of_%s', string(frequencies))];
+    mkdir(outputFolder);
+    if frequencies == 200
+        shiftVals = logspace(-4, -1, 12);
+        shiftGrowth = shiftVals(12)/shiftVals(11);
+        contrastValues = [shiftVals shiftVals(12)*shiftGrowth contrastValues(12)*shiftGrowth*shiftGrowth];
+    end
+    for i = 1:length(shiftValues)
+        fprintf('starting at %s\n', datetime('now'))
+        contrast = contrastValues;
+        shiftValue = shiftValues(i);
+        fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_shift_%s_pi',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.2f", contrast), '.', '_'), strrep(sprintf("%.9f", shiftValue), '.', '_'));
+        disp(fileName);
+        CreateSensorAbsorptionSignalShiftDataset_function(frequencies, contrast, shiftValue, numSamples, fileName, outputFolder)
+        fprintf('ending at %s\n', datetime('now'))
+    end
 end

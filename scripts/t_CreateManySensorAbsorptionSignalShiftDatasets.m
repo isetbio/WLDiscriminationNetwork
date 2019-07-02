@@ -54,9 +54,12 @@ for f = 1:length(frequencyValues)
     if frequencies == 200
         shiftVals = logspace(-4, -1, 12);
         shiftGrowth = shiftVals(12)/shiftVals(11);
-        contrastValues = [shiftVals shiftVals(12)*shiftGrowth contrastValues(12)*shiftGrowth*shiftGrowth];
+        shiftValues = [shiftVals shiftVals(12)*shiftGrowth shiftVals(12)*shiftGrowth*shiftGrowth];
     end
     for i = 1:length(shiftValues)
+        if i > 12
+            disp('working overtime here!')
+        end
         fprintf('starting at %s\n', datetime('now'))
         contrast = contrastValues;
         shiftValue = shiftValues(i);

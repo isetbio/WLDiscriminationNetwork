@@ -27,13 +27,16 @@
 %    CreateConeAbsorptionSignalNoiseDataset_function
 
 
-frequencyVals = unique(round(logspace(0, log(50)/log(10), 20)));
-frequencyVals = 1;
+% frequencyVals = unique(round(logspace(0, log(50)/log(10), 20)));
+% frequencyVals = 1;
+frequencyVals = round(logspace(log10(1), log10(200), 12));
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_angle\';
+
 % frequencyVals = 1;
 for f = 1:length(frequencyVals)
     % Values to set
     freq = frequencyVals(f);
-    outputFolder = ['/share/wandell/data/reith/2_class_MTF_angle_experiment/frequency_' num2str(freq)];
+    outputFolder = [superOutputFolder sprintf('harmonic_frequency_of_%s', string(freq))];
     mkdir(outputFolder);
     numSamples = 2;
     frequencies = freq;
@@ -41,8 +44,7 @@ for f = 1:length(frequencyVals)
     contrastValues = 0.1;
     angleValues = logspace(-5, -2, 12);
     
-    outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_rotation/';
-    mkdir(outputFolder);
+    % outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_rotation/';
     % This creates the resulting datasets
     for an = 1:length(angleValues)
         fprintf('starting at %s\n', datetime('now'))

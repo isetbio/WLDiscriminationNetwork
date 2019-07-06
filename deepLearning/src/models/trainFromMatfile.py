@@ -243,7 +243,9 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
 if __name__ == '__main__':
     mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_019952623150.h5'
-    mat_path = r'C:\Users\Fabian\Documents\data\faces\face_sq\2_samplesPerClass_freq_1_contrast_0_019952623150_image_face_sq.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\faces\face_sq\2_samplesPerClass_freq_1_contrast_0_019952623150_image_face_sq.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\test_200_dummy2.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_shift\harmonic_frequency_of_124\2_samplesPerClass_freq_124_contrast_0_10_shift_0_100000000_pi.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\face_guy_green\2_samplesPerClass_freq_1_contrast_0_019952623150_image_face_guy_green.h5'
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True, shuffle_scope=100, train_set_size=150, oo=False, svm=False, test_size=60, train_nn=True, shuffle_portion=2000)
     autoTrain_Resnet_optimalObserver(mat_path)

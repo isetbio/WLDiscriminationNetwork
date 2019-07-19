@@ -2,6 +2,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
 import os
+import types
 
 
 def line_styler(offset_default=2, style=(2, 2)):
@@ -138,7 +139,7 @@ def visualize_pixel_blocks(comparison_folder, sample_folder, shift=False, angle=
 
 
 def pixel_blocks_specific_contrast(comparison_folder, sample_folders, selected_contrast, shift=False, angle=False, include_oo=True, include_nn=True,
-                                   include_svm=True, fname='default', use_svm_train_sizes=False):
+                                   include_svm=True, fname='default', use_svm_train_sizes=False, plot_style='default'):
     if shift:
         metric = 'shift'
     elif angle:
@@ -146,8 +147,11 @@ def pixel_blocks_specific_contrast(comparison_folder, sample_folders, selected_c
     else:
         metric = 'contrast'
     if fname == 'default':
-        fname = f'{selected_contrast}_selected_contrast_training_sample_comparison'
-    line_style = line_styler()
+        fname = f'{selected_contrast}_selected_contrast_training_sample_comparison_new'
+    if plot_style == 'default':
+        line_style = line_styler()
+    else:
+        line_style = plot_style
     fig = plt.figure()
     plt.grid(which='both')
     plt.xscale('log')
@@ -187,19 +191,29 @@ def pixel_blocks_specific_contrast(comparison_folder, sample_folders, selected_c
     resnet_vals = np.array(resnet_vals)[sort_idxs]
     oo_vals = np.array(oo_vals)[sort_idxs]
 
-    plt.title(f"ResNet18 performance for varying training set sizes")
+    #plt.title(f"ResNet18 performance for varying training set sizes")
     if include_oo:
-        plt.plot(train_size, oo_vals, label='Ideal Observer for reference', linestyle=next(line_style))
+        if isinstance(line_style, types.GeneratorType):
+            plt.plot(train_size, oo_vals, label='Ideal Observer for reference', linestyle=next(line_style))
+        else:
+            plt.plot(train_size, oo_vals, label='Ideal Observer for reference', linestyle=line_style)
     if include_nn:
-        plt.plot(train_size, resnet_vals, label='ResNet18', linestyle=next(line_style))
+        if isinstance(line_style, types.GeneratorType):
+            plt.plot(train_size, resnet_vals, label='ResNet18', linestyle=next(line_style))
+        else:
+            plt.plot(train_size, resnet_vals, label='ResNet18', linestyle=line_style)
     if include_svm:
         svm_vals = get_svm_vals(selected_contrast)
         svm_vals = [[val] for val in svm_vals]
         svm_vals = np.array(svm_vals)
-        plt.plot(train_size, svm_vals, label='Support Vector Machine', linestyle=next(line_style))
+        if isinstance(line_style, types.GeneratorType):
+            plt.plot(train_size, svm_vals, label='Support Vector Machine', linestyle=next(line_style))
+        else:
+            plt.plot(train_size, svm_vals, label='Support Vector Machine', linestyle=line_style)
 
     out_path = os.path.dirname(sample_folders[0])
-    plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
+    # plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
+    plt.legend(frameon=True, loc='best', fontsize='small')
     fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
     # fig.show()
     print('done!')
@@ -209,14 +223,14 @@ if __name__ == "__main__":
     selected_contrast = 6.30957344e-04
     block_folders = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sample_number_contrast\resnet') if f.is_dir()]
     comparison_folder = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\experiment_patches_238x238'
-    pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_contrast)
+    pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_contrast, plot_style='-')
     selected_contrast = 1.25892541e-03
-    pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_contrast)
+    pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_contrast, plot_style='-')
     selected_contrast = 0.00031622776601683794
-    pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_contrast)
-    block_folders.sort(key=lambda k: int(k.split('_')[-1]))
-    for block_folder in block_folders:
-        size = int(block_folder.split('_')[-1])
-        if size in [107689]:
-            continue
-        visualize_pixel_blocks(comparison_folder, block_folder, include_svm=True)
+    pixel_blocks_specific_contrast(comparison_folder, block_folders, selected_contrast, plot_style='-')
+    # block_folders.sort(key=lambda k: int(k.split('_')[-1]))
+    # for block_folder in block_folders:
+    #     size = int(block_folder.split('_')[-1])
+    #     if size in [107689]:
+    #         continue
+    #     visualize_pixel_blocks(comparison_folder, block_folder, include_svm=True)

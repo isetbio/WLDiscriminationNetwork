@@ -65,26 +65,12 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
-    super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
-    # super_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf'
-    super_path = '/share/wandell/data/reith/redo_experiments/mtf_experiments/mtf_angle_new_freq'
-    super_path = '/share/wandell/data/reith/redo_experiments/mtf_experiments/mtf_shift_new_freq'
-    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
-    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
-    for fpath in fpaths:
-        # run_on_folder(fpath, include_angle=True)
-        run_on_folder(fpath, include_shift=True)
-    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
-
-
-if __name__ == '__main__':
-    full_start = time.time()
     # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
-    fpaths = ['/share/wandell/data/reith/redo_experiments/face_experiment/multi_face_result']
+    fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
     # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
     for fpath in fpaths:
         # run_on_folder(fpath, include_angle=True)
-        run_on_folder(fpath)
+        run_on_folder(fpath, ca_rule=110)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 r"""
 LATER
@@ -110,6 +96,30 @@ if __name__ == '__main__':
 r"""
 #####################################################################
 Older runs for documentation purposes..
+######################################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
+    # super_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf'
+    super_path = '/share/wandell/data/reith/redo_experiments/mtf_experiments/mtf_angle_new_freq'
+    super_path = '/share/wandell/data/reith/redo_experiments/mtf_experiments/mtf_shift_new_freq'
+    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    for fpath in fpaths:
+        # run_on_folder(fpath, include_angle=True)
+        run_on_folder(fpath, include_shift=True)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+
+if __name__ == '__main__':
+    full_start = time.time()
+    # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
+    fpaths = ['/share/wandell/data/reith/redo_experiments/face_experiment/multi_face_result']
+    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    for fpath in fpaths:
+        # run_on_folder(fpath, include_angle=True)
+        run_on_folder(fpath)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 ####################################################################
 if __name__ == '__main__':
     full_start = time.time()

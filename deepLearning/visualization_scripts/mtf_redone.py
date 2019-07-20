@@ -3,6 +3,8 @@ from matplotlib import pyplot as plt
 import numpy as np
 import os
 import bisect
+import types
+from matplotlib.ticker import ScalarFormatter
 
 
 def line_styler(offset_default=2, style=(2, 2)):
@@ -81,8 +83,11 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
 
 
 def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, include_nn=True,
-             include_svm=True):
-    line_style = line_styler()
+             include_svm=True, plot_style='default'):
+    if plot_style == 'default':
+        line_style = line_styler()
+    else:
+        line_style = plot_style
     out_path = os.path.dirname(mtf_paths[0])
     freqs = []
     nn_dprimes = []
@@ -93,7 +98,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
     else:
         metric = 'contrast'
 
-    fname = f'Modulation_transfer_function_{metric}_values_frequencies_target_d_{target_d}'
+    fname = f'Modulation_transfer_function_{metric}_values_frequencies_target_d_{target_d}_new'
 
     for p in mtf_paths:
         freq = int(p.split('_')[-1])
@@ -138,16 +143,22 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
     nn_bilinear_targets = np.array(nn_bilinear_targets)
     oo_bilinear_targets = np.array(oo_bilinear_targets)
 
-    fig = plt.figure()
+    fig, ax = plt.subplots()
+    for axis in [ax.yaxis]:
+        axis.set_major_formatter(ScalarFormatter())
     plt.grid(which='both')
     # plt.yscale('log')
     plt.xscale('log')
-    plt.xlabel('frequency')
-    plt.ylabel('1 over contrast')
+    plt.yscale('log')
+    plt.xlabel('Frequency (cycles/image)')
+    plt.ylabel('Contrast sensitivity')
     plt.title(f'Modulation Transfer Function - target dprime is {target_d}')
-
-    plt.plot(oo_freqs, 1 / oo_bilinear_targets, label='Optimal Observer', linestyle=next(line_style))
-    plt.plot(nn_freqs, 1 / nn_bilinear_targets, label='ResNet', linestyle=next(line_style))
+    if isinstance(line_style, types.GeneratorType):
+        plt.plot(oo_freqs, 1 / oo_bilinear_targets, label='Optimal Observer', linestyle=next(line_style))
+        plt.plot(nn_freqs, 1 / nn_bilinear_targets, label='ResNet', linestyle=next(line_style))
+    else:
+        plt.plot(oo_freqs, 1 / oo_bilinear_targets, label='Optimal Observer', linestyle=line_style)
+        plt.plot(nn_freqs, 1 / nn_bilinear_targets, label='ResNet', linestyle=line_style)
     ############SVM SUPPORT#######################################
     if include_svm:
         svm_bilinear_targets = []
@@ -172,9 +183,12 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
             interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
             svm_bilinear_targets.append(interpolated_val)
         svm_bilinear_targets = np.array(svm_bilinear_targets)
-        plt.plot(svm_freqs, 1 / svm_bilinear_targets, label='Support Vector Machine', linestyle=next(line_style))
+        if isinstance(line_style, types.GeneratorType):
+            plt.plot(svm_freqs, 1 / svm_bilinear_targets, label='Support Vector Machine', linestyle=next(line_style))
+        else:
+            plt.plot(svm_freqs, 1 / svm_bilinear_targets, label='Support Vector Machine', linestyle=line_style)
     ################################################################
-    plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
+    plt.legend(frameon=True, loc='best', fontsize='small')
     fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)    ###############
     ###############
     ############333
@@ -239,6 +253,20 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
 
 
 if __name__ == "__main__":
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq') if f.is_dir()]
+    # for scope_folder in mtf_paths:
+    #     visualize_pixel_blocks(scope_folder)
+    mtf_calc(mtf_paths, target_d=1.5, plot_style='-')
+    mtf_calc(mtf_paths, target_d=2, plot_style='-')
+    mtf_calc(mtf_paths, target_d=1, plot_style='-')
+    mtf_calc(mtf_paths, target_d=3, plot_style='-')
+
+
+
+r"""
+Older runs:
+########################################################################
+if __name__ == "__main__":
     mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_shift') if f.is_dir()]
     for scope_folder in mtf_paths:
         visualize_pixel_blocks(scope_folder, shift=True)
@@ -246,13 +274,9 @@ if __name__ == "__main__":
     mtf_calc(mtf_paths, target_d=2, shift=True)
     mtf_calc(mtf_paths, target_d=1, shift=True)
     mtf_calc(mtf_paths, target_d=3, shift=True)
-
-
-r"""
-Older runs:
-########################################################################
+##############################################################################
 if __name__ == "__main__":
-    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf') if f.is_dir()]
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq') if f.is_dir()]
     for scope_folder in mtf_paths:
         visualize_pixel_blocks(scope_folder)
     mtf_calc(mtf_paths, target_d=1.5)

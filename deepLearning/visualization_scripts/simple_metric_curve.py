@@ -97,4 +97,5 @@ if __name__ == '__main__':
     f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_contrasts'
     f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_phase_shift'
     f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_rotation'
-    visualize_result_data(f, line_style='-', angle=True)
+    f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\multi_face_result'
+    visualize_result_data(f, line_style='-')

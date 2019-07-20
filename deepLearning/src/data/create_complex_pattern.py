@@ -23,5 +23,5 @@ def create_automaton(rule=110, size=(238, 238), seed=42):
 if __name__ == '__main__':
     from matplotlib import pyplot as plt
     image = create_automaton()
-    plt.imshow(image)
+    plt.imshow(image, cmap='gray')
     print('done')

@@ -92,6 +92,8 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
         if ca_rule != -1:
             automaton = create_automaton(rule=ca_rule, size=experiment.shape[1:], seed=1337)
             pure_signal = experiment[1] - experiment[0]
+            automaton_signal = pure_signal*automaton
+            experiment[1] = automaton_signal + experiment[0]
 
 
 

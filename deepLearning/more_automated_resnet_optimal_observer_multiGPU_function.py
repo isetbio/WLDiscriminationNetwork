@@ -62,16 +62,21 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     time.sleep(60)
     print("done!")
 
-shuffled_pixels=-2
+
 if __name__ == '__main__':
     full_start = time.time()
     # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
-    fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
-    # fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/shuffled_columns']
+    # fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
+    fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_45_on_harmonic_freq_1',
+              '/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_105_on_harmonic_freq_1',
+              '/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_154_on_harmonic_freq_1',
+              '/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
     # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
     for fpath in fpaths:
         # run_on_folder(fpath, include_angle=True)
-        run_on_folder(fpath, shuffled_pixels=-2)
+        rule = fpath.split('_')[-5]
+        rule = int(rule)
+        run_on_folder(fpath, ca_rule=rule)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 r"""
 LATER
@@ -98,6 +103,18 @@ r"""
 #####################################################################
 Older runs for documentation purposes..
 #####################################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
+    fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
+    # fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/shuffled_columns']
+    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    for fpath in fpaths:
+        # run_on_folder(fpath, include_angle=True)
+        # run_on_folder(fpath, shuffled_pixels=-2)
+        run_on_folder(fpath)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+#########################################################################
 if __name__ == '__main__':
     full_start = time.time()
     # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'

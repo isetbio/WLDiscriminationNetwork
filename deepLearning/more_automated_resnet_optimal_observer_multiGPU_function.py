@@ -66,8 +66,8 @@ shuffled_pixels=-2
 if __name__ == '__main__':
     full_start = time.time()
     # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
-    # fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
-    fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/shuffled_columns']
+    fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
+    # fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/shuffled_columns']
     # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
     for fpath in fpaths:
         # run_on_folder(fpath, include_angle=True)

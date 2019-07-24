@@ -22,7 +22,7 @@ def matfile_gen(pathMatDir):
 
 def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None, **kwargs):
     kword_args = {'train_nn': True, 'include_shift': False, 'NetClass': NetClass, 'deeper_pls': deeper_pls,
-                  'NetClass_param': NetClass_param, 'include_angle': False, 'svm': True}
+                  'NetClass_param': NetClass_param, 'include_angle': False, 'svm': True, 'force_balance': True}
     deviceIDs = GPUtil.getAvailable(order='first', limit=6, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
     print(deviceIDs)
     function_start = time.time()
@@ -67,16 +67,9 @@ if __name__ == '__main__':
     full_start = time.time()
     # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
     fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/shuffled_columns']
-    # fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_45_on_harmonic_freq_1',
-    #           '/share/wandel    l/data/reith/redo_experiments/cellular_automaton/rule_105_on_harmonic_freq_1',
-    #           '/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_154_on_harmonic_freq_1',
-    #           '/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
-    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
     for fpath in fpaths:
         # run_on_folder(fpath, include_angle=True)
-        rule = fpath.split('_')[-5]
-        rule = int(rule)
-        run_on_folder(fpath, ca_rule=rule)
+        run_on_folder(fpath, shuffle_pixels=-2)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 r"""
 LATER

@@ -69,7 +69,7 @@ if __name__ == '__main__':
     fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/shuffled_columns']
     for fpath in fpaths:
         # run_on_folder(fpath, include_angle=True)
-        run_on_folder(fpath, shuffle_pixels=-2)
+        run_on_folder(fpath, shuffled_pixels=-2)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 r"""
 LATER

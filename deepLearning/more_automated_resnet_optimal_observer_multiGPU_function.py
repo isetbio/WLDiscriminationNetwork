@@ -66,11 +66,11 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 if __name__ == '__main__':
     full_start = time.time()
     # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
-    # fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
-    fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_45_on_harmonic_freq_1',
-              '/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_105_on_harmonic_freq_1',
-              '/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_154_on_harmonic_freq_1',
-              '/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
+    fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/shuffled_columns']
+    # fpaths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_45_on_harmonic_freq_1',
+    #           '/share/wandel    l/data/reith/redo_experiments/cellular_automaton/rule_105_on_harmonic_freq_1',
+    #           '/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_154_on_harmonic_freq_1',
+    #           '/share/wandell/data/reith/redo_experiments/cellular_automaton/rule_110_on_harmonic_freq_1']
     # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
     for fpath in fpaths:
         # run_on_folder(fpath, include_angle=True)

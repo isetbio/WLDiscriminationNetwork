@@ -23,7 +23,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,
                                      shuffled_pixels=0, shuffle_scope=-1, test_eval=True, random_seed_nn=True, train_set_size=-1,
-                                     test_size=5000, shuffle_portion=-1, ca_rule=-1):
+                                     test_size=5000, shuffle_portion=-1, ca_rule=-1, force_balance=False):
 
 
     # relevant variables
@@ -75,7 +75,8 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         train_test_log = [TrainWrt, TestWrt]
     else:
         train_test_log = None
-    testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=True)
+    testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=True,
+                                                        force_balance=force_balance)
     #normalization values
     mean_norm = meanData.mean()
     std_norm = testDataFull.std()
@@ -197,6 +198,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
 
     print(f"ResNet accuracy is {testAcc*100:.2f}%")
+    print(f"ResNet dprime is {nn_dprime}")
     print(f"Optimal observer accuracy is {accOptimal*100:.2f}%")
     print(f"Optimal observer d index is {d2}")
     print(f"Theoretical d index is {d1}")
@@ -243,13 +245,13 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
 if __name__ == '__main__':
     mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_019952623150.h5'
-    mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq\harmonic_frequency_of_14\1_samplesPerClass_freq_14_contrast_0_019952623150.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq\harmonic_frequency_of_14\1_samplesPerClass_freq_14_contrast_0_019952623150.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\multi_face_result\2_samplesPerClass_freq_1_contrast_0_019952623150_image_multi_face_result.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\face_sq\2_samplesPerClass_freq_1_contrast_0_019952623150_image_face_sq.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\test_200_dummy2.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_shift\harmonic_frequency_of_124\2_samplesPerClass_freq_124_contrast_0_10_shift_0_100000000_pi.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\face_guy_green\2_samplesPerClass_freq_1_contrast_0_019952623150_image_face_guy_green.h5'
-    # autoTrain_Resnet_optimalObserver(mat_path, ca_rule=110)
-    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=-2)
+    autoTrain_Resnet_optimalObserver(mat_path, force_balance=True)
+    # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True, shuffle_scope=100, train_set_size=150, oo=False, svm=False, test_size=60, train_nn=True, shuffle_portion=2000)
 

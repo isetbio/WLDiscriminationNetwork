@@ -209,14 +209,17 @@ def mat_data_loader(data, labels, batchSize, shuffle=True):
         j += batchSize
 
 
-def poisson_noise_loader(meanData, size, numpyData=False, seed=False):
+def poisson_noise_loader(meanData, size, numpyData=False, seed=False, force_balance=False):
     if seed:
         np.random.seed(42)
     if numpyData:
         # more data means all data after #0 are signal cases
         data = []
-        if len(meanData) > 2:
-            labels = np.random.randint(2, size=size)
+        if len(meanData) == 2:
+            if force_balance:
+                labels = np.random.permutation(np.concatenate((np.ones(size//2), np.zeros(size-size//2)))).astype(int)
+            else:
+                labels = np.random.randint(2, size=size)
             for l in labels:
                 if l == 0:
                     data.append(np.random.poisson(meanData[l]))

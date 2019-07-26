@@ -66,10 +66,14 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 if __name__ == '__main__':
     full_start = time.time()
     # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
-    fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/shuffled_columns']
+    super_paths = ['/share/wandell/data/reith/redo_experiments/cellular_automaton/class_3', '/share/wandell/data/reith/redo_experiments/cellular_automaton/class_2']
+    # super_paths = [r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\cellular_automaton\class_2', r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\cellular_automaton\class_3']
+    fpaths = [p.path for p in os.scandir(super_paths[0]) if p.is_dir()]
+    fpaths.extend([p.path for p in os.scandir(super_paths[1]) if p.is_dir()])
     for fpath in fpaths:
         # run_on_folder(fpath, include_angle=True)
-        run_on_folder(fpath, shuffled_pixels=-2)
+        ca_rule = int(fpath.split('_')[-1])
+        run_on_folder(fpath, ca_rule=ca_rule)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 r"""
 LATER
@@ -95,6 +99,15 @@ if __name__ == '__main__':
 r"""
 #####################################################################
 Older runs for documentation purposes..
+#####################################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
+    fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/shuffled_columns']
+    for fpath in fpaths:
+        # run_on_folder(fpath, include_angle=True)
+        run_on_folder(fpath, shuffled_pixels=-2)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 #####################################################################
 if __name__ == '__main__':
     full_start = time.time()

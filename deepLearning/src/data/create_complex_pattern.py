@@ -22,6 +22,11 @@ def create_automaton(rule=110, size=(238, 238), seed=42):
 
 if __name__ == '__main__':
     from matplotlib import pyplot as plt
-    image = create_automaton()
-    plt.imshow(image, cmap='gray')
-    print('done')
+    import scipy.misc
+    out_path = r'C:\Users\Fabian\Documents\data\automatons'
+    for i in range(256):
+        automaton = create_automaton(rule=i)
+        scipy.misc.imsave(f"{out_path}\\automaton_rule_{i}.png", automaton)
+    # image = create_automaton()
+    # plt.imshow(image, cmap='gray')
+    # print('done')

@@ -94,8 +94,38 @@ def visualize_result_data(folder_path, shift=False, angle=False, include_oo=True
 
 
 if __name__ == '__main__':
-    f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_contrasts'
-    f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_phase_shift'
-    f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_rotation'
-    f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\multi_face_result'
-    visualize_result_data(f, line_style='-')
+
+    paths = [r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\cellular_automaton\class_2',
+             r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\cellular_automaton\class_3']
+    subfolders = []
+    for pa in paths:
+        folders = [p.path for p in os.scandir(pa) if p.is_dir()]
+        subfolders.extend(folders)
+
+    for p in subfolders:
+        visualize_result_data(p, line_style='-', fname=f"{os.path.basename(p)}_performance")
+
+
+r'''
+Past runs:
+##############################################################
+if __name__ == '__main__':
+    paths = [r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\shuffled_columns']
+    for p in paths:
+        visualize_result_data(p, line_style='-', fname='shuffled_columns_harmonic_curve_freq1')
+##################################################################
+if __name__ == '__main__':
+    paths = [p.path for p in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\cellular_automaton') if p.is_dir()]
+    # f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_contrasts'
+    # f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_phase_shift'
+    # f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_rotation'
+    # f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\multi_face_result'
+    for p in paths:
+        visualize_result_data(p, line_style='-')
+###############################################################
+# f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_contrasts'
+# f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_phase_shift'
+# f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sensor_harmonic_rotation'
+# f = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\multi_face_result'
+#################################################################
+'''

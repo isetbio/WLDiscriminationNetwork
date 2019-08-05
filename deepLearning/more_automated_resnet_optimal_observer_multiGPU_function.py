@@ -66,10 +66,18 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 if __name__ == '__main__':
     full_start = time.time()
     # super_path = '/share/wandell/data/reith/redo_experiments/face_experiment'
-    fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/shuffled_rows']
+    fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/face_signal/faces_shuff_rows']
     for fpath in fpaths:
         # run_on_folder(fpath, include_angle=True)
         run_on_folder(fpath, shuffled_pixels=-1)
+    fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/face_signal/faces_shuff_columns']
+    for fpath in fpaths:
+        # run_on_folder(fpath, include_angle=True)
+        run_on_folder(fpath, shuffled_pixels=-2)
+    fpaths = ['/share/wandell/data/reith/redo_experiments/shuffled_pixels/face_signal/faces_shuff_pixels']
+    for fpath in fpaths:
+        # run_on_folder(fpath, include_angle=True)
+        run_on_folder(fpath, shuffled_pixels=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 

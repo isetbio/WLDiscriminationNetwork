@@ -147,7 +147,7 @@ def pixel_blocks_specific_contrast(comparison_folder, sample_folders, selected_c
     else:
         metric = 'contrast'
     if fname == 'default':
-        fname = f'{selected_contrast}_selected_contrast_training_sample_comparison_new'
+        fname = f'{selected_contrast}_selected_contrast_training_sample_comparison_nolegend_lw'
     if plot_style == 'default':
         line_style = line_styler()
     else:
@@ -157,7 +157,7 @@ def pixel_blocks_specific_contrast(comparison_folder, sample_folders, selected_c
     plt.xscale('log')
     # plt.yscale('log')
     plt.xlabel('Training samples used')
-    plt.ylabel('dprime')
+    plt.ylabel('d-prime')
     train_size = []
     resnet_vals = []
     svm_vals = []
@@ -190,18 +190,18 @@ def pixel_blocks_specific_contrast(comparison_folder, sample_folders, selected_c
     svm_vals = np.array(svm_vals)[sort_idxs]
     resnet_vals = np.array(resnet_vals)[sort_idxs]
     oo_vals = np.array(oo_vals)[sort_idxs]
-
+    lw = 2.5
     #plt.title(f"ResNet18 performance for varying training set sizes")
     if include_oo:
         if isinstance(line_style, types.GeneratorType):
             plt.plot(train_size, oo_vals, label='Ideal Observer for reference', linestyle=next(line_style))
         else:
-            plt.plot(train_size, oo_vals, label='Ideal Observer for reference', linestyle=line_style)
+            plt.plot(train_size, oo_vals, label='Ideal Observer for reference', linestyle=line_style, linewidth=lw)
     if include_nn:
         if isinstance(line_style, types.GeneratorType):
             plt.plot(train_size, resnet_vals, label='ResNet18', linestyle=next(line_style))
         else:
-            plt.plot(train_size, resnet_vals, label='ResNet18', linestyle=line_style)
+            plt.plot(train_size, resnet_vals, label='ResNet18', linestyle=line_style, linewidth=lw)
     if include_svm:
         svm_vals = get_svm_vals(selected_contrast)
         svm_vals = [[val] for val in svm_vals]
@@ -209,11 +209,11 @@ def pixel_blocks_specific_contrast(comparison_folder, sample_folders, selected_c
         if isinstance(line_style, types.GeneratorType):
             plt.plot(train_size, svm_vals, label='Support Vector Machine', linestyle=next(line_style))
         else:
-            plt.plot(train_size, svm_vals, label='Support Vector Machine', linestyle=line_style)
+            plt.plot(train_size, svm_vals, label='Support Vector Machine', linestyle=line_style, linewidth=lw)
 
     out_path = os.path.dirname(sample_folders[0])
     # plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
-    plt.legend(frameon=True, loc='best', fontsize='small')
+    # plt.legend(frameon=True, loc='best', fontsize='small', framealpha=0.8)
     fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
     # fig.show()
     print('done!')

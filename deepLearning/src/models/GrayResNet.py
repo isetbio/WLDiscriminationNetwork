@@ -35,3 +35,8 @@ class GrayResnet101(models.ResNet):
         # x = self.drop1(x)
         # x = self.extraFc2(x)
         return F.log_softmax(x, dim=1)
+
+
+if __name__ == '__main__':
+    test = GrayResnet18(2)
+    print('nice')

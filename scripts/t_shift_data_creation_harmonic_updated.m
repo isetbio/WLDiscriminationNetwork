@@ -28,11 +28,12 @@
 
 % Values to set
 superOutputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_phase_shift/';
-superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_shift\';
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_lines_shift_new_freq\';
 mkdir(superOutputFolder);
-numSamples = 2;
+numSamples = 1;
 % frequencies = 1;
-frequencyValues = round(logspace(log10(1), log10(200), 12));
+% frequencyValues = round(logspace(log10(1), log10(200), 12));
+frequencyValues = round(logspace(log10(1), log10(100), 8));
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = 0.1;
 contrastFreqPairs = [];

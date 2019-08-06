@@ -24,7 +24,7 @@ sensor = sensorSet(sensor,'noise flag',1);
 %% Create data variables
 
 shiftValues = 0;
-nImages = (length(scanAngle)+1)*(length(scanFreq)+1)*length(scanContrast)*length(shiftValues)*numSamples;
+nImages = (length(scanAngle)+1)*(length(scanFreq))*length(scanContrast)*length(shiftValues)*numSamples;
 
 % With noise (for each frequency + no signal)
 imgNoise = zeros(256,256, nImages);
@@ -43,8 +43,8 @@ noNoiseImgPhase = zeros(length(scanFreq)*length(shiftValues)+1, 1);
 
 %% Run a loop over all frequencies (1), all contrast strengths (1) and over the number of samples
 k = 1;
-p.row = 256;
-p.col = 256;
+p.row = 512;
+p.col = 512;
 originalPhase = p.ph;
 for cc = 1:length(scanContrast)
     p.contrast = scanContrast(cc);
@@ -70,7 +70,7 @@ for cc = 1:length(scanContrast)
                 imgNoise(:,:,k) = sensorGet(sensor, 'electrons');
                 imgNoiseFreqs(k) = p.freq;
                 imgNoiseContrasts(k) = p.contrast;
-                imgNoisePhases(k) = p.ph;
+                imgNoisePhases(k) = p.ph-originalPhase;
                 imgNoiseAngles(k) = p.ang/pi;
 
                 % Calculate without noise

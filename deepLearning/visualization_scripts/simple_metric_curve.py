@@ -51,12 +51,12 @@ def visualize_result_data(folder_path, shift=False, angle=False, include_oo=True
     # plt.grid(which='both')
     plt.xscale('log')
     if shift:
-        plt.xlabel('shift in \u03C0')
+        plt.xlabel('Shift in \u03C0')
     elif angle:
-        plt.xlabel('angle in \u03C0')
+        plt.xlabel('Angle in \u03C0')
     else:
-        plt.xlabel(metric)
-    plt.ylabel('dprime')
+        plt.xlabel('Contrast')
+    plt.ylabel('d-prime')
     # num = folder_path.split('_')[-1]
     if title == 'default':
         title = f"Harmonic frequency of {frequency} performance for various {metric} values"
@@ -95,6 +95,23 @@ def visualize_result_data(folder_path, shift=False, angle=False, include_oo=True
 
 if __name__ == '__main__':
 
+    paths = [r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\face_signal\faces_shuff_columns',
+             r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\face_signal\faces_shuff_rows',
+             r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\face_signal\faces_shuff_pixels']
+    subfolders = []
+    for pa in paths:
+        folders = [p.path for p in os.scandir(pa) if p.is_dir()]
+        subfolders.extend(folders)
+
+    for p in paths:
+        visualize_result_data(p, line_style='-', fname=f"{os.path.basename(p)}_performance")
+
+
+r'''
+Past runs:
+#############################################################
+if __name__ == '__main__':
+
     paths = [r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\cellular_automaton\class_2',
              r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\cellular_automaton\class_3']
     subfolders = []
@@ -104,10 +121,6 @@ if __name__ == '__main__':
 
     for p in subfolders:
         visualize_result_data(p, line_style='-', fname=f"{os.path.basename(p)}_performance")
-
-
-r'''
-Past runs:
 ##############################################################
 if __name__ == '__main__':
     paths = [r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\shuffled_columns']

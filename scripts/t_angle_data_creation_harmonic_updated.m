@@ -29,8 +29,8 @@
 
 % frequencyVals = unique(round(logspace(0, log(50)/log(10), 20)));
 % frequencyVals = 1;
-frequencyVals = round(logspace(log10(1), log10(200), 12));
-superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_angle\';
+frequencyVals = round(logspace(log10(1), log10(100), 8));
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_lines_angle_new_freq_test\';
 
 % frequencyVals = 1;
 for f = 1:length(frequencyVals)
@@ -38,7 +38,7 @@ for f = 1:length(frequencyVals)
     freq = frequencyVals(f);
     outputFolder = [superOutputFolder sprintf('harmonic_frequency_of_%s', string(freq))];
     mkdir(outputFolder);
-    numSamples = 2;
+    numSamples = 1;
     frequencies = freq;
     % contrastValues = [0.0003, 0.0002, 0.0004];
     contrastValues = 0.1;
@@ -47,6 +47,9 @@ for f = 1:length(frequencyVals)
     % outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_rotation/';
     % This creates the resulting datasets
     for an = 1:length(angleValues)
+        if an == 12
+            disp('12 is a holy number');
+        end
         fprintf('starting at %s\n', datetime('now'))
         contrast = contrastValues;
         angle = angleValues(an);

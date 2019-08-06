@@ -28,16 +28,17 @@
 
 % Values to set
 % outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_contrasts';
-superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_200\';
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_lines_contrast_new_freq\';
 mkdir(superOutputFolder);
 numSamples = 1;
 frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = logspace(-5, -1.7, 12);
-contrastGrowth = contrastValues(12)/contrastValues(11);
-contrastValues = [contrastValues contrastValues(12)*contrastGrowth contrastValues(12)*contrastGrowth*contrastGrowth];
+% contrastGrowth = contrastValues(12)/contrastValues(11);
+% contrastValues = [contrastValues contrastValues(12)*contrastGrowth contrastValues(12)*contrastGrowth*contrastGrowth];
 contrastFreqPairs = [];
-frequencyValues = round(logspace(log10(1), log10(200), 12));
+% frequencyValues = round(logspace(log10(1), log10(200), 12));
+frequencyValues = round(logspace(log10(1), log10(100), 8));
 % floatFrequencyValues = logspace(log10(1), log10(200), 12);
 % frequencyGrowthVal = floatFrequencyValues(12)/floatFrequencyValues(11);
 % frequencyValues = [frequencyValues frequencyValues(12)*frequencyGrowthVal];

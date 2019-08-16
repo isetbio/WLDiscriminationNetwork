@@ -62,27 +62,15 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     time.sleep(60)
     print("done!")
 
-
 if __name__ == '__main__':
-    # adjust shift/angle values for lines experiment
+    # disk mtf calculation. size is in pixel
     full_start = time.time()
-    super_path = '/share/wandell/data/reith/redo_experiments/lines_mtf_experiments/mtf_lines_shift_new_freq_updated_values'
+    super_path = '/share/wandell/data/reith/redo_experiments/disks_mtf_experiment/disk_more_contrast'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]))
     for fpath in fpaths:
-        run_on_folder(fpath, include_shift=True)
-    super_path = '/share/wandell/data/reith/redo_experiments/lines_mtf_experiments/mtf_lines_angle_new_freq_updated_values'
-    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
-    fpaths.sort(key=lambda x: int(x.split('_')[-1]))
-    for fpath in fpaths:
-        run_on_folder(fpath, include_angle=True)
-    # super_path = '/share/wandell/data/reith/redo_experiments/lines_mtf_experiments/mtf_lines_contrast_new_freq'
-    # fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
-    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
-    # for fpath in fpaths:
-    #     run_on_folder(fpath)
+        run_on_folder(fpath)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
-
 
 r"""
 LATER
@@ -116,6 +104,27 @@ r"""
 #####################################################################
 Older runs for documentation purposes..
 #####################################################################
+
+if __name__ == '__main__':
+    # adjust shift/angle values for lines experiment
+    full_start = time.time()
+    super_path = '/share/wandell/data/reith/redo_experiments/lines_mtf_experiments/mtf_lines_shift_new_freq_updated_values'
+    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    for fpath in fpaths:
+        run_on_folder(fpath, include_shift=True)
+    super_path = '/share/wandell/data/reith/redo_experiments/lines_mtf_experiments/mtf_lines_angle_new_freq_updated_values'
+    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    for fpath in fpaths:
+        run_on_folder(fpath, include_angle=True)
+    # super_path = '/share/wandell/data/reith/redo_experiments/lines_mtf_experiments/mtf_lines_contrast_new_freq'
+    # fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    # for fpath in fpaths:
+    #     run_on_folder(fpath)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+############################################################################
 if __name__ == '__main__':
     # disk mtf calculation. size is in pixel
     full_start = time.time()

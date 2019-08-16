@@ -77,6 +77,18 @@ end
 % harmonics are (1 + sum(cos(2*pi*f*x + ph))
 % with the additional issue that X and Y can be at some angle.
 img = zeros(size(X));
+% the "normal" harmonic has two pixel columns, which are exactly the man
+% value, 1.0. We add a very small shift value two all lines, to avoid this
+% problem. if 1.0 values exist, the split over the mean value creates an
+% extremely easy problem..
+lines = true;
+angle = true;
+if lines
+    ph = ph + 1e-10;
+end
+if angle
+    ang = ang + 1e-10;
+end
 for ii=1:length(freq)
     img = img + ...
         contrast(ii)*g.*cos( 2*pi*freq(ii)*(cos(ang(ii))*X + sin(ang(ii))*Y) ...
@@ -84,11 +96,23 @@ for ii=1:length(freq)
 end
 img = img / length(freq);
 
-lines = false;
 if lines
     maxVal = max(img(:));
     minVal = min(img(:));
     meanVal = mean(img(:));
+    if not (length(img(img<=meanVal)) == length(img(img>meanVal)))        
+        disp("PROBLEMPROBLEMPROBLEM, use median..");
+        meanVal = median(img(:));
+        disp(length(img(img<=meanVal)) - length(img(img>meanVal)));
+        disp(length(img(img==meanVal)));
+        pause(1);
+        if not (length(img(img<=meanVal)) == length(img(img>meanVal)))        
+            error("median isn't the solution here..");
+        end
+        if not (length(img(img==meanVal)) == 0)
+            error("let's stop here..");
+        end
+    end
     img(img<=meanVal) = minVal;
     img(img>meanVal) = maxVal;
 end

@@ -12,10 +12,6 @@ eTime = 1e-3;
 
 %% Set up the camera sensor
 
-resolution = [256 256];
-p = harmonicP;
-eTime = 1e-3;
-% fov = 5;
 sensor = sensorCreate('monochrome');
 sensor = sensorSet(sensor,'size',resolution);
 sensor = sensorSet(sensor,'exp time',eTime);
@@ -42,8 +38,8 @@ noNoiseImgPhase = zeros(length(scanFreq)*length(shiftValues)+1, 1);
 
 %% Run a loop over all frequencies (1), all contrast strengths (1) and over the number of samples
 k = 1;
-p.row = 256;
-p.col = 256;
+p.row = 1024;
+p.col = 1024;
 originalPhase = p.ph;
 for cc = 1:length(scanContrast)
     p.contrast = scanContrast(cc);

@@ -36,6 +36,13 @@ frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
 contrastValues = logspace(-5, -1.7, 12);
 % contrastFreqPairs = [];
+contrastGrowth = contrastValues(4)/contrastValues(3);
+contrastValues = [contrastValues contrastValues(end)*contrastGrowth];
+contrastValues = [contrastValues contrastValues(end)*contrastGrowth];
+contrastValues = [contrastValues contrastValues(end)*contrastGrowth];
+contrastValues = [contrastValues contrastValues(end)*contrastGrowth];
+contrastValues = [contrastValues contrastValues(end)*contrastGrowth];
+contrastValues = [contrastValues contrastValues(end)*contrastGrowth];
 shiftValues = 0;
 
 % for i = 1:length(contrastValues)
@@ -51,7 +58,7 @@ for i = 1:length(imagePaths)
     imagePath = imagePath{1};
     [~,fname,~] = fileparts(imagePath);
     % outputFolder = ['/share/wandell/data/reith/circle_fun/h5_data/' fname '/'];
-    outputFolder = ['C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\' fname '\'];
+    outputFolder = ['C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\extra\' fname '\'];
     status = mkdir(outputFolder);
     for j = 1:length(contrastValues)
         % This creates the resulting datasets

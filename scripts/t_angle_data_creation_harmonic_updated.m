@@ -30,7 +30,7 @@
 % frequencyVals = unique(round(logspace(0, log(50)/log(10), 20)));
 % frequencyVals = 1;
 frequencyVals = round(logspace(log10(1), log10(100), 8));
-superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_lines_angle_new_freq_test\';
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_lines_angle_new_freq_updated_values\';
 
 % frequencyVals = 1;
 for f = 1:length(frequencyVals)
@@ -43,6 +43,8 @@ for f = 1:length(frequencyVals)
     % contrastValues = [0.0003, 0.0002, 0.0004];
     contrastValues = 0.1;
     angleValues = logspace(-5, -2, 12);
+    % lower angle values for lines (might be not needed)
+    % angleValues = logspace(-10, -5, 12);
     
     % outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_rotation/';
     % This creates the resulting datasets

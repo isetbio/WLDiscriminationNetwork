@@ -68,7 +68,7 @@ if __name__ == '__main__':
     full_start = time.time()
     super_path = '/share/wandell/data/reith/redo_experiments/lines_mtf_experiments/mtf_lines_shift_higher_scene_res'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
-    fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
     for fpath in fpaths:
         run_on_folder(fpath, shift=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")

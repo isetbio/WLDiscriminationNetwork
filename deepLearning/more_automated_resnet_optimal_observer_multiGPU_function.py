@@ -64,6 +64,19 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 
 if __name__ == '__main__':
+    # individual faces
+    full_start = time.time()
+    super_path = '/share/wandell/data/reith/redo_experiments/face_experiment/single_faces'
+    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    for fpath in fpaths:
+        run_on_folder(fpath)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+r"""
+LATER
+################################################################
+if __name__ == '__main__':
     # disk mtf calculation. size is in pixel
     full_start = time.time()
     super_path = '/share/wandell/data/reith/redo_experiments/lines_mtf_experiments/mtf_lines_shift_higher_scene_res'
@@ -72,10 +85,7 @@ if __name__ == '__main__':
     for fpath in fpaths:
         run_on_folder(fpath, include_shift=True)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
-
-r"""
-LATER
-################################################################
+##################################################################
 if __name__ == '__main__':
     full_start = time.time()
     # super_path = '/share/wandell/data/reith/redo_experiments/lines_mtf_experiments/mtf_lines_shift_new_freq'

@@ -85,7 +85,6 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
         if includeAngle:
             args.append(h5Dict['rotation'])
     else:
-        # round to .1f experiment:
         experiment = h5Dict['noNoiseImg']
         # rotate 90 degrees
         experiment = np.transpose(experiment, (0, 2, 1))

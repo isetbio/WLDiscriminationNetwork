@@ -244,15 +244,19 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
 
 if __name__ == '__main__':
-    mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_019952623150.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_019952623150.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq\harmonic_frequency_of_14\1_samplesPerClass_freq_14_contrast_0_019952623150.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\multi_face_result\2_samplesPerClass_freq_1_contrast_0_019952623150_image_multi_face_result.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\face_sq\2_samplesPerClass_freq_1_contrast_0_019952623150_image_face_sq.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\test_200_dummy2.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_shift\harmonic_frequency_of_124\2_samplesPerClass_freq_124_contrast_0_10_shift_0_100000000_pi.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\face_guy_green\2_samplesPerClass_freq_1_contrast_0_019952623150_image_face_guy_green.h5'
-    mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_angle_new_freq\harmonic_frequency_of_4/2_samplesPerClass_freq_4_contrast_0_10_angle_0_005336699_pi_oo.h5'
-    mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_lines_angle_new_freq\harmonic_frequency_of_1/1_samplesPerClass_freq_1_contrast_0_10_angle_0_005336699_pi_oo.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_angle_new_freq\harmonic_frequency_of_4/2_samplesPerClass_freq_4_contrast_0_10_angle_0_005336699_pi_oo.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_lines_angle_new_freq\harmonic_frequency_of_1/1_samplesPerClass_freq_1_contrast_0_10_angle_0_005336699_pi_oo.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\lines_mtf_experiments\mtf_lines_shift_new_freq_lower_values\harmonic_frequency_of_1\1_samplesPerClass_freq_100_contrast_0_10_shift_0_000000001_pi.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\viz_templates\harmonic_frequency_of_1\1_samplesPerClass_freq_52_contrast_0_10_angle_0_125000000_pi_oo.h5'
+    mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\circle_with_radius_100\2_samplesPerClass_freq_1_contrast_0_010000000000_image_circle_with_radius_100.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\disk_templates\circle_with_radius_100.h5'
     autoTrain_Resnet_optimalObserver(mat_path)
     # autoTrain_Resnet_optimalObserver(mat_path, force_balance=True, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=-2)

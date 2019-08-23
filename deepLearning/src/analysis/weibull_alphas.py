@@ -55,15 +55,15 @@ def get_alphas_fixed_beta(x, *ys):
     for i in range(len(ys)):
         ys[i][ys[i] == ys[i].max()] = np.max(ys)
         fits.append(FitWeibull(x, ys[i]/ys[i].max(), expectedMin=0))
-        print(f"fit{i} is {fits[i].params}.")
+        # print(f"fit{i} is {fits[i].params}.")
 
     fixed_beta = np.mean([fit.params[1] for fit in fits])
-    print(f"fixed_beta = {fixed_beta}")
+    # print(f"fixed_beta = {fixed_beta}")
     new_fits = []
     for i, y in enumerate(ys):
         new_fit = FixedBetaFitWeibull(fixed_beta, x, y/y.max(), expectedMin=0)
         new_fits.append(new_fit)
-        print(f"new_fit{i} is {new_fits[i].params}")
+        # print(f"new_fit{i} is {new_fits[i].params}")
     alphas = [new_fit.params[0] for new_fit in new_fits]
     return alphas, new_fits
 

@@ -94,8 +94,6 @@ def get_h5mean_data(pathMat, includeContrast=False, includeShift=False, includeA
             automaton_signal = pure_signal*automaton
             experiment[1] = automaton_signal + experiment[0]
 
-
-
         # experiment += 0.567891011121314
         if meanData_rounding is not None:
             print(f"Rounding mean_data to {meanData_rounding} decimals..")

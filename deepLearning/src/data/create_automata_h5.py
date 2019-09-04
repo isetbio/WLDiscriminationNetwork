@@ -38,8 +38,9 @@ def create_automata_h5(out_path, rule=110, a_class='noClass', size=(512, 512), f
             with h5py.File(save_path, 'w') as f:
                 f.create_dataset(name='noNoiseImg', data=noNoise)
                 f.create_dataset(name='imgNoise', data=noise)
-                f.create_dataset(name='noNoiseImgContrast', data=c)
-                f.create_dataset(name='imgNoiseContrasts', data=c)
+                f.create_dataset(name='noNoiseImgContrast', data=[0, c])
+                f.create_dataset(name='imgNoiseContrasts', data=[0, c])
+                f.create_dataset(name='noNoiseImgFreq', data=1)
 
 
 

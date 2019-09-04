@@ -5,6 +5,7 @@ import os
 import bisect
 import types
 from matplotlib.ticker import ScalarFormatter
+import itertools
 
 
 def line_styler(offset_default=2, style=(2, 2)):
@@ -33,7 +34,7 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
 
 
 def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=True, include_nn=True,
-                           include_svm=True, fname='default'):
+                           include_svm=True, fname='default', plot_style='default', use_legend=True):
     if shift:
         metric = 'shift'
     elif angle:
@@ -41,13 +42,25 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
     else:
         metric = 'contrast'
     if fname == 'default':
-        fname = f'harmonic_curve_detection_{metric}_comparison'
-    line_style = line_styler()
+        if not use_legend:
+            fname = f'harmonic_curve_detection_{metric}_comparison_no_legend'
+        else:
+            fname = f'harmonic_curve_detection_{metric}_comparison'
+
+    if plot_style == 'default':
+        line_style = line_styler()
+    else:
+        line_style=plot_style
     fig = plt.figure()
     # plt.grid(which='both')
     plt.xscale('log')
-    plt.xlabel(metric)
-    plt.ylabel('dprime')
+    if shift:
+        plt.xlabel('Shift in \u03C0')
+    elif angle:
+        plt.xlabel('Angle in \u03C0')
+    else:
+        plt.xlabel('Contrast')
+    plt.ylabel('d-prime')
     num = block_folder.split('_')[-1]
     plt.title(f"Harmonic frequency of {num} performance for various {metric} values")
     plt.grid(which='both')
@@ -63,27 +76,41 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
         oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by=metric)
         nn = get_csv_column(csv1, 'nn_dprime', sort_by=metric)
         contrasts = get_csv_column(csv1, metric, sort_by=metric)
-
-        if include_oo:
-            plt.plot(contrasts, oo, label='Ideal Observer'+appendix, linestyle=next(line_style))
-        if include_nn:
-            plt.plot(contrasts, nn, label='ResNet18'+appendix, linestyle=next(line_style))
-        epsilon = 0.001
-        if include_svm:
-            svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
-            if (svm>oo.max()-epsilon).any():
-                svm[svm >= (svm.max()-epsilon)] = oo.max()
-            plt.plot(contrasts, svm, label='Support Vector Machine'+appendix, linestyle=next(line_style))
+        if shift:
+            contrasts /= np.pi
+        if isinstance(line_style, types.GeneratorType):
+            if include_oo:
+                plt.plot(contrasts, oo, label='Ideal Observer'+appendix, linestyle=next(line_style))
+            if include_nn:
+                plt.plot(contrasts, nn, label='ResNet18'+appendix, linestyle=next(line_style))
+            epsilon = 0.001
+            if include_svm:
+                svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
+                if (svm>oo.max()-epsilon).any():
+                    svm[svm >= (svm.max()-epsilon)] = oo.max()
+                plt.plot(contrasts, svm, label='Support Vector Machine'+appendix, linestyle=line_style)
+        else:
+            if include_oo:
+                plt.plot(contrasts, oo, label='Ideal Observer'+appendix, linestyle=line_style)
+            if include_nn:
+                plt.plot(contrasts, nn, label='ResNet18'+appendix, linestyle=line_style)
+            epsilon = 0.001
+            if include_svm:
+                svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
+                if (svm>oo.max()-epsilon).any():
+                    svm[svm >= (svm.max()-epsilon)] = oo.max()
+                plt.plot(contrasts, svm, label='Support Vector Machine'+appendix, linestyle=line_style)
 
     out_path = block_folder
-    plt.legend(frameon=True, loc='upper left', fontsize='xx-small')
+    if use_legend:
+        plt.legend(frameon=True, loc='upper left', fontsize='small', framealpha=None)
     fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
     # fig.show()
     print('done!')
 
 
-def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, include_nn=True,
-             include_svm=True, plot_style='default'):
+def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, include_oo=True, include_nn=True,
+             include_svm=True, plot_style='default', calc_faces=False, calc_automata=False, calc_random=False):
     if plot_style == 'default':
         line_style = line_styler()
     else:
@@ -95,13 +122,23 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
 
     if shift:
         metric = 'shift'
+    elif angle:
+        metric = 'angle'
     else:
         metric = 'contrast'
 
     fname = f'Modulation_transfer_function_{metric}_values_frequencies_target_d_{target_d}_new'
-
+    counter = itertools.count(1)
     for p in mtf_paths:
-        freq = int(p.split('_')[-1])
+        # freq is disk radius for disks. Just a number for faces
+        if calc_faces:
+            freq = next(counter)
+        elif calc_automata:
+            freq = int(p.split('_')[-2])
+        elif calc_random:
+            freq = int(p.split('x')[-1])
+        else:
+            freq = int(p.split('_')[-1])
         freqs.append(freq)
         nn_dprimes.append(get_csv_column(os.path.join(p, 'results.csv'), 'nn_dprime', sort_by=metric))
         oo_dprimes.append(
@@ -116,12 +153,14 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
     oo_dprimes = oo_dprimes[sort_idxs]
 
     metric_values = get_csv_column(os.path.join(mtf_paths[0], 'results.csv'), metric, sort_by=metric)
+    if shift:
+        metric_values /= np.pi
     nn_bilinear_targets = []
     oo_bilinear_targets = []
 
     for i, dprimes in enumerate(nn_dprimes):
         right_target = bisect.bisect(dprimes, target_d)
-        if right_target >= 12:
+        if right_target >= len(dprimes):
             nn_freqs = np.delete(nn_freqs, i)
             continue
         left_target = right_target - 1
@@ -131,7 +170,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
 
     for i, dprimes in enumerate(oo_dprimes):
         right_target = bisect.bisect(dprimes, target_d)
-        if right_target >= 12:
+        if right_target >= len(dprimes):
             oo_freqs = np.delete(oo_freqs, i)
             continue
         left_target = right_target - 1
@@ -150,8 +189,19 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
     # plt.yscale('log')
     plt.xscale('log')
     plt.yscale('log')
-    plt.xlabel('Frequency (cycles/image)')
-    plt.ylabel('Contrast sensitivity')
+    if disks:
+        plt.xlabel('Radius of disk signal')
+    elif calc_random:
+        plt.xlabel('Block size')
+    else:
+        plt.xlabel('Frequency (cycles/image)')
+
+    if shift:
+        plt.ylabel("Phase shift sensitivity")
+    elif angle:
+        plt.ylabel("Angle sensitivity")
+    else:
+        plt.ylabel('Contrast sensitivity')
     plt.title(f'Modulation Transfer Function - target dprime is {target_d}')
     if isinstance(line_style, types.GeneratorType):
         plt.plot(oo_freqs, 1 / oo_bilinear_targets, label='Optimal Observer', linestyle=next(line_style))
@@ -164,8 +214,16 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
         svm_bilinear_targets = []
         svm_dprimes = []
         svm_freqs = []
+        counter2 = itertools.count(1)
         for p in mtf_paths:
-            freq = int(p.split('_')[-1])
+            if calc_faces:
+                freq= next(counter2)
+            elif calc_automata:
+                freq = int(p.split('_')[-2])
+            elif calc_random:
+                freq = int(p.split('x')[-1])
+            else:
+                freq = int(p.split('_')[-1])
             svm_freqs.append(freq)
             svm_dprimes.append(
                 get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by=metric))
@@ -175,7 +233,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
         svm_freqs = svm_freqs[sort_idxs]
         for i, dprimes in enumerate(svm_dprimes):
             right_target = bisect.bisect(dprimes, target_d)
-            if right_target >= 12:
+            if right_target >= len(dprimes):
                 svm_freqs = np.delete(svm_freqs, i)
                 continue
             left_target = right_target - 1
@@ -191,7 +249,6 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
     plt.legend(frameon=True, loc='best', fontsize='small')
     fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)    ###############
     ###############
-    ############333
     #
     #
     #
@@ -253,18 +310,54 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, include_oo=True, 
 
 
 if __name__ == "__main__":
-    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq') if f.is_dir()]
-    # for scope_folder in mtf_paths:
-    #     visualize_pixel_blocks(scope_folder)
-    mtf_calc(mtf_paths, target_d=1.5, plot_style='-')
-    mtf_calc(mtf_paths, target_d=2, plot_style='-')
-    mtf_calc(mtf_paths, target_d=1, plot_style='-')
-    mtf_calc(mtf_paths, target_d=3, plot_style='-')
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\single_faces') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\redo_automaton\matlab_contrasts\class3') if f.is_dir()]
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\different_patch_sizes') if f.is_dir()]
+
+    for scope_folder in mtf_paths:
+        visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True)
+    mtf_calc(mtf_paths, target_d=1.5, calc_random=True, plot_style='-', include_svm=True)
+    mtf_calc(mtf_paths, target_d=2, calc_random=True, plot_style='-', include_svm=True)
+    # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=3, calc_random=True, plot_style='-', include_svm=True)
 
 
 
 r"""
+C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined
+
 Older runs:
+########################################################################
+if __name__ == "__main__":
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq') if f.is_dir()]
+    for scope_folder in mtf_paths:
+        visualize_pixel_blocks(scope_folder, angle=True, plot_style='-', use_legend=False)
+    mtf_calc(mtf_paths, target_d=1.5, angle=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=2, angle=True, plot_style='-')
+    # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=3, angle=True, plot_style='-')
+########################################################################
+if __name__ == "__main__":
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq') if f.is_dir()]
+    for scope_folder in mtf_paths:
+        visualize_pixel_blocks(scope_folder, shift=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=1.5, shift=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=2, shift=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=1, shift=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=3, shift=True, plot_style='-')
+#######################################################################
+if __name__ == "__main__":
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]
+    for scope_folder in mtf_paths:
+        visualize_pixel_blocks(scope_folder)
+    mtf_calc(mtf_paths, target_d=1.5, plot_style='-')
+    mtf_calc(mtf_paths, target_d=2, plot_style='-')
+    mtf_calc(mtf_paths, target_d=1, plot_style='-')
+    mtf_calc(mtf_paths, target_d=3, plot_style='-')
 ########################################################################
 if __name__ == "__main__":
     mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_shift') if f.is_dir()]

@@ -64,18 +64,19 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 
 if __name__ == '__main__':
-    # automata
+    # shuffling
     full_start = time.time()
     # super_path = '/share/wandell/data/reith/redo_experiments/redo_automaton/matlab_contrasts'
     # fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     # # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
     # for fpath in fpaths:
     #     run_on_folder(fpath)
-    super_path = '/share/wandell/data/reith/redo_experiments/redo_automaton/plain_automata'
+    super_path = '/share/wandell/data/reith/redo_experiments/shuffled_pixels/redo_shuffle_blocks'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
-    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    fpaths.sort(key=lambda x: int(x.split('x')[-1]))
     for fpath in fpaths:
-        run_on_folder(fpath)
+        s_pixels = int(fpath.split('x')[-1])
+        run_on_folder(fpath, shuffled_pixels=s_pixels)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 r"""
@@ -85,6 +86,21 @@ if __name__ == '__main__':
     # individual faces
     full_start = time.time()
     super_path = '/share/wandell/data/reith/redo_experiments/face_experiment/single_faces'
+    fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    for fpath in fpaths:
+        run_on_folder(fpath)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+###################################################################
+if __name__ == '__main__':
+    # automata
+    full_start = time.time()
+    # super_path = '/share/wandell/data/reith/redo_experiments/redo_automaton/matlab_contrasts'
+    # fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
+    # # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
+    # for fpath in fpaths:
+    #     run_on_folder(fpath)
+    super_path = '/share/wandell/data/reith/redo_experiments/redo_automaton/plain_automata'
     fpaths = [p.path for p in os.scandir(super_path) if p.is_dir()]
     # fpaths.sort(key=lambda x: int(x.split('_')[-1]))
     for fpath in fpaths:

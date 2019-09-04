@@ -1,7 +1,7 @@
 from deepLearning.src.models.resnet_train_test import train_poisson, test
 from deepLearning.src.models.GrayResNet import GrayResnet18, GrayResnet101
 from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel, calculate_dprime
-from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader, PoissonNoiseLoaderClass
+from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader, PoissonNoiseLoaderClass, shuffle_pixels as shuffle_pixels_func
 from deepLearning.src.data.logger import Logger, CsvWriter
 from deepLearning.src.models.support_vector_machine import score_svm
 import torch
@@ -23,10 +23,12 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,
                                      shuffled_pixels=0, shuffle_scope=-1, test_eval=True, random_seed_nn=True, train_set_size=-1,
-                                     test_size=5000, shuffle_portion=-1, ca_rule=-1, force_balance=False):
+                                     test_size=5000, shuffle_portion=-1, ca_rule=-1, force_balance=False,
+                                     same_test_data_shuff_pixels=True):
 
 
     # relevant variables
+    shuffled_pixels_backup = 0
     startTime = time.time()
     print(device, pathMat)
     if device is not None:
@@ -37,6 +39,12 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
     outPath = os.path.dirname(pathMat)
     fileName = os.path.basename(pathMat).split('.')[0]
     sys.stdout = Logger(f"{os.path.join(outPath, fileName)}_log.txt")
+    # We want to add the same seeded poisson noise. We implement this by first getting the same meanData template
+    # and add the seeded poisson noise. We then shuffle all test Data with the same mask.
+    if same_test_data_shuff_pixels and (shuffled_pixels != 0):
+        shuffled_pixels_backup = shuffled_pixels
+        shuffled_pixels = False
+
     if include_shift:
         meanData, meanDataLabels, dataContrast, dataShift = get_h5mean_data(pathMat, includeContrast=True, includeShift=True,
                                                                             them_cones=them_cones, separate_rgb=separate_rgb,
@@ -75,8 +83,17 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         train_test_log = [TrainWrt, TestWrt]
     else:
         train_test_log = None
-    testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=True,
-                                                        force_balance=force_balance)
+    if same_test_data_shuff_pixels and shuffled_pixels_backup != 0:
+        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=True,
+                                                            force_balance=force_balance)
+        testDataFull = shuffle_pixels_func(testDataFull, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
+        # also shuffle mean data. As the shuffle mask is seeded, we simple call the shuffle function again..
+        meanData = shuffle_pixels_func(meanData, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
+    else:
+        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=True,
+                                                            force_balance=force_balance)
+
+
     #normalization values
     mean_norm = meanData.mean()
     std_norm = testDataFull.std()
@@ -245,7 +262,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
 if __name__ == '__main__':
     # mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_019952623150.h5'
-    # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq\harmonic_frequency_of_14\1_samplesPerClass_freq_14_contrast_0_019952623150.h5'
+    mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq\harmonic_frequency_of_14\1_samplesPerClass_freq_14_contrast_0_019952623150.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\multi_face_result\2_samplesPerClass_freq_1_contrast_0_019952623150_image_multi_face_result.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\face_sq\2_samplesPerClass_freq_1_contrast_0_019952623150_image_face_sq.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\test_200_dummy2.h5'
@@ -255,9 +272,10 @@ if __name__ == '__main__':
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_lines_angle_new_freq\harmonic_frequency_of_1/1_samplesPerClass_freq_1_contrast_0_10_angle_0_005336699_pi_oo.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\lines_mtf_experiments\mtf_lines_shift_new_freq_lower_values\harmonic_frequency_of_1\1_samplesPerClass_freq_100_contrast_0_10_shift_0_000000001_pi.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\viz_templates\harmonic_frequency_of_1\1_samplesPerClass_freq_52_contrast_0_10_angle_0_125000000_pi_oo.h5'
-    mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\circle_with_radius_100\2_samplesPerClass_freq_1_contrast_0_010000000000_image_circle_with_radius_100.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\circle_with_radius_100\2_samplesPerClass_freq_1_contrast_0_010000000000_image_circle_with_radius_100.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\multi_face_result\2_samplesPerClass_freq_1_contrast_0_019952623150_image_multi_face_result.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\disk_templates\circle_with_radius_100.h5'
-    autoTrain_Resnet_optimalObserver(mat_path)
+    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=50, test_size=15)
     # autoTrain_Resnet_optimalObserver(mat_path, force_balance=True, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True, shuffle_scope=100, train_set_size=150, oo=False, svm=False, test_size=60, train_nn=True, shuffle_portion=2000)

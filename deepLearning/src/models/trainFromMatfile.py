@@ -255,8 +255,8 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         print(f'Wrote results to {resultCSV}')
         if lock is not None:
             lock.release()
-        endTime = time.time()
 
+    endTime = time.time()
     print(f"done! It took {str(datetime.timedelta(seconds=endTime-startTime))} hours:min:seconds")
     sys.stdout = sys.stdout.revert()
 

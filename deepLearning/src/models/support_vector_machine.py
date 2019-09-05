@@ -61,6 +61,6 @@ if __name__ == '__main__':
         path_mat = '/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_1/5_samplesPerClass_freq_1_contrast_oo_0_000414616956.h5'
     meanData, meanDataLabels, dataMetric = get_h5mean_data(path_mat, includeContrast=True)
     sample_numbers = np.logspace(np.log10(500), np.log10(50000), num=15).astype(np.int)
-    test_data, test_labels = poisson_noise_loader(meanData, size=20, numpyData=True)
-    for num in sample_numbers:
-        get_svm_accuracy(path_mat, test_data, test_labels, num_samples=num, includeContrast=True)
+    # test_data, test_labels = poisson_noise_loader(meanData, size=20, numpyData=True)
+    # for num in sample_numbers:
+    #     get_svm_accuracy(path_mat, test_data, test_labels, num_samples=num, includeContrast=True)

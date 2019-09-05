@@ -84,13 +84,13 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
     else:
         train_test_log = None
     if same_test_data_shuff_pixels and shuffled_pixels_backup != 0:
-        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=20,
+        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=42,
                                                             force_balance=force_balance)
         testDataFull = shuffle_pixels_func(testDataFull, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
         # also shuffle mean data. As the shuffle mask is seeded, we simple call the shuffle function again..
         meanData = shuffle_pixels_func(meanData, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
     else:
-        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=20,
+        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=42,
                                                             force_balance=force_balance)
 
 
@@ -158,7 +158,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
     if train_nn:
         if random_seed_nn:
-            torch.random.manual_seed(42)
+            torch.random.manual_seed(22)
         if NetClass is None:
             if deeper_pls:
                 Net = GrayResnet101(dimOut)

@@ -150,7 +150,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         #                                  'meanData_rounding': meanData_rounding, 'shuffled_pixels': shuffled_pixels, 'includeAngle': include_angle,
         #                                  'includeShift': include_shift}
         #     score_svm(pathMat, lock, **kwords)
-        svm_process = mp.Process(target=score_svm, args=[pathMat, lock],
+        svm_process = mp.Process(target=score_svm, args=[pathMat, lock, testDataFull, testLabelsFull],
                                  kwargs={'them_cones': them_cones, 'includeContrast': include_contrast_svm, 'separate_rgb': separate_rgb, 'metric': metric_svm,
                                          'meanData_rounding': meanData_rounding, 'shuffled_pixels': shuffled_pixels, 'includeAngle': include_angle,
                                          'includeShift': include_shift})

@@ -220,41 +220,42 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
     print(f"Optimal observer d index is {d2}")
     print(f"Theoretical d index is {d1}")
 
-    if lock is not None:
-        lock.acquire()
-    resultCSV = os.path.join(outPath, "results.csv")
-    file_exists = os.path.isfile(resultCSV)
+    if train_nn or oo:
+        if lock is not None:
+            lock.acquire()
+        resultCSV = os.path.join(outPath, "results.csv")
+        file_exists = os.path.isfile(resultCSV)
 
-    with open(resultCSV, 'a') as csvfile:
-        if not include_shift and not include_angle:
-            headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'nn_dprime']
-            writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
+        with open(resultCSV, 'a') as csvfile:
+            if not include_shift and not include_angle:
+                headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'nn_dprime']
+                writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
 
-            if not file_exists:
-                writer.writeheader()  # file doesn't exist yet, write a header
+                if not file_exists:
+                    writer.writeheader()  # file doesn't exist yet, write a header
 
-            writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': max(dataContrast).astype(np.float64), 'nn_dprime': nn_dprime})
-        elif include_shift:
-            headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'shift', 'nn_dprime']
-            writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
+                writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': max(dataContrast).astype(np.float64), 'nn_dprime': nn_dprime})
+            elif include_shift:
+                headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'shift', 'nn_dprime']
+                writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
 
-            if not file_exists:
-                writer.writeheader()  # file doesn't exist yet, write a header
+                if not file_exists:
+                    writer.writeheader()  # file doesn't exist yet, write a header
 
-            writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': max(dataContrast).astype(np.float32), 'shift': dataShift[1].astype(np.float64), 'nn_dprime': nn_dprime})
-        elif include_angle:
-            headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'angle', 'nn_dprime']
-            writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
+                writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': max(dataContrast).astype(np.float32), 'shift': dataShift[1].astype(np.float64), 'nn_dprime': nn_dprime})
+            elif include_angle:
+                headers = ['ResNet_accuracy', 'optimal_observer_accuracy', 'theoretical_d_index', 'optimal_observer_d_index', 'contrast', 'angle', 'nn_dprime']
+                writer = csv.DictWriter(csvfile, delimiter=';', lineterminator='\n',fieldnames=headers)
 
-            if not file_exists:
-                writer.writeheader()  # file doesn't exist yet, write a header
+                if not file_exists:
+                    writer.writeheader()  # file doesn't exist yet, write a header
 
-            writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': max(dataContrast).astype(np.float32), 'angle': dataAngle[1].astype(np.float64), 'nn_dprime': nn_dprime})
+                writer.writerow({'ResNet_accuracy': testAcc, 'optimal_observer_accuracy': accOptimal, 'theoretical_d_index': d1, 'optimal_observer_d_index': d2, 'contrast': max(dataContrast).astype(np.float32), 'angle': dataAngle[1].astype(np.float64), 'nn_dprime': nn_dprime})
 
-    print(f'Wrote results to {resultCSV}')
-    if lock is not None:
-        lock.release()
-    endTime = time.time()
+        print(f'Wrote results to {resultCSV}')
+        if lock is not None:
+            lock.release()
+        endTime = time.time()
 
     print(f"done! It took {str(datetime.timedelta(seconds=endTime-startTime))} hours:min:seconds")
     sys.stdout = sys.stdout.revert()

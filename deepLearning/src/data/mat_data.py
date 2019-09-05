@@ -206,9 +206,12 @@ def mat_data_loader(data, labels, batchSize, shuffle=True):
         j += batchSize
 
 
-def poisson_noise_loader(meanData, size, numpyData=False, seed=False, force_balance=False):
-    if seed:
-        np.random.seed(42)
+def poisson_noise_loader(meanData, size, numpyData=False, seed=-1, force_balance=False):
+    if seed != -1:
+        if numpyData:
+            np.random.seed(seed)
+        else:
+            torch.random.manual_seed(seed)
     if numpyData:
         # more data means all data after #0 are signal cases
         data = []

@@ -19,7 +19,7 @@ import multiprocessing as mp
 
 
 def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=True, include_shift=False,
-                                     deeper_pls=False, oo=True, svm=False, NetClass=None, NetClass_param=None,
+                                     deeper_pls=False, oo=True, svm=True, NetClass=None, NetClass_param=None,
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,
                                      shuffled_pixels=0, shuffle_scope=-1, test_eval=True, random_seed_nn=True, train_set_size=-1,
@@ -84,13 +84,13 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
     else:
         train_test_log = None
     if same_test_data_shuff_pixels and shuffled_pixels_backup != 0:
-        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=True,
+        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=42,
                                                             force_balance=force_balance)
         testDataFull = shuffle_pixels_func(testDataFull, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
         # also shuffle mean data. As the shuffle mask is seeded, we simple call the shuffle function again..
         meanData = shuffle_pixels_func(meanData, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
     else:
-        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=True,
+        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=42,
                                                             force_balance=force_balance)
 
 
@@ -275,7 +275,7 @@ if __name__ == '__main__':
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\circle_with_radius_100\2_samplesPerClass_freq_1_contrast_0_010000000000_image_circle_with_radius_100.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\multi_face_result\2_samplesPerClass_freq_1_contrast_0_019952623150_image_multi_face_result.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\disk_templates\circle_with_radius_100.h5'
-    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=50, test_size=15)
+    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=50, test_size=20, train_nn=False, oo=False)
     # autoTrain_Resnet_optimalObserver(mat_path, force_balance=True, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True, shuffle_scope=100, train_set_size=150, oo=False, svm=False, test_size=60, train_nn=True, shuffle_portion=2000)

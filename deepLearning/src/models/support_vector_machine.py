@@ -36,10 +36,10 @@ def get_svm_accuracy(path_mat, test_data, test_labels, num_samples=10000, lock=N
     meanData, meanDataLabels, dataMetric = get_h5mean_data(path_mat, **kwargs)
     if lock is not None:
         lock.release()
-    train_data, train_labels = poisson_noise_loader(meanData, size=num_samples, numpyData=True)
+    train_data, train_labels = poisson_noise_loader(meanData, size=num_samples, numpyData=True, seed=84)
     train_data = train_data.reshape(train_data.shape[0], -1)
     test_data = test_data.reshape(test_data.shape[0], -1)
-    svc = svm.SVC(kernel='linear', max_iter=1000, random_state=42)
+    svc = svm.SVC(kernel='linear', max_iter=1000, random_state=14)
     num_data = len(train_data)
     num_train = int(num_data)
     x_train, y_train = train_data, train_labels
@@ -54,7 +54,13 @@ def get_svm_accuracy(path_mat, test_data, test_labels, num_samples=10000, lock=N
 
 if __name__ == '__main__':
     print("starting out..")
-    path_mat = '/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_1/5_samplesPerClass_freq_1_contrast_oo_0_000414616956.h5'
+    windows_db = True
+    if windows_db:
+        path_mat = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks\experiment_patches_2x2\1_samplesPerClass_freq_1_contrast_oo_0_019952623150.h5'
+    else:
+        path_mat = '/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_1/5_samplesPerClass_freq_1_contrast_oo_0_000414616956.h5'
+    meanData, meanDataLabels, dataMetric = get_h5mean_data(path_mat, includeContrast=True)
     sample_numbers = np.logspace(np.log10(500), np.log10(50000), num=15).astype(np.int)
+    test_data, test_labels = poisson_noise_loader(meanData, size=20, numpyData=True)
     for num in sample_numbers:
-        get_svm_accuracy(path_mat, num_samples=num, includeShift=True)
+        get_svm_accuracy(path_mat, test_data, test_labels, num_samples=num, includeContrast=True)

@@ -16,7 +16,7 @@ def score_svm(h5_path, lock, test_data, test_labels, metric='contrast', num_samp
 def write_svm_csv(acc, dprime, metric, out_path, lock=None, metric_name='contrast', num_samples=10000):
     if lock is not None:
         lock.acquire()
-    svm_csv = os.path.join(out_path, "svm_results_deterministic.csv")
+    svm_csv = os.path.join(out_path, "svm_results_seeded.csv")
     file_exists = os.path.isfile(svm_csv)
 
     with open(svm_csv, 'a') as csv_file:

@@ -76,7 +76,7 @@ if __name__ == '__main__':
     fpaths.sort(key=lambda x: int(x.split('x')[-1]))
     for fpath in fpaths:
         s_pixels = int(fpath.split('x')[-1])
-        run_on_folder(fpath, shuffled_pixels=s_pixels)
+        run_on_folder(fpath, shuffled_pixels=s_pixels, train_nn=False, oo=False)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 r"""

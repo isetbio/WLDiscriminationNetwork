@@ -63,8 +63,9 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     time.sleep(60)
     print("done!")
 
+
 if __name__ == '__main__':
-    # shuffle columns
+    # shuffle columns and normal
     full_start = time.time()
     super_path = r'/share/wandell/data/reith/redo_experiments/shuffled_pixels/redo_columns'
     columns = glob(f"{super_path}/*columns*")

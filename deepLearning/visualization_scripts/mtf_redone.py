@@ -6,6 +6,7 @@ import bisect
 import types
 from matplotlib.ticker import ScalarFormatter
 import itertools
+from deepLearning.src.analysis. weibull_alphas import ScaledWeibull, get_weibull_interpolation
 
 
 def line_styler(offset_default=2, style=(2, 2)):
@@ -110,7 +111,8 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
 
 
 def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, include_oo=True, include_nn=True,
-             include_svm=True, plot_style='default', calc_faces=False, calc_automata=False, calc_random=False):
+             include_svm=True, plot_style='default', calc_faces=False, calc_automata=False, calc_random=False,
+             weibull_interpol=False):
     if plot_style == 'default':
         line_style = line_styler()
     else:
@@ -128,6 +130,8 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
         metric = 'contrast'
 
     fname = f'Modulation_transfer_function_{metric}_values_frequencies_target_d_{target_d}_new'
+    if weibull_interpol:
+        fname += '_weibull'
     counter = itertools.count(1)
     for p in mtf_paths:
         # freq is disk radius for disks. Just a number for faces
@@ -159,25 +163,31 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
     oo_bilinear_targets = []
 
     for i, dprimes in enumerate(nn_dprimes):
-        right_target = bisect.bisect(dprimes, target_d)
-        if right_target >= len(dprimes):
-            nn_freqs = np.delete(nn_freqs, i)
-            continue
-        left_target = right_target - 1
-        p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
-        interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
-        nn_bilinear_targets.append(interpolated_val)
+        if weibull_interpol:
+            nn_bilinear_targets.append(get_weibull_interpolation(metric_values, dprimes, target_d))
+        else:
+            right_target = bisect.bisect(dprimes, target_d)
+            if right_target >= len(dprimes):
+                nn_freqs = np.delete(nn_freqs, i)
+                continue
+            left_target = right_target - 1
+            p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
+            interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
+            nn_bilinear_targets.append(interpolated_val)
 
     for i, dprimes in enumerate(oo_dprimes):
-        right_target = bisect.bisect(dprimes, target_d)
-        if right_target >= len(dprimes):
-            oo_freqs = np.delete(oo_freqs, i)
-            continue
-        left_target = right_target - 1
-        p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
-        print(p_val, metric_values[left_target])
-        interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
-        oo_bilinear_targets.append(interpolated_val)
+        if weibull_interpol:
+            oo_bilinear_targets.append(get_weibull_interpolation(metric_values,dprimes, target_d))
+        else:
+            right_target = bisect.bisect(dprimes, target_d)
+            if right_target >= len(dprimes):
+                oo_freqs = np.delete(oo_freqs, i)
+                continue
+            left_target = right_target - 1
+            p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
+            print(p_val, metric_values[left_target])
+            interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
+            oo_bilinear_targets.append(interpolated_val)
 
     nn_bilinear_targets = np.array(nn_bilinear_targets)
     oo_bilinear_targets = np.array(oo_bilinear_targets)
@@ -232,14 +242,17 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
         svm_dprimes = svm_dprimes[sort_idxs]
         svm_freqs = svm_freqs[sort_idxs]
         for i, dprimes in enumerate(svm_dprimes):
-            right_target = bisect.bisect(dprimes, target_d)
-            if right_target >= len(dprimes):
-                svm_freqs = np.delete(svm_freqs, i)
-                continue
-            left_target = right_target - 1
-            p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
-            interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
-            svm_bilinear_targets.append(interpolated_val)
+            if weibull_interpol:
+                svm_bilinear_targets.append(get_weibull_interpolation(metric_values, dprimes, target_d))
+            else:
+                right_target = bisect.bisect(dprimes, target_d)
+                if right_target >= len(dprimes):
+                    svm_freqs = np.delete(svm_freqs, i)
+                    continue
+                left_target = right_target - 1
+                p_val = (target_d - dprimes[left_target]) / (dprimes[right_target] - dprimes[left_target])
+                interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
+                svm_bilinear_targets.append(interpolated_val)
         svm_bilinear_targets = np.array(svm_bilinear_targets)
         if isinstance(line_style, types.GeneratorType):
             plt.plot(svm_freqs, 1 / svm_bilinear_targets, label='Support Vector Machine', linestyle=next(line_style))
@@ -310,6 +323,23 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
 
 
 if __name__ == "__main__":
+
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks') if f.is_dir()]
+    # for scope_folder in mtf_paths:
+    #     visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True)
+    mtf_calc(mtf_paths, target_d=1.5, calc_random=True, plot_style='-', include_svm=True, weibull_interpol=True)
+    mtf_calc(mtf_paths, target_d=2, calc_random=True, plot_style='-', include_svm=True, weibull_interpol=True)
+    # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=3, calc_random=True, plot_style='-', include_svm=True, weibull_interpol=True)
+
+
+
+r"""
+C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined
+
+Older runs:
+########################################################################
+if __name__ == "__main__":
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined') if f.is_dir()]
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\single_faces') if f.is_dir()]
@@ -322,13 +352,6 @@ if __name__ == "__main__":
     mtf_calc(mtf_paths, target_d=2, calc_random=True, plot_style='-', include_svm=True)
     # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
     mtf_calc(mtf_paths, target_d=3, calc_random=True, plot_style='-', include_svm=True)
-
-
-
-r"""
-C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined
-
-Older runs:
 ########################################################################
 if __name__ == "__main__":
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]

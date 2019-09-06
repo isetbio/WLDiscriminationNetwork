@@ -1,7 +1,7 @@
 from deepLearning.src.models.resnet_train_test import train_poisson, test
 from deepLearning.src.models.GrayResNet import GrayResnet18, GrayResnet101
 from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel, calculate_dprime
-from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader, PoissonNoiseLoaderClass, shuffle_pixels as shuffle_pixels_func
+from deepLearning.src.data.mat_data import get_h5mean_data, poisson_noise_loader, PoissonNoiseLoaderClass, shuffle_pixels as shuffle_pixels_func, shuffle_1d
 from deepLearning.src.data.logger import Logger, CsvWriter
 from deepLearning.src.models.support_vector_machine import score_svm
 import torch
@@ -86,10 +86,15 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
     if same_test_data_shuff_pixels and shuffled_pixels_backup != 0:
         testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=42,
                                                             force_balance=force_balance)
-        testDataFull = shuffle_pixels_func(testDataFull, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
+        if shuffled_pixels_backup > 1:
+            testDataFull = shuffle_pixels_func(testDataFull, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
+            meanData = shuffle_pixels_func(meanData, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
+            shuffled_pixels = shuffled_pixels_backup
+        else:
+            testDataFull = shuffle_1d(testDataFull, dimension=shuffled_pixels_backup)
+            meanData = shuffle_1d(meanData, dimension=shuffled_pixels_backup)
+            shuffled_pixels = shuffled_pixels_backup
         # also shuffle mean data. As the shuffle mask is seeded, we simply call the shuffle function again..
-        meanData = shuffle_pixels_func(meanData, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
-        shuffled_pixels = shuffled_pixels_backup
     else:
         testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=42,
                                                             force_balance=force_balance)

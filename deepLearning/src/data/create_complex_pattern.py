@@ -26,7 +26,10 @@ if __name__ == '__main__':
     out_path = r'C:\Users\Fabian\Documents\data\automatons'
     for i in range(256):
         automaton = create_automaton(rule=i)
-        scipy.misc.imsave(f"{out_path}\\automaton_rule_{i}.png", automaton)
+        np.random.seed(41)
+        shuff_idxs = np.random.permutation(automaton.shape[1])
+        automaton = np.take(automaton, shuff_idxs, axis=1)
+        scipy.misc.imsave(f"{out_path}\\automaton_rule_{i}_shuff_cols.png", automaton)
     # image = create_automaton()
     # plt.imshow(image, cmap='gray')
     # print('done')

@@ -25,6 +25,7 @@ class FixedBetaFitWeibull(FitWeibull):
     essentially the same..
     """
     glob_beta = None
+
     def __init__(self, fixed_beta, *args, **kwargs):
         self.fixed_beta = fixed_beta
         FixedBetaFitWeibull.glob_beta = self.fixed_beta
@@ -40,6 +41,7 @@ class FixedBetaFitWeibull(FitWeibull):
         _chance = 0
         xx = alpha * (-np.log((1.0 - yy)/(1 - _chance))) ** (1.0/self.fixed_beta)
         return xx
+
 
 
 def get_alphas_fixed_beta(x, *ys):
@@ -66,4 +68,47 @@ def get_alphas_fixed_beta(x, *ys):
         # print(f"new_fit{i} is {new_fits[i].params}")
     alphas = [new_fit.params[0] for new_fit in new_fits]
     return alphas, new_fits
+
+
+class ScaledWeibull():
+    def __init__(self, xx, yy, y_max=-1, **kwargs):
+        self.xx = np.copy(xx)
+        self.yy = np.copy(yy)
+        if y_max != -1:
+            self.y_max = y_max
+        else:
+            self.y_max = yy.max()
+        self.yy /= self.y_max
+        self.WeibullFit = FitWeibull(self.xx, self.yy, expectedMin=0, **kwargs)
+
+    def interpol(self, target_dprime):
+        result = self.WeibullFit.inverse(target_dprime/self.y_max)
+        return result
+
+    def evaluate(self, xx=None):
+        if xx is None:
+            xx = self.xx
+        yy = self.WeibullFit.eval(xx)
+        return yy*self.y_max
+
+
+def get_weibull_interpolation(xx, yy, target_dprime):
+    # max y has to be scaled to 1
+    WB = ScaledWeibull(xx, yy)
+    result = WB.interpol(target_dprime)
+    return result
+
+
+if __name__ == '__main__':
+    dprimes = np.array([-0.07554976,  0.02006533, -0.08515377, -0.00879679,  0.02481237,
+                         0.04760913,  0.15243606,  0.61620849,  2.43833205,  4.78657647,
+                         6.7055888 ,  7.08037796])
+    metric_values = np.array([1.00000000e-05, 1.99526231e-05, 3.98107171e-05, 7.94328235e-05,
+                              1.58489319e-04, 3.16227766e-04, 6.30957344e-04, 1.25892541e-03,
+                              2.51188643e-03, 5.01187234e-03, 1.00000000e-02, 1.99526231e-02])
+    dprime_target = 1.5
+    SWeibull = ScaledWeibull(metric_values, dprimes, sems=1)
+    y_pred = SWeibull.evaluate(metric_values)
+    # interpolation = get_weibull_interpolation(metric_values, dprimes, dprime_target)
+    print('nice!')
 

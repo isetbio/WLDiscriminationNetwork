@@ -63,7 +63,23 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     time.sleep(60)
     print("done!")
 
+if __name__ == '__main__':
+    # shuffle columns
+    full_start = time.time()
+    super_path = r'/share/wandell/data/reith/redo_experiments/shuffled_pixels/redo_columns'
+    columns = glob(f"{super_path}/*columns*")
+    print(columns)
+    for fpath in columns:
+        run_on_folder(fpath, shuffled_pixels=-2)
+    normal = glob(f"{super_path}/*normal*")
+    print(normal)
+    for fpath in normal:
+        run_on_folder(fpath)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
+r"""
+LATER
+################################################################
 if __name__ == '__main__':
     # shuffling
     full_start = time.time()
@@ -79,10 +95,7 @@ if __name__ == '__main__':
         s_pixels = int(fpath.split('x')[-1])
         run_on_folder(fpath, shuffled_pixels=s_pixels, train_nn=False, oo=False)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
-
-r"""
-LATER
-################################################################
+###################################################################
 if __name__ == '__main__':
     # individual faces
     full_start = time.time()

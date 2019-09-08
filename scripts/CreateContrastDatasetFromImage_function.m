@@ -10,8 +10,8 @@ saveFlag = true;
 
 resolution = [256 256];
 p = harmonicP;
-p.col = 512;
-p.row = 512;
+p.col = 256;
+p.row = 256;
 eTime = 1e-3;
 % fov = 5;
 sensor = sensorCreate('monochrome');
@@ -60,6 +60,8 @@ for cc = 0:length(scanContrast)
                 p.ph = originalPhase;
             end
             scene = createSceneFromImage(p, imagePath);
+            % adjust scene fov to sensor fov
+            scene = sceneSet(scene, 'fov', sensorGet(sensor, 'fov'));
             oi = oiCreate;
             oi = oiCompute(oi,scene);
             sensor = sensorSet(sensor,'noise flag',1);
@@ -95,8 +97,8 @@ end
 
 
 %% Crop
-imgNoise = imgNoise(11:248, 11:248,:);
-noNoiseImg = noNoiseImg(11:248, 11:248,:);
+% imgNoise = imgNoise(11:248, 11:248,:);
+% noNoiseImg = noNoiseImg(11:248, 11:248,:);
 %% Save everything
 
 if(saveFlag)

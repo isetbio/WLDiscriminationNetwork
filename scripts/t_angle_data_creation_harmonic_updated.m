@@ -30,7 +30,7 @@
 % frequencyVals = unique(round(logspace(0, log(50)/log(10), 20)));
 % frequencyVals = 1;
 frequencyVals = round(logspace(log10(1), log10(100), 8));
-superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_lines_angle_new_freq_updated_values\';
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\viz_templates\';
 
 % frequencyVals = 1;
 for f = 1:length(frequencyVals)

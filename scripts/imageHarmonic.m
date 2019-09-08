@@ -50,6 +50,8 @@ if checkfields(parms,'freq'), freq = parms.freq; else freq = 1; parms.freq = fre
 if checkfields(parms,'ph'), ph = parms.ph; else ph = pi/2; parms.ph = ph; end
 if checkfields(parms,'row'), row = parms.row; else row = 64; parms.row = row; end
 if checkfields(parms,'col'), col = parms.col; else col = 64; parms.col = col; end
+if isfield(parms, 'signalGridSize'), dparms.signalGridSize = parms.signalGridSize; else dparms.signalGridSize=1; end
+if isfield(parms, 'signalLocation'), dparms.signalLocation = parms.signalLocation; else dparms.signalLocation=1; end
 
 % The Gabor Flag is a non-zero value that specifies the standard deviation
 % of the Gaussian as a fraction of the image size.  For example, if the
@@ -81,8 +83,8 @@ img = zeros(size(X));
 % value, 1.0. We add a very small shift value two all lines, to avoid this
 % problem. if 1.0 values exist, the split over the mean value creates an
 % extremely easy problem..
-lines = true;
-angle = true;
+lines = false;
+angle = false;
 if lines
     ph = ph + 1e-10;
 end
@@ -95,6 +97,20 @@ for ii=1:length(freq)
         + ph(ii)) + 1;
 end
 img = img / length(freq);
+
+gs = parms.signalGridSize;
+if gs > 1
+    % move the middle part to the specified location. Uncovered parts (by
+    % this movement) are set to the default value of 1.
+    newImg = ones(size(X));
+    signalPart = img-1;
+    for jj = 1:length(parms.signalLocation)
+        loc = parms.signalLocation(jj);
+        newImg = addSignalToLoc(loc, signalPart, newImg, parms);  
+    end
+    img = newImg;
+end
+
 
 if lines
     maxVal = max(img(:));

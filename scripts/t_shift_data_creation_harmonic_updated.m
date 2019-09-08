@@ -28,7 +28,7 @@
 
 % Values to set
 superOutputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_phase_shift/';
-superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\mtf_lines_shift_new_freq_higher_scene_res\';
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\viz_templates\';
 mkdir(superOutputFolder);
 numSamples = 1;
 % frequencies = 1;

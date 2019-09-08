@@ -28,7 +28,8 @@
 
 % Values to set
 
-imageDir = 'C:\Users\Fabian\Documents\data\faces\';
+imageDir = 'C:\Users\Fabian\Documents\data\faces\single_faces\';
+imageDir = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\redo_automaton\matlab_templates\';
 imageNames = dir([imageDir '*.png']);
 imageNames = dir([imageDir '*.h5']);
 imagePaths = fullfile(imageDir, {imageNames.name});
@@ -52,7 +53,7 @@ for i = 1:length(imagePaths)
     imagePath = imagePath{1};
     [~,fname,~] = fileparts(imagePath);
     % outputFolder = ['/share/wandell/data/reith/circle_fun/h5_data/' fname '/'];
-    outputFolder = ['C:\Users\Fabian\Documents\data\faces\' fname '\'];
+    outputFolder = ['C:\Users\Fabian\Documents\data\windows2rsync\windows_data\redo_automaton\matlab_contrastsiii\' fname '\'];
     status = mkdir(outputFolder);
     for j = 1:length(contrastValues)
         % This creates the resulting datasets

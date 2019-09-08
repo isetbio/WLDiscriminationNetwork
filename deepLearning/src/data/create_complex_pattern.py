@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 
 # creates a cellular automaton pattern (https://en.wikipedia.org/wiki/Cellular_automaton)
@@ -23,13 +24,22 @@ def create_automaton(rule=110, size=(238, 238), seed=42):
 if __name__ == '__main__':
     from matplotlib import pyplot as plt
     import scipy.misc
-    out_path = r'C:\Users\Fabian\Documents\data\automatons'
+    out_path = r'C:\Users\Fabian\Documents\data\automatons_cutouts'
+    os.makedirs(out_path, exist_ok=True)
+    shuffle_cols = False
+    cutout = 60
     for i in range(256):
         automaton = create_automaton(rule=i)
-        np.random.seed(41)
-        shuff_idxs = np.random.permutation(automaton.shape[1])
-        automaton = np.take(automaton, shuff_idxs, axis=1)
-        scipy.misc.imsave(f"{out_path}\\automaton_rule_{i}_shuff_cols.png", automaton)
+        if shuffle_cols:
+            np.random.seed(41)
+            shuff_idxs = np.random.permutation(automaton.shape[1])
+            automaton = np.take(automaton, shuff_idxs, axis=1)
+        if cutout > -1:
+            automaton = automaton[:cutout, :cutout]
+        if shuffle_cols:
+            scipy.misc.imsave(f"{out_path}\\automaton_rule_{i}_shuff_cols.png", automaton)
+        else:
+            scipy.misc.imsave(f"{out_path}\\automaton_rule_{i}.png", automaton)
     # image = create_automaton()
     # plt.imshow(image, cmap='gray')
     # print('done')

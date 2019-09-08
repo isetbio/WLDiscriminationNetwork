@@ -64,6 +64,16 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 
 if __name__ == '__main__':
+    full_start = time.time()
+    fpaths = '/share/wandell/data/reith/redo_experiments/multiple_locations/harmonic_frequency_of_1_loc_1_signalGridSize_1 '
+    for fpath in fpaths:
+        run_on_folder(fpath)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+r"""
+LATER
+################################################################
+if __name__ == '__main__':
     # shuffle columns and normal
     full_start = time.time()
     super_path = r'/share/wandell/data/reith/redo_experiments/shuffled_pixels/redo_columns'
@@ -76,10 +86,7 @@ if __name__ == '__main__':
     for fpath in normal:
         run_on_folder(fpath)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
-
-r"""
-LATER
-################################################################
+####################################################################
 if __name__ == '__main__':
     # shuffling
     full_start = time.time()

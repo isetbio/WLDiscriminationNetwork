@@ -235,8 +235,12 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
             else:
                 freq = int(p.split('_')[-1])
             svm_freqs.append(freq)
-            svm_dprimes.append(
-                get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by=metric))
+            try:
+                svm_dprimes.append(
+                    get_csv_column(os.path.join(p, 'svm_results_seeded.csv'), 'dprime_accuracy', sort_by=metric))
+            except:
+                svm_dprimes.append(
+                    get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by=metric))
         svm_dprimes, svm_freqs = np.array(svm_dprimes), np.array(svm_freqs)
         sort_idxs = np.argsort(svm_freqs)
         svm_dprimes = svm_dprimes[sort_idxs]
@@ -323,14 +327,28 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
 
 
 if __name__ == "__main__":
-
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\single_faces') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\redo_automaton\matlab_contrasts\class3') if f.is_dir()]
     mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks') if f.is_dir()]
+
     # for scope_folder in mtf_paths:
     #     visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True)
-    mtf_calc(mtf_paths, target_d=1.5, calc_random=True, plot_style='-', include_svm=True, weibull_interpol=True)
-    mtf_calc(mtf_paths, target_d=2, calc_random=True, plot_style='-', include_svm=True, weibull_interpol=True)
+    mtf_calc(mtf_paths, target_d=1.5, calc_random=True, plot_style='-', include_svm=True)
+    mtf_calc(mtf_paths, target_d=2, calc_random=True, plot_style='-', include_svm=True)
     # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
-    mtf_calc(mtf_paths, target_d=3, calc_random=True, plot_style='-', include_svm=True, weibull_interpol=True)
+    mtf_calc(mtf_paths, target_d=3, calc_random=True, plot_style='-', include_svm=True)
+
+# if __name__ == "__main__":
+#
+#     mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_columns') if f.is_dir()]
+#     # for scope_folder in mtf_paths:
+#     #     visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True)
+#     mtf_calc(mtf_paths, target_d=1.5, plot_style='-', include_svm=True)
+#     mtf_calc(mtf_paths, target_d=2, plot_style='-', include_svm=True)
+#     # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
+#     mtf_calc(mtf_paths, target_d=3, plot_style='-', include_svm=True)
 
 
 

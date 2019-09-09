@@ -47,8 +47,10 @@ def get_svm_accuracy(path_mat, test_data, test_labels, num_samples=10000, lock=N
     svc.fit(x_train, y_train)
     preds = svc.predict(x_test)
     acc = np.mean(preds == y_test)
-    dprime = calculate_dprime(np.stack([preds, y_test], axis=1))
-    print(f'Accuracy is {acc}, Dprime is {dprime} num train samples is {num_train}, took {str(datetime.timedelta(seconds=time.time()-start))}.')
+    dp_preds = (preds > 0).astype(np.int)
+    dp_y_test = (y_test > 0).astype(np.int)
+    dprime = calculate_dprime(np.stack([dp_preds, dp_y_test], axis=1))
+    print(f'Accuracy is {acc}, Dprime is {dprime}  train samples is {num_train}, took {str(datetime.timedelta(seconds=time.time()-start))}.')
     return acc, dprime, float(dataMetric[1])
 
 
@@ -56,11 +58,11 @@ if __name__ == '__main__':
     print("starting out..")
     windows_db = True
     if windows_db:
-        path_mat = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks\experiment_patches_2x2\1_samplesPerClass_freq_1_contrast_oo_0_019952623150.h5'
+        path_mat = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_hc\harmonic_frequency_of_1_loc_1_signalGridSize_4\1_samplesPerClass_freq_1_contrast_0_798104925988_loc_1_signalGrid_4.h5'
     else:
         path_mat = '/share/wandell/data/reith/2_class_MTF_freq_experiment/frequency_1/5_samplesPerClass_freq_1_contrast_oo_0_000414616956.h5'
     meanData, meanDataLabels, dataMetric = get_h5mean_data(path_mat, includeContrast=True)
     sample_numbers = np.logspace(np.log10(500), np.log10(50000), num=15).astype(np.int)
-    # test_data, test_labels = poisson_noise_loader(meanData, size=20, numpyData=True)
+    test_data, test_labels = poisson_noise_loader(meanData, size=100, numpyData=True)
     # for num in sample_numbers:
-    #     get_svm_accuracy(path_mat, test_data, test_labels, num_samples=num, includeContrast=True)
+    get_svm_accuracy(path_mat, test_data, test_labels, num_samples=200, includeContrast=True)

@@ -206,7 +206,7 @@ def mat_data_loader(data, labels, batchSize, shuffle=True):
         j += batchSize
 
 
-def poisson_noise_loader(meanData, size, numpyData=False, seed=-1, force_balance=False):
+def poisson_noise_loader(meanData, size, numpyData=False, seed=-1, force_balance=False, signal_no_signal=True):
     if seed != -1:
         if numpyData:
             np.random.seed(seed)
@@ -220,6 +220,14 @@ def poisson_noise_loader(meanData, size, numpyData=False, seed=-1, force_balance
                 labels = np.random.permutation(np.concatenate((np.ones(size//2), np.zeros(size-size//2)))).astype(int)
             else:
                 labels = np.random.randint(2, size=size)
+            for l in labels:
+                if l == 0:
+                    data.append(np.random.poisson(meanData[l]))
+                else:
+                    selector = np.random.randint(1, len(meanData))
+                    data.append(np.random.poisson(meanData[selector]))
+        elif signal_no_signal:
+            labels = np.random.randint(2, size=size)
             for l in labels:
                 if l == 0:
                     data.append(np.random.poisson(meanData[l]))
@@ -251,7 +259,7 @@ def poisson_noise_loader(meanData, size, numpyData=False, seed=-1, force_balance
 
 
 class PoissonNoiseLoaderClass:
-    def __init__(self, mean_data, batch_size, train_set_size=-1, numpy_data=False, use_data_seed=False, data_seed=42):
+    def __init__(self, mean_data, batch_size, train_set_size=-1, numpy_data=False, use_data_seed=False, data_seed=12):
         if type(mean_data) == np.ndarray:
             mean_data = torch.from_numpy(mean_data).type(torch.float32)
         elif mean_data.is_cuda:
@@ -265,6 +273,12 @@ class PoissonNoiseLoaderClass:
         self.ii, self.jj = -1, -1
         self.batch_size = batch_size
         self.original_sorting = np.array(range(train_set_size))
+        if self.use_data_seed:
+            if self.data_seed != -1:
+                if self.numpy_data:
+                    np.random.seed(self.data_seed)
+                else:
+                    torch.random.manual_seed(self.data_seed)
 
     def get_data(self):
         if self.train_set_size == -1:
@@ -272,13 +286,14 @@ class PoissonNoiseLoaderClass:
             labels = -1
 
         else:
-            dataset, labels = self.poisson_noise_loader(self.train_set_size, self.numpy_data, self.use_data_seed)
+            dataset, labels = self.poisson_noise_loader(self.train_set_size, self.numpy_data, self.data_seed)
         return dataset, labels
 
     def get_batches(self, batch_size=-1, shuffle=True, reset=False):
         if batch_size == -1:
             batch_size = self.batch_size
         if self.train_set_size == -1:
+            # using a seed here would be problematic, as all batches would be the same
             batch_data, batch_labels = self.poisson_noise_loader(batch_size, self.numpy_data)
         else:
             if not self.jj < self.train_set_size or self.jj == -1 or reset:
@@ -296,8 +311,8 @@ class PoissonNoiseLoaderClass:
         batch_labels = batch_labels.cuda()
         return batch_data, batch_labels
 
-    def poisson_noise_loader(self, size, numpyData=False, seed=False):
-        if seed:
+    def poisson_noise_loader(self, size, numpyData=False, seed=-1):
+        if seed != -1:
             if numpyData:
                 np.random.seed(self.data_seed)
             else:

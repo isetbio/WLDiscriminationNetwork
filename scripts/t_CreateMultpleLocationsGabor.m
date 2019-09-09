@@ -28,14 +28,14 @@
 
 % Values to set
 % outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_contrasts';
-superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations\';
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_hc\';
 mkdir(superOutputFolder);
 numSamples = 1;
 frequencies = 1;
 % contrastValues = [0.0003, 0.0002, 0.0004];
 % We increase contrast 10x, as garbor dereases max contast 5x and area of
 % harmonic is decreased significantly as well. 
-contrastValues = logspace(-5, -1.7, 12)*10;
+contrastValues = logspace(-5, -1.7, 12)*40;
 % contrastGrowth = contrastValues(12)/contrastValues(11);
 % contrastValues = [contrastValues contrastValues(12)*contrastGrowth contrastValues(12)*contrastGrowth*contrastGrowth];
 contrastFreqPairs = [];

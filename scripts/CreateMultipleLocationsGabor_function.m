@@ -63,8 +63,11 @@ for cc = 1:length(scanContrast)
             if p.freq == 0
                 p.signalLocation = 1;
                 p.signalGridSize = 1;
+                if ll > 1
+                    continue
+                end
             else
-                p.signalLocation = signalLocation{1};
+                p.signalLocation = signalLocation{ll};
                 p.signalGridSize = signalGridSize;
             end
             scene = sceneCreate('harmonic',p);  % sceneWindow(scene);
@@ -86,9 +89,13 @@ for cc = 1:length(scanContrast)
                     pixel = sensorGet(sensor,'pixel');
                     meanVal = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
                     % noNoiseImg(:,:,ff+1) = sensorGet(sensor, 'electrons');
-                    noNoiseImg(:,:,ff+1) = meanVal;
-                    noNoiseImgFreq(ff+1) = p.freq;
-                    noNoiseImgContrast(ff+1) = p.contrast;
+                    % ff of 0 only has one ll case (-> 1), ff of 1 has
+                    % multiple cases (potentially, if multiple signals). Also works
+                    % if there are multiple frequencies and one signal.
+                    % Combination of both is not yet implemented..
+                    noNoiseImg(:,:,ff+ll) = meanVal;
+                    noNoiseImgFreq(ff+ll) = p.freq;
+                    noNoiseImgContrast(ff+ll) = p.contrast;
                     sensor = sensorSet(sensor,'noise flag',1);
                 end
 

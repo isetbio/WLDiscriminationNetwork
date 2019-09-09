@@ -113,14 +113,12 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
     if oo:
         if len(meanData) > 2:
-            if optimalOPredictionLabel.max() > 1:
-                d1 = -1
-                d2 = -1
-            else:
-                d1 = -1
-                print(f"Theoretical d index is {d1}")
-                d2 = calculate_dprime(optimalOPredictionLabel)
-                print(f"Optimal observer d index is {d2}")
+            optimalOPredictionLabel[:, 1][optimalOPredictionLabel[:, 1] > 0] = 1
+            accOptimal = np.mean(optimalOPredictionLabel[:, 0] == optimalOPredictionLabel[:, 1])
+            d1 = -1
+            print(f"Theoretical d index is {d1}")
+            d2 = calculate_dprime(optimalOPredictionLabel)
+            print(f"Optimal observer d index is {d2}, acc is {accOptimal}.")
 
         else:
             d1 = calculate_discriminability_index(meanData)
@@ -190,7 +188,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         testData = torch.from_numpy(testData).type(torch.float32)
         testData -= mean_norm
         testData /= std_norm
-        PoissonDataObject = PoissonNoiseLoaderClass(meanData, batchSize, train_set_size=train_set_size, data_seed=12,
+        PoissonDataObject = PoissonNoiseLoaderClass(meanData, batchSize, train_set_size=train_set_size, data_seed=123,
                                                     use_data_seed=True)
         for i in range(lr_epoch_reps):
             print(f"Trainig for {num_epochs/lr_epoch_reps} epochs with a learning rate of {learning_rate}..")
@@ -268,7 +266,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
 if __name__ == '__main__':
     # mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_019952623150.h5'
-    mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq\harmonic_frequency_of_14\1_samplesPerClass_freq_14_contrast_0_019952623150.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq\harmonic_frequency_of_14\1_samplesPerClass_freq_14_contrast_0_019952623150.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\multi_face_result\2_samplesPerClass_freq_1_contrast_0_019952623150_image_multi_face_result.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\face_sq\2_samplesPerClass_freq_1_contrast_0_019952623150_image_face_sq.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\test_200_dummy2.h5'
@@ -280,8 +278,10 @@ if __name__ == '__main__':
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\viz_templates\harmonic_frequency_of_1\1_samplesPerClass_freq_52_contrast_0_10_angle_0_125000000_pi_oo.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\circle_with_radius_100\2_samplesPerClass_freq_1_contrast_0_010000000000_image_circle_with_radius_100.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\multi_face_result\2_samplesPerClass_freq_1_contrast_0_019952623150_image_multi_face_result.h5'
+    # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\redo_automaton\plain_automata\plain_automata_rule_3_class2\automata_rule_3_class2_contrast_0.01995262.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\disks\disk_templates\circle_with_radius_100.h5'
-    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=2, test_size=20, train_nn=False, oo=False)
+    mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_hc\harmonic_frequency_of_1_loc_1_signalGridSize_4\1_samplesPerClass_freq_1_contrast_0_798104925988_loc_1_signalGrid_4.h5'
+    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=False, test_size=20, train_nn=True, oo=True)
     # autoTrain_Resnet_optimalObserver(mat_path, force_balance=True, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True, shuffle_scope=100, train_set_size=150, oo=False, svm=False, test_size=60, train_nn=True, shuffle_portion=2000)

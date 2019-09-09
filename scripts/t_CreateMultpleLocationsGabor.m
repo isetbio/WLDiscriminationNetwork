@@ -28,7 +28,7 @@
 
 % Values to set
 % outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_contrasts';
-superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_hc\';
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_templates\';
 mkdir(superOutputFolder);
 numSamples = 1;
 frequencies = 1;
@@ -57,6 +57,8 @@ frequencyValues = 1;
 
 % This creates the resulting datasets
 gridlocs = {{1, {1}}, {3, {4,6}}, {3, {1,2,3,4,5,6,7,8,9}},{2, {1,2,3,4}}, {4, {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}}};
+gridlocs = {{1, {1}}, {3, {[4,6]}}, {3, {[1,2,3,4,5,6,7,8,9]}},{2, {[1,2,3,4]}}, {4, {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}}};
+contrastValues = contrastValues(end);
 signalLocation = {1};
 signalGridSize = 1;
 for f = 1:length(frequencyValues)
@@ -64,12 +66,13 @@ for f = 1:length(frequencyValues)
         signalGridSize = gridlocs{gl}{1};
         signalLocation = gridlocs{gl}{2};
         frequencies = frequencyValues(f);
-        outputFolder = [superOutputFolder sprintf('harmonic_frequency_of_%s_loc_%d_signalGridSize_%d', string(frequencies),signalLocation{1}, signalGridSize)];
+        outputFolder = [superOutputFolder sprintf('harmonic_frequency_of_%s_loc_%d_signalGridSize_%d', string(frequencies),signalLocation{1}(1), signalGridSize)];
+        disp(outputFolder)
         mkdir(outputFolder);
         for i = 1:length(contrastValues)
             fprintf('starting at %s\n', datetime('now'))
             contrast = contrastValues(i);
-            fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_loc_%d_signalGrid_%d',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.12f", contrast), '.', '_'), signalLocation{1}, signalGridSize);
+            fileName = sprintf('%d_samplesPerClass_freq_%s_contrast_%s_loc_%d_signalGrid_%d',numSamples, join(string(frequencies),'-'), strrep(sprintf("%.12f", contrast), '.', '_'), signalLocation{1}(1), signalGridSize);
             disp(fileName);
             CreateMultipleLocationsGabor_function(frequencies, contrast, signalGridSize, signalLocation, numSamples, fileName, outputFolder)
             fprintf('ending at %s\n', datetime('now'))

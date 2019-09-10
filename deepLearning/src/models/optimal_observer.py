@@ -62,7 +62,7 @@ def get_optimal_observer_acc_parallel(testData, testLabels, meanData, returnPred
     predictions = parallel_apply_along_axis(get_optimal_observer_prediction, 1, testData, meanData)
     # again, treat cases with more than 2 mean data arrays as multiple signal location cases.
     if meanData.shape[0] > 2:
-        predictions[predictions >= 1] = 1
+        # predictions[predictions >= 1] = 1
         more_signals = False
         # To adjust the distribution of different classes to the ideal observer prior of evenly distributed classes
         if more_signals:
@@ -150,7 +150,6 @@ def calculate_discriminability_index(meanData):
     d = np.sum((beta-alpha) * np.log(beta/alpha)) / np.sqrt(0.5*np.sum(((alpha+beta) * np.log(beta/alpha)**2)))
     # 8.474092465767908
     return d
-
 
 
 if __name__ == '__main__':

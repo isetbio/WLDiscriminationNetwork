@@ -104,7 +104,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         # also shuffle mean data. As the shuffle mask is seeded, we simply call the shuffle function again..
     else:
         testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=42,
-                                                            force_balance=force_balance, signal_no_signal=True)
+                                                            force_balance=force_balance, signal_no_signal=signal_no_signal)
 
     # normalization values
     mean_norm = meanData.mean()
@@ -120,7 +120,8 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
     if oo:
         if len(meanData) > 2:
-            optimalOPredictionLabel[:, 1][optimalOPredictionLabel[:, 1] > 0] = 1
+            # set all signal cases to 1
+            optimalOPredictionLabel[optimalOPredictionLabel > 0] = 1
             accOptimal = np.mean(optimalOPredictionLabel[:, 0] == optimalOPredictionLabel[:, 1])
             d1 = -1
             print(f"Theoretical d index is {d1}")
@@ -196,7 +197,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         testData -= mean_norm
         testData /= std_norm
         PoissonDataObject = PoissonNoiseLoaderClass(meanData, batchSize, train_set_size=train_set_size, data_seed=123,
-                                                    use_data_seed=True)
+                                                    use_data_seed=True, signal_no_signal=signal_no_signal)
         for i in range(lr_epoch_reps):
             print(f"Trainig for {num_epochs/lr_epoch_reps} epochs with a learning rate of {learning_rate}..")
             optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
@@ -293,7 +294,7 @@ if __name__ == '__main__':
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_templates\harmonic_frequency_of_1_loc_1_signalGridSize_3\1_samplesPerClass_freq_1_contrast_0_798104925988_loc_1_signalGrid_3.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_templates\harmonic_frequency_of_1_loc_1_signalGridSize_2\1_samplesPerClass_freq_1_contrast_0_798104925988_loc_1_signalGrid_2.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_templates\harmonic_frequency_of_1_loc_1_signalGridSize_1\1_samplesPerClass_freq_1_contrast_0_798104925988_loc_1_signalGrid_1.h5'
-    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=False, test_size=20, train_nn=True, oo=True)
+    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=False, test_size=400, train_nn=True, oo=True)
     # autoTrain_Resnet_optimalObserver(mat_path, force_balance=True, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True, shuffle_scope=100, train_set_size=150, oo=False, svm=False, test_size=60, train_nn=True, shuffle_portion=2000)

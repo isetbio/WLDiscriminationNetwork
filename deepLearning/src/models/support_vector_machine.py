@@ -8,8 +8,9 @@ import datetime
 import time
 
 
-def score_svm(h5_path, lock, test_data, test_labels, metric='contrast', num_samples=10000, **kwargs):
-    acc, dprime, metric_val = get_svm_accuracy(h5_path, test_data, test_labels, num_samples, lock=lock, **kwargs)
+def score_svm(h5_path, lock, test_data, test_labels, metric='contrast', num_samples=10000, signal_no_signal=False, **kwargs):
+    acc, dprime, metric_val = get_svm_accuracy(h5_path, test_data, test_labels, num_samples, lock=lock,
+                                               signal_no_signal=signal_no_signal, **kwargs)
     write_svm_csv(acc, dprime, metric_val, os.path.dirname(h5_path), lock=lock, metric_name=metric, num_samples=num_samples)
 
 
@@ -29,14 +30,14 @@ def write_svm_csv(acc, dprime, metric, out_path, lock=None, metric_name='contras
         lock.release()
 
 
-def get_svm_accuracy(path_mat, test_data, test_labels, num_samples=10000, lock=None, **kwargs):
+def get_svm_accuracy(path_mat, test_data, test_labels, num_samples=10000, lock=None, signal_no_signal=False, **kwargs):
     start = time.time()
     if lock is not None:
         lock.acquire()
     meanData, meanDataLabels, dataMetric = get_h5mean_data(path_mat, **kwargs)
     if lock is not None:
         lock.release()
-    train_data, train_labels = poisson_noise_loader(meanData, size=num_samples, numpyData=True, seed=84)
+    train_data, train_labels = poisson_noise_loader(meanData, size=num_samples, numpyData=True, seed=84, signal_no_signal=signal_no_signal)
     train_data = train_data.reshape(train_data.shape[0], -1)
     test_data = test_data.reshape(test_data.shape[0], -1)
     svc = svm.SVC(kernel='linear', max_iter=1000, random_state=14)

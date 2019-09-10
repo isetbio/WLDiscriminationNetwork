@@ -226,7 +226,7 @@ def poisson_noise_loader(meanData, size, numpyData=False, seed=-1, force_balance
                 else:
                     selector = np.random.randint(1, len(meanData))
                     data.append(np.random.poisson(meanData[selector]))
-        elif signal_no_signal:
+        elif signal_no_signal and len(meanData) > 2:
             labels = np.random.randint(2, size=size)
             for l in labels:
                 if l == 0:
@@ -242,7 +242,7 @@ def poisson_noise_loader(meanData, size, numpyData=False, seed=-1, force_balance
         return data, labels
     else:
         data = []
-        if len(meanData) > 2:
+        if len(meanData) > 2 and signal_no_signal:
             labels = torch.randint(2, (size,)).type(torch.long)
             for l in labels:
                 if l==0:
@@ -259,7 +259,8 @@ def poisson_noise_loader(meanData, size, numpyData=False, seed=-1, force_balance
 
 
 class PoissonNoiseLoaderClass:
-    def __init__(self, mean_data, batch_size, train_set_size=-1, numpy_data=False, use_data_seed=False, data_seed=12):
+    def __init__(self, mean_data, batch_size, train_set_size=-1, numpy_data=False, use_data_seed=False, data_seed=12,
+                 signal_no_signal=False):
         if type(mean_data) == np.ndarray:
             mean_data = torch.from_numpy(mean_data).type(torch.float32)
         elif mean_data.is_cuda:
@@ -273,6 +274,7 @@ class PoissonNoiseLoaderClass:
         self.ii, self.jj = -1, -1
         self.batch_size = batch_size
         self.original_sorting = np.array(range(train_set_size))
+        self.signal_no_signal = signal_no_signal
         if self.use_data_seed:
             if self.data_seed != -1:
                 if self.numpy_data:
@@ -320,7 +322,7 @@ class PoissonNoiseLoaderClass:
         if numpyData:
             # more data means all data after #0 are signal cases
             data = []
-            if len(self.mean_data) > 2:
+            if len(self.mean_data) > 2 and self.signal_no_signal:
                 labels = np.random.randint(2, size=size)
                 for l in labels:
                     if l == 0:
@@ -336,7 +338,7 @@ class PoissonNoiseLoaderClass:
             return data, labels
         else:
             data = []
-            if len(self.mean_data) > 2:
+            if len(self.mean_data) > 2 and self.signal_no_signal:
                 labels = torch.randint(2, (size,)).type(torch.long)
                 for l in labels:
                     if l == 0:

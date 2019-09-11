@@ -82,7 +82,7 @@ nnD = []
 ooD = []
 print("Results neural network:\n")
 for i in classes:
-    selector = selector = np.where(nnPredictions==i)[0]
+    selector = np.where(nnPredictions==i)[0]
     hit = (0.5 + np.sum(nnLabels[selector] == i))/(np.sum(nnLabels == i) + 1)
     false_alarm = (0.5 + np.sum(nnLabels[selector] != i))/(np.sum(nnLabels != i) + 1)
     d = norm.ppf(hit)-norm.ppf(false_alarm)
@@ -91,7 +91,7 @@ for i in classes:
 
 print("Results optimal observer:\n")
 for i in classes:
-    selector = selector = np.where(ooPredictions==i)[0]
+    selector = np.where(ooPredictions==i)[0]
     hit = (0.5 + np.sum(nnLabels[selector] == i))/(np.sum(nnLabels == i) + 1)
     false_alarm = (0.5 + np.sum(nnLabels[selector] != i))/(np.sum(nnLabels != i) + 1)
     d = norm.ppf(hit)-norm.ppf(false_alarm)

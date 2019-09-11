@@ -235,7 +235,17 @@ def poisson_noise_loader(meanData, size, numpyData=False, seed=-1, force_balance
                     selector = np.random.randint(1, len(meanData))
                     data.append(np.random.poisson(meanData[selector]))
         else:
-            labels = np.random.randint(len(meanData), size=size)
+            # balances as good as possible, given required size. We balance classes perfectly to achieve theoretically
+            # optimal ideal observer performance
+            if force_balance:
+                class_size = size//len(meanData)
+                labels = np.random.permutation(np.repeat(np.array(range(len(meanData))), class_size)).astype(int)
+                rest_size = size-(class_size*len(meanData))
+                rest_labels = np.random.randint(len(meanData), size=rest_size)
+                labels = np.append(labels, rest_labels)
+                print('todo')
+            else:
+                labels = np.random.randint(len(meanData), size=size)
             for l in labels:
                 data.append(np.random.poisson(meanData[l]))
         data = np.stack(data)

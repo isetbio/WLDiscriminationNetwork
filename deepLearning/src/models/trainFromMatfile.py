@@ -216,7 +216,9 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         testDataFull /= std_norm
         testAcc, nnPredictionLabels = test(batchSize, testDataFull, testLabelsFull, Net, dimIn, includePredictionLabels=True, test_eval=test_eval)
         if len(meanData) == 2 or optimalOPredictionLabel.max() <= 1:
-            nn_dprime = calculate_dprime(nnPredictionLabels)
+            nnPredictionLabels_dprime = np.copy(nnPredictionLabels)
+            nnPredictionLabels_dprime[nnPredictionLabels_dprime > 0] = 1
+            nn_dprime = calculate_dprime(nnPredictionLabels_dprime)
         else:
             nn_dprime = -1
         pickle.dump(nnPredictionLabels, open(os.path.join(outPath, f"{id_name}_nn_pred_labels.p"), 'wb'))

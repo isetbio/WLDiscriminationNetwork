@@ -67,7 +67,7 @@ if __name__ == '__main__':
     full_start = time.time()
     # fpaths = ['/share/wandell/data/reith/redo_experiments/multiple_locations/harmonic_frequency_of_1_loc_1_signalGridSize_1']
     # fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/multiple_locations/multiple_locations_experiment') if p.is_dir()]
-    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/multiple_locations/multiple_locations_experiment_equal_class_samples') if p.is_dir()]
+    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/multiple_locations/multiple_locations_experiment_equal_class_samples_all_signal') if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=True)
     for fpath in fpaths:
         run_on_folder(fpath)

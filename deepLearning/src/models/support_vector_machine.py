@@ -49,7 +49,7 @@ def get_svm_accuracy(path_mat, test_data, test_labels, num_samples=10000, lock=N
     svc.fit(x_train, y_train)
     preds = svc.predict(x_test)
     acc = np.mean(preds == y_test)
-    # save predicitons, labels
+    # save predictions, labels
     id_name = os.path.basename(path_mat).split('.')[0]
     out_path = os.path.dirname(path_mat)
     pickle.dump(np.stack([preds, y_test], axis=1), open(os.path.join(out_path, f"{id_name}_svm_pred_labels.p"), 'wb'))

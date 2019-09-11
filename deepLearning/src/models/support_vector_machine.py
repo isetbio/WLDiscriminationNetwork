@@ -6,6 +6,7 @@ import os
 import csv
 import datetime
 import time
+import pickle
 
 
 def score_svm(h5_path, lock, test_data, test_labels, metric='contrast', num_samples=10000, signal_no_signal=False, **kwargs):
@@ -48,6 +49,11 @@ def get_svm_accuracy(path_mat, test_data, test_labels, num_samples=10000, lock=N
     svc.fit(x_train, y_train)
     preds = svc.predict(x_test)
     acc = np.mean(preds == y_test)
+    # save predicitons, labels
+    id_name = os.path.basename(path_mat).split('.')[0]
+    out_path = os.path.dirname(path_mat)
+    pickle.dump(np.stack([preds, y_test], axis=1), open(os.path.join(out_path, f"{id_name}_svm_pred_labels.p"), 'wb'))
+    # score dprime
     dp_preds = (preds > 0).astype(np.int)
     dp_y_test = (y_test > 0).astype(np.int)
     dprime = calculate_dprime(np.stack([dp_preds, dp_y_test], axis=1))

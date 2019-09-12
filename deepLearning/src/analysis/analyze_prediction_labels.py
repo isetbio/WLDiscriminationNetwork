@@ -11,6 +11,8 @@ fpath_oo = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_loca
 # fpath_nn = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment_equal_class_samples\harmonic_frequency_of_1_loc_1_signalGridSize_4\1_samplesPerClass_freq_1_contrast_0_100475457260_loc_1_signalGrid_4_nn_pred_labels.p'
 # fpath_oo = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment_equal_class_samples\harmonic_frequency_of_1_loc_1_signalGridSize_4\1_samplesPerClass_freq_1_contrast_0_100475457260_loc_1_signalGrid_4_oo_pred_label.p'
 
+fpath_nn = r'\\?\C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment_equal_class_samples_all_signal\harmonic_frequency_of_1_loc_1_signalGridSize_5\1_samplesPerClass_freq_1_contrast_0_003177312939_loc_1_signalGrid_5_nn_pred_labels.p'
+fpath_oo = r'\\?\C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment_equal_class_samples_all_signal\harmonic_frequency_of_1_loc_1_signalGridSize_5\1_samplesPerClass_freq_1_contrast_0_003177312939_loc_1_signalGrid_5_oo_pred_label.p'
 
 with open(fpath_oo, 'rb') as f:
     oo = pickle.load(f)

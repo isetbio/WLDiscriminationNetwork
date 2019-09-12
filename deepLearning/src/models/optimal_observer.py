@@ -89,8 +89,15 @@ def calculate_dprime(prediction_label):
     selector = np.where(oo_predictions == i)[0]
     hit = (np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i))
     false_alarm = (np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i))
-    if not (0<hit<1 and 0<false_alarm<1):
+    # check if dataset classes are balanced (within a margin of 10)
+    balanced = np.abs(np.sum(oo_labels)-len(oo_labels)) < 10
+    if not (0<hit<1 and 0<false_alarm<1) and balanced:
         hit = (0.5 + np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i) + 1)
+        false_alarm = (0.5 + np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i) + 1)
+    # we adjust the addition of 0.5 to account for imbalance
+    elif (0<hit<1 and 0<false_alarm<1) and not balanced:
+        adjustment = np.sum(oo_labels == i)/np.sum(oo_labels != i)
+        hit = (0.5*adjustment + np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i) + 1*adjustment)
         false_alarm = (0.5 + np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i) + 1)
     d = norm.ppf(hit) - norm.ppf(false_alarm)
     return d
@@ -98,7 +105,7 @@ def calculate_dprime(prediction_label):
 
 def get_optimal_observer_acc(testData, testLabels, meanData, returnPredictionLabel=False):
     allAccuracies = []
-    predictionLabel = np.empty((0,2))
+    predictionLabel = np.empty((0, 2))
     for datum, label in zip(testData, testLabels):
         llVals = []
         for meanDatum in meanData:

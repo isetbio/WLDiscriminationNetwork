@@ -23,7 +23,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,
                                      shuffled_pixels=0, shuffle_scope=-1, test_eval=True, random_seed_nn=True, train_set_size=-1,
-                                     test_size=5000, shuffle_portion=-1, ca_rule=-1, force_balance=False,
+                                     test_size=5000, shuffle_portion=-1, ca_rule=-1, force_balance=True,
                                      same_test_data_shuff_pixels=True, class_balance='class_based'):
 
 

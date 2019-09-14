@@ -95,7 +95,7 @@ def calculate_dprime(prediction_label):
         hit = (0.5 + np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i) + 1)
         false_alarm = (0.5 + np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i) + 1)
     # we adjust the addition of 0.5 to account for imbalance
-    elif (0<hit<1 and 0<false_alarm<1) and not balanced:
+    elif not (0<hit<1 and 0<false_alarm<1) and not balanced:
         adjustment = np.sum(oo_labels == i)/np.sum(oo_labels != i)
         hit = (0.5*adjustment + np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i) + 1*adjustment)
         false_alarm = (0.5 + np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i) + 1)

@@ -47,7 +47,7 @@ def write_csv_svm(resultCSV, svm_accuracy, dprime_accuracy, contrast, samples_us
             {'svm_accuracy': svm_accuracy, 'dprime_accuracy': dprime_accuracy, 'contrast': contrast, 'samples_used': samples_used})
 
 
-def calculate_values(oo_data, nn_data, svm_data, out_path):
+def calculate_values(oo_data, nn_data, svm_data, out_path, adjust_imbalance=True):
     nn_data = sort_paths(nn_data)
     oo_data = sort_paths(oo_data)
     svm_data = sort_paths(svm_data)
@@ -70,9 +70,9 @@ def calculate_values(oo_data, nn_data, svm_data, out_path):
         contrast = get_contrast(o)
         oo_acc = np.mean(oo[:,0] == oo[:,1])
         nn_acc = np.mean(nn[:,0] == nn[:,1])
-        oo_dprime = calculate_dprime(oo)
-        nn_dprime = calculate_dprime(nn)
-        svm_dprime = calculate_dprime(svm)
+        oo_dprime = calculate_dprime(oo, adjust_imbalance=adjust_imbalance)
+        nn_dprime = calculate_dprime(nn, adjust_imbalance=adjust_imbalance)
+        svm_dprime = calculate_dprime(svm, adjust_imbalance=adjust_imbalance)
         svm_acc = np.mean(svm[:,0] == svm[:,1])
         write_csv_row(csv_path, nn_acc, oo_acc, -1, oo_dprime, contrast, nn_dprime)
         write_csv_svm(csv_svm, svm_acc, svm_dprime, contrast)
@@ -87,7 +87,7 @@ for fp in fpaths:
     svm_data = glob(f'{fp}\\*_svm_pred*')
     if (len(oo_data)+len(nn_data)+len(svm_data)) < 36:
         continue
-    calculate_values(oo_data, nn_data, svm_data, fp)
+    calculate_values(oo_data, nn_data, svm_data, fp, adjust_imbalance=True)
 print('done')
 
 

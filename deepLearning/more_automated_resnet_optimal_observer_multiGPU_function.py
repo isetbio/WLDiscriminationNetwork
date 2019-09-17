@@ -69,7 +69,7 @@ if __name__ == '__main__':
     fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/multiple_locations/multiple_locations_experiment_ideal_observer_adjusted') if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=True)
     for fpath in fpaths:
-        run_on_folder(fpath, train_nn=False, svm=False)
+        run_on_folder(fpath, train_nn=False, svm=False, class_balance='signal_based')
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 r"""

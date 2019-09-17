@@ -45,6 +45,7 @@ noNoiseImgContrast = zeros(length(scanFreq)+1, 1);
 
 %% Run a loop over all frequencies (1), all contrast strengths (1) and over the number of samples
 k = 1;
+minFreq = 0;
 % p.row & p.row are not necessarily the resulting image size, as # scene pixesl > # pixels of
 % sensor, which captures its pixels..
 p.row = 512;
@@ -53,7 +54,7 @@ p.GaborFlag = 0.05;
 p.gridZoom = 1;
 for cc = 1:length(scanContrast)
     p.contrast = scanContrast(cc);
-    for ff = 0 : length(scanFreq)
+    for ff = minFreq : length(scanFreq)
         if ff == 0
             p.freq = 0;
         else
@@ -93,8 +94,8 @@ for cc = 1:length(scanContrast)
                     % multiple cases (potentially, if multiple signals). Also works
                     % if there are multiple frequencies and one signal.
                     % Combination of both is not yet implemented..
-                    noNoiseImg(:,:,ff+ll) = meanVal;
-                    noNoiseImgFreq(ff+ll) = p.freq;
+                    noNoiseImg(:,:,ff+ll-minFreq) = meanVal;
+                    noNoiseImgFreq(ff+ll-minFreq) = p.freq;
                     noNoiseImgContrast(ff+ll) = p.contrast;
                     sensor = sensorSet(sensor,'noise flag',1);
                 end

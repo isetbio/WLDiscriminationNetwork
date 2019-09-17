@@ -79,7 +79,7 @@ end
 % harmonics are (1 + sum(cos(2*pi*f*x + ph))
 % with the additional issue that X and Y can be at some angle.
 img = zeros(size(X));
-% the "normal" harmonic has two pixel columns, which are exactly the man
+% the "normal" harmonic has two pixel columns, which are exactly the mean
 % value, 1.0. We add a very small shift value two all lines, to avoid this
 % problem. if 1.0 values exist, the split over the mean value creates an
 % extremely easy problem..

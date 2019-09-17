@@ -70,6 +70,7 @@ def get_optimal_observer_prediction(datum, meanData, signal_noise_even=False):
 def get_optimal_observer_acc_parallel(testData, testLabels, meanData, returnPredictionLabel=False, signal_noise_even=True):
     testData = testData.reshape(testData.shape[0], -1)
     meanData = meanData.reshape(meanData.shape[0], -1)
+    print(f'signal_noise_even is {signal_noise_even}!')
     predictions = parallel_apply_along_axis(get_optimal_observer_prediction, 1, testData, meanData, signal_noise_even)
     # again, treat cases with more than 2 mean data arrays as multiple signal location cases.
     if meanData.shape[0] > 2:

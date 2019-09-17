@@ -48,18 +48,29 @@ def parallel_apply_along_axis(func1d, axis, arr, *args):
     return np.concatenate(individual_results)
 
 
-def get_optimal_observer_prediction(datum, meanData):
+def get_optimal_observer_prediction(datum, meanData, signal_noise_even=False):
     llVals = []
-    for meanDatum in meanData:
-        llVals.append(poisson.logpmf(datum, meanDatum).sum())
+    num_signals = len(meanData)-1
+    for i, meanDatum in enumerate(meanData):
+        log_probability = poisson.logpmf(datum, meanDatum).sum()
+        # all is fine, if categories are evenly distributed. But if not, we have to add the log of their proba-
+        # bility.
+        if signal_noise_even:
+            # if i is 0, we know it's the non signal case and use a p of 0.5
+            if i == 0:
+                log_probability += np.log(0.5)
+            # if i > 0, we know it's a signal case
+            else:
+                log_probability += np.log(1/num_signals)
+        llVals.append(log_probability)
     prediction = np.argmax(llVals)
     return prediction
 
 
-def get_optimal_observer_acc_parallel(testData, testLabels, meanData, returnPredictionLabel=False):
+def get_optimal_observer_acc_parallel(testData, testLabels, meanData, returnPredictionLabel=False, signal_noise_even=True):
     testData = testData.reshape(testData.shape[0], -1)
     meanData = meanData.reshape(meanData.shape[0], -1)
-    predictions = parallel_apply_along_axis(get_optimal_observer_prediction, 1, testData, meanData)
+    predictions = parallel_apply_along_axis(get_optimal_observer_prediction, 1, testData, meanData, signal_noise_even)
     # again, treat cases with more than 2 mean data arrays as multiple signal location cases.
     if meanData.shape[0] > 2:
         # predictions[predictions >= 1] = 1
@@ -82,7 +93,7 @@ def get_optimal_observer_acc_parallel(testData, testLabels, meanData, returnPred
         return np.mean(allAccuracies)
 
 
-def calculate_dprime(prediction_label):
+def calculate_dprime(prediction_label, adjust_imbalance=True):
     oo_predictions = prediction_label[:, 0]
     oo_labels = prediction_label[:, 1]
     i = 1
@@ -95,21 +106,38 @@ def calculate_dprime(prediction_label):
         hit = (0.5 + np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i) + 1)
         false_alarm = (0.5 + np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i) + 1)
     # we adjust the addition of 0.5 to account for imbalance
-    elif not (0<hit<1 and 0<false_alarm<1) and not balanced:
+    elif not (0<hit<1 and 0<false_alarm<1) and not balanced and adjust_imbalance:
         adjustment = np.sum(oo_labels == i)/np.sum(oo_labels != i)
         hit = (0.5*adjustment + np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i) + 1*adjustment)
+        false_alarm = (0.5 + np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i) + 1)
+    elif not (0<hit<1 and 0<false_alarm<1) and not balanced and not adjust_imbalance:
+        if false_alarm == 1.0:
+            print('set to 0')
+            return 0
+        hit = (0.5 + np.sum(oo_labels[selector] == i)) / (np.sum(oo_labels == i) + 1)
         false_alarm = (0.5 + np.sum(oo_labels[selector] != i)) / (np.sum(oo_labels != i) + 1)
     d = norm.ppf(hit) - norm.ppf(false_alarm)
     return d
 
 
-def get_optimal_observer_acc(testData, testLabels, meanData, returnPredictionLabel=False):
+def get_optimal_observer_acc(testData, testLabels, meanData, returnPredictionLabel=False, signal_noise_even=True):
     allAccuracies = []
     predictionLabel = np.empty((0, 2))
+    num_signals = len(meanData)-1
     for datum, label in zip(testData, testLabels):
         llVals = []
-        for meanDatum in meanData:
-            llVals.append(poisson.logpmf(datum, meanDatum).sum())
+        for i, meanDatum in enumerate(meanData):
+            log_probability = poisson.logpmf(datum, meanDatum).sum()
+            # all is fine, if categories are evenly distributed. But if not, we have to add the log of their proba-
+            # bility.
+            if signal_noise_even:
+                # if i is 0, we know it's the non signal case and use a p of 0.5
+                if i == 0:
+                    log_probability += np.log(0.5)
+                # if i > 0, we know it's a signal case
+                else:
+                    log_probability += np.log(1/num_signals)
+            llVals.append(log_probability)
         prediction = np.argmax(llVals)
         allAccuracies.append(prediction == label)
         predictionLabel = np.append(predictionLabel, [[prediction, label]], axis=0)

@@ -28,10 +28,10 @@
 
 % Values to set
 % outputFolder = '/share/wandell/data/reith/redo_experiments/sensor_harmonic_contrasts';
-superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_templates\';
+superOutputFolder = 'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_higher_freq\';
 mkdir(superOutputFolder);
 numSamples = 1;
-frequencies = 1;
+frequencies = 10;
 % contrastValues = [0.0003, 0.0002, 0.0004];
 % We increase contrast 10x, as garbor dereases max contast 5x and area of
 % harmonic is decreased significantly as well. 
@@ -56,11 +56,10 @@ frequencyValues = 1;
 % % end
 
 % This creates the resulting datasets
-gridlocs = {{1, {1}}, {3, {4,6}}, {3, {1,2,3,4,5,6,7,8,9}},{2, {1,2,3,4}}, {4, {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}}};
-gridlocs = {{1, {1}}, {3, {[4,6]}}, {3, {[1,2,3,4,5,6,7,8,9]}},{2, {[1,2,3,4]}}, {4, {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}}};
-contrastValues = contrastValues(end);
-signalLocation = {1};
-signalGridSize = 1;
+gridlocs = {{1, {1}}, {3, {4,6}}, {3, {1,2,3,4,5,6,7,8,9}},{2, {1,2,3,4}}, {4, {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}}, {5, {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25}}};
+% gridlocs = {{1, {1}}, {3, {[4,6]}}, {3, {[1,2,3,4,5,6,7,8,9]}},{2, {[1,2,3,4]}}, {4, {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}}};
+% contrastValues = contrastValues(end);
+gridlocs = gridlocs(end);
 for f = 1:length(frequencyValues)
     for gl = 1:length(gridlocs)
         signalGridSize = gridlocs{gl}{1};

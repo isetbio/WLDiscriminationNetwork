@@ -73,7 +73,7 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
             appendix = f' {num} random pixels were shuffled'
             include_oo = False
         csv1 = os.path.join(folder, 'results.csv')
-        csv_svm = os.path.join(folder, 'svm_results.csv')
+        csv_svm = os.path.join(folder, 'svm_results_seeded.csv')
         oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by=metric)
         nn = get_csv_column(csv1, 'nn_dprime', sort_by=metric)
         contrasts = get_csv_column(csv1, metric, sort_by=metric)
@@ -331,14 +331,15 @@ if __name__ == "__main__":
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined') if f.is_dir()]
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\single_faces') if f.is_dir()]
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\redo_automaton\matlab_contrasts\class3') if f.is_dir()]
-    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks') if f.is_dir()]
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment_equal_class_dprime_adjusted') if f.is_dir()]
 
-    # for scope_folder in mtf_paths:
-    #     visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True)
-    mtf_calc(mtf_paths, target_d=1.5, calc_random=True, plot_style='-', include_svm=True)
-    mtf_calc(mtf_paths, target_d=2, calc_random=True, plot_style='-', include_svm=True)
+    for scope_folder in mtf_paths:
+        visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True)
+    mtf_calc(mtf_paths, target_d=1.5, plot_style='-', include_svm=True)
+    mtf_calc(mtf_paths, target_d=2, plot_style='-', include_svm=True)
     # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
-    mtf_calc(mtf_paths, target_d=3, calc_random=True, plot_style='-', include_svm=True)
+    mtf_calc(mtf_paths, target_d=3, plot_style='-', include_svm=True)
 
 # if __name__ == "__main__":
 #

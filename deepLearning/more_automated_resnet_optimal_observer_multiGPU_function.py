@@ -65,6 +65,18 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
+    # run only on ideal observer, account for varying sample sizes in calculation
+    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/multiple_locations/multiple_locations_experiment_ideal_observer_adjusted') if p.is_dir()]
+    fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=True)
+    for fpath in fpaths:
+        run_on_folder(fpath, train_nn=False, svm=False)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+r"""
+LATER
+#################################################################
+if __name__ == '__main__':
+    full_start = time.time()
     # fpaths = ['/share/wandell/data/reith/redo_experiments/multiple_locations/harmonic_frequency_of_1_loc_1_signalGridSize_1']
     fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/multiple_locations/multiple_locations_experiment_equal_class_dprime_adjusted') if p.is_dir()]
     # fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/multiple_locations/multiple_locations_experiment_equal_class_samples_all_signal') if p.is_dir()]
@@ -73,8 +85,6 @@ if __name__ == '__main__':
         run_on_folder(fpath)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
-r"""
-LATER
 ################################################################
 if __name__ == '__main__':
     # shuffle columns and normal

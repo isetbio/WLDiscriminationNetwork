@@ -7,6 +7,7 @@ import types
 from matplotlib.ticker import ScalarFormatter
 import itertools
 from deepLearning.src.analysis. weibull_alphas import ScaledWeibull, get_weibull_interpolation
+import csv
 
 
 def line_styler(offset_default=2, style=(2, 2)):
@@ -73,7 +74,7 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
             appendix = f' {num} random pixels were shuffled'
             include_oo = False
         csv1 = os.path.join(folder, 'results.csv')
-        csv_svm = os.path.join(folder, 'svm_results_seeded.csv')
+        csv_svm = os.path.join(folder, 'svm_results.csv')
         oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by=metric)
         nn = get_csv_column(csv1, 'nn_dprime', sort_by=metric)
         contrasts = get_csv_column(csv1, metric, sort_by=metric)
@@ -237,7 +238,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
             svm_freqs.append(freq)
             try:
                 svm_dprimes.append(
-                    get_csv_column(os.path.join(p, 'svm_results_seeded.csv'), 'dprime_accuracy', sort_by=metric))
+                    get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by=metric))
             except:
                 svm_dprimes.append(
                     get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by=metric))
@@ -264,7 +265,17 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
             plt.plot(svm_freqs, 1 / svm_bilinear_targets, label='Support Vector Machine', linestyle=line_style)
     ################################################################
     plt.legend(frameon=True, loc='best', fontsize='small')
-    fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)    ###############
+    fig.savefig(os.path.join(out_path, f'{fname}.png'), dpi=200)
+    ###############
+    csv_dict = {'svm': 1 / svm_bilinear_targets, 'io': 1 / oo_bilinear_targets, 'resnet': 1 / nn_bilinear_targets}
+    with open(os.path.join(out_path, f'{fname}.csv'), 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=list(csv_dict.keys()))
+        writer.writeheader()
+        for i in range(len(nn_bilinear_targets)):
+            temp_dict = {}
+            for k, v in csv_dict.items():
+                temp_dict[k] = v[i]
+            writer.writerow(temp_dict)
     ###############
     #
     #
@@ -333,13 +344,19 @@ if __name__ == "__main__":
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\redo_automaton\matlab_contrasts\class3') if f.is_dir()]
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks') if f.is_dir()]
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment_equal_class_dprime_adjusted') if f.is_dir()]
-    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment') if f.is_dir()]
+    mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq_less_contrast'
+    mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq_better_csv'
+    mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined_better_csv'
+    mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment_reanalyze\single_faces'
+    mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks_csv'
+    mtf_paths = [f.path for f in os.scandir(mtf_file_path) if f.is_dir()]
     for scope_folder in mtf_paths:
-        visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True)
-    mtf_calc(mtf_paths, target_d=1.5, plot_style='-', include_svm=True)
-    mtf_calc(mtf_paths, target_d=2, plot_style='-', include_svm=True)
+        visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True, angle=False)
+    mtf_calc(mtf_paths, target_d=1.5, plot_style='-', include_svm=True, angle=False, calc_random=True)
+    mtf_calc(mtf_paths, target_d=2, plot_style='-', include_svm=True, angle=False, calc_random=True)
     # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
-    mtf_calc(mtf_paths, target_d=3, plot_style='-', include_svm=True)
+    mtf_calc(mtf_paths, target_d=3, plot_style='-', include_svm=True, angle=False, calc_random=True)
 
 # if __name__ == "__main__":
 #

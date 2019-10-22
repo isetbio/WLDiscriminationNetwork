@@ -11,6 +11,8 @@ import multiprocessing as mp
 import time
 import datetime
 import os
+from deepLearning.src.models.new_inception import inceptionv3
+from deepLearning.src.models.new_vgg import vgg16
 
 
 def matfile_gen(pathMatDir):
@@ -66,15 +68,47 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation
-    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/multiple_locations/multiple_locations_experiment_ideal_observer_adjusted') if p.is_dir()]
-    fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=True)
+    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/more_nn/vgg16') if p.is_dir()]
+    fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
+    net_class = vgg16
     for fpath in fpaths:
-        run_on_folder(fpath, train_nn=False, svm=False, class_balance='signal_based')
+        num = fpath.split('_')[-1]
+        if num == '2':
+            run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class)
+        elif num == '3':
+            run_on_folder(fpath, include_shift=True, NetClass=net_class)
+        else:
+            run_on_folder(fpath, NetClass=net_class)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+
+if __name__ == '__main__':
+    full_start = time.time()
+    # run only on ideal observer, account for varying sample sizes in calculation
+    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/more_nn/inceptionv3') if p.is_dir()]
+    fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
+    net_class = inceptionv3
+    for fpath in fpaths:
+        num = fpath.split('_')[-1]
+        if num == '2':
+            run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class)
+        elif num == '3':
+            run_on_folder(fpath, include_shift=True, NetClass=net_class)
+        else:
+            run_on_folder(fpath, NetClass=net_class)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 r"""
-LATER
+PAST RUNS
 #################################################################
+if __name__ == '__main__':
+    full_start = time.time()
+    # run only on ideal observer, account for varying sample sizes in calculation
+    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/multiple_locations/multiple_locations_experiment_ideal_observer_adjusted') if p.is_dir()]
+    fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
+    for fpath in fpaths:
+        run_on_folder(fpath)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+#######################################################################3
 if __name__ == '__main__':
     full_start = time.time()
     # fpaths = ['/share/wandell/data/reith/redo_experiments/multiple_locations/harmonic_frequency_of_1_loc_1_signalGridSize_1']

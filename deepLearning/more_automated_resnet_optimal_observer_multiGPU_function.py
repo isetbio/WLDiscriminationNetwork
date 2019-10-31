@@ -68,7 +68,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation
-    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/more_nn/vgg16') if p.is_dir()]
+    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn/vgg16') if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
     net_class = vgg16
     for fpath in fpaths:
@@ -84,7 +84,7 @@ if __name__ == '__main__':
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation
-    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/more_nn/inceptionv3') if p.is_dir()]
+    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn/inceptionv3') if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
     net_class = inceptionv3
     for fpath in fpaths:

@@ -4,7 +4,7 @@ import torchvision.models as models
 
 
 class inceptionv3(nn.Module):
-    def __init__(self, dimOut):
+    def __init__(self, dimOut, *args):
         super().__init__()
         self.model = models.inception_v3(num_classes=dimOut)
 

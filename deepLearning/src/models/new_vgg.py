@@ -4,7 +4,7 @@ import torchvision.models as models
 
 
 class vgg16(nn.Module):
-    def __init__(self, dimOut):
+    def __init__(self, dimOut, *args):
         super().__init__()
         self.model = models.vgg16(num_classes=dimOut)
 

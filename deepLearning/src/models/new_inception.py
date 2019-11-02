@@ -7,6 +7,7 @@ class inceptionv3(nn.Module):
     def __init__(self, dimOut, *args):
         super().__init__()
         self.model = models.inception_v3(num_classes=dimOut)
+        self.model.cuda()
 
         # self.extraFc1 = nn.Linear(1000, 200)
         # self.drop1 = nn.Dropout(p=dropout)

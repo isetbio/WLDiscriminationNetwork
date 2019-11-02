@@ -73,6 +73,8 @@ if __name__ == '__main__':
     net_class = vgg16
     for fpath in fpaths:
         num = fpath.split('_')[-1]
+        if num != '1':
+            continue
         if num == '2':
             run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001)
         elif num == '3':
@@ -89,6 +91,8 @@ if __name__ == '__main__':
     net_class = vgg16bn
     for fpath in fpaths:
         num = fpath.split('_')[-1]
+        if num != '1':
+            continue
         if num == '2':
             run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001)
         elif num == '3':
@@ -105,6 +109,8 @@ if __name__ == '__main__':
     net_class = vgg16bn
     for fpath in fpaths:
         num = fpath.split('_')[-1]
+        if num != '1':
+            continue
         if num == '2':
             run_on_folder(fpath, shuffled_pixels=1)
         elif num == '3':
@@ -123,6 +129,8 @@ if __name__ == '__main__':
     net_class = inceptionv3
     for fpath in fpaths:
         num = fpath.split('_')[-1]
+        if num != '1':
+            continue
         if num == '2':
             run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class)
         elif num == '3':

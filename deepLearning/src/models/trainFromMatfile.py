@@ -181,7 +181,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
             else:
                 Net = NetClass(dimOut, min_norm, max_norm, mean_norm, std_norm, freeze_until=NetClass_param)
         Net.cuda()
-        # print(Net)
+        print(Net)
         # Net.load_state_dict(torch.load('trained_RobustNet_denoised.torch'))
         criterion = nn.NLLLoss()
         bestTestAcc = 0

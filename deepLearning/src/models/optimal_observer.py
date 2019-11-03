@@ -61,7 +61,7 @@ def get_optimal_observer_prediction(datum, meanData, signal_noise_even=False):
                 log_probability += np.log(0.5)
             # if i > 0, we know it's a signal case
             else:
-                log_probability += np.log(1/num_signals)
+                log_probability += np.log(0.5/num_signals)
         llVals.append(log_probability)
     prediction = np.argmax(llVals)
     return prediction

@@ -122,7 +122,6 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
     freqs = []
     nn_dprimes = []
     oo_dprimes = []
-
     if shift:
         metric = 'shift'
     elif angle:
@@ -159,7 +158,9 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
 
     metric_values = get_csv_column(os.path.join(mtf_paths[0], 'results.csv'), metric, sort_by=metric)
     if shift:
-        metric_values /= np.pi
+        metric_values /= (np.pi*2)
+    if angle:
+        metric_values /= 2
     nn_bilinear_targets = []
     oo_bilinear_targets = []
 
@@ -336,7 +337,34 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
     # # fig.show()
     # print('done!')
 
+if __name__ == "__main__":
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]
+    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq') if f.is_dir()]
+    for scope_folder in mtf_paths:
+        visualize_pixel_blocks(scope_folder, angle=True, plot_style='-', use_legend=False)
+    mtf_calc(mtf_paths, target_d=1.5, angle=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=2, angle=True, plot_style='-')
+    # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=3, angle=True, plot_style='-')
 
+
+# if __name__ == "__main__":
+#
+#     mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_columns') if f.is_dir()]
+#     # for scope_folder in mtf_paths:
+#     #     visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True)
+#     mtf_calc(mtf_paths, target_d=1.5, plot_style='-', include_svm=True)
+#     mtf_calc(mtf_paths, target_d=2, plot_style='-', include_svm=True)
+#     # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
+#     mtf_calc(mtf_paths, target_d=3, plot_style='-', include_svm=True)
+
+
+
+r"""
+C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined
+
+Older runs:
+########################################################################
 if __name__ == "__main__":
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined') if f.is_dir()]
@@ -357,23 +385,6 @@ if __name__ == "__main__":
     mtf_calc(mtf_paths, target_d=2, plot_style='-', include_svm=True, angle=False, calc_random=True)
     # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
     mtf_calc(mtf_paths, target_d=3, plot_style='-', include_svm=True, angle=False, calc_random=True)
-
-# if __name__ == "__main__":
-#
-#     mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_columns') if f.is_dir()]
-#     # for scope_folder in mtf_paths:
-#     #     visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True)
-#     mtf_calc(mtf_paths, target_d=1.5, plot_style='-', include_svm=True)
-#     mtf_calc(mtf_paths, target_d=2, plot_style='-', include_svm=True)
-#     # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
-#     mtf_calc(mtf_paths, target_d=3, plot_style='-', include_svm=True)
-
-
-
-r"""
-C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined
-
-Older runs:
 ########################################################################
 if __name__ == "__main__":
     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]

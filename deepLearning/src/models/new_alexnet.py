@@ -27,7 +27,6 @@ class alexnet(nn.Module):
         return F.log_softmax(x, dim=1)
 
 
-
 if __name__ == '__main__':
     net = alexnet(2)
     input = np.random.rand(1, 3, 224, 224)

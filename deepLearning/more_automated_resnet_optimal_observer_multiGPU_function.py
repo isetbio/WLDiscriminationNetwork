@@ -13,6 +13,7 @@ import datetime
 import os
 from deepLearning.src.models.new_inception import inceptionv3
 from deepLearning.src.models.new_vgg import vgg16, vgg16bn
+from deepLearning.src.models.new_alexnet import alexnet
 
 
 def matfile_gen(pathMatDir):
@@ -73,8 +74,6 @@ if __name__ == '__main__':
     net_class = vgg16
     for fpath in fpaths:
         num = fpath.split('_')[-1]
-        if num != '1':
-            continue
         if num == '2':
             run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001)
         elif num == '3':
@@ -86,19 +85,17 @@ if __name__ == '__main__':
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation
-    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn_2/vgg16bn') if p.is_dir()]
+    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn_2/alexnet') if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
-    net_class = vgg16bn
+    net_class = alexnet
     for fpath in fpaths:
         num = fpath.split('_')[-1]
-        if num != '1':
-            continue
         if num == '2':
             run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001)
         elif num == '3':
             run_on_folder(fpath, include_shift=True, NetClass=net_class, initial_lr=0.00001)
         else:
-            run_on_folder(fpath, NetClass=net_class) #, initial_lr=0.00001)
+            run_on_folder(fpath, NetClass=net_class, initial_lr=0.00001)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 if __name__ == '__main__':
@@ -106,11 +103,9 @@ if __name__ == '__main__':
     # run only on ideal observer, account for varying sample sizes in calculation
     fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn_2/resnet') if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
-    net_class = vgg16bn
+    net_class = vgg16
     for fpath in fpaths:
         num = fpath.split('_')[-1]
-        if num != '1':
-            continue
         if num == '2':
             run_on_folder(fpath, shuffled_pixels=1)
         elif num == '3':
@@ -120,24 +115,6 @@ if __name__ == '__main__':
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 
-
-if __name__ == '__main__':
-    full_start = time.time()
-    # run only on ideal observer, account for varying sample sizes in calculation
-    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn_2/inceptionv3') if p.is_dir()]
-    fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
-    net_class = inceptionv3
-    for fpath in fpaths:
-        num = fpath.split('_')[-1]
-        if num != '1':
-            continue
-        if num == '2':
-            run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class)
-        elif num == '3':
-            run_on_folder(fpath, include_shift=True, NetClass=net_class)
-        else:
-            run_on_folder(fpath, NetClass=net_class)
-    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 r"""
 PAST RUNS

@@ -27,6 +27,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     kword_args = {'train_nn': True, 'include_shift': False, 'NetClass': NetClass, 'deeper_pls': deeper_pls,
                   'NetClass_param': NetClass_param, 'include_angle': False, 'svm': True, 'force_balance': True}
     deviceIDs = GPUtil.getAvailable(order='first', limit=6, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
+    devideIDs = [1,2,3,4,5,6]
     print(deviceIDs)
     function_start = time.time()
     pathGen = matfile_gen(dirname)

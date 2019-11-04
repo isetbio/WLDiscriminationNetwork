@@ -71,7 +71,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation
-    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn_2/vgg16') if p.is_dir()]
+    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn_oo/vgg16') if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
     net_class = vgg16
     for fpath in fpaths:
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation
-    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn_2/alexnet') if p.is_dir()]
+    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn_oo/alexnet') if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
     net_class = alexnet
     for fpath in fpaths:
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation
-    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn_2/resnet') if p.is_dir()]
+    fpaths = [p.path for p in os.scandir('/scratch/reith/oo/more_nn_oo/resnet') if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
     net_class = vgg16
     for fpath in fpaths:

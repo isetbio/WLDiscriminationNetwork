@@ -67,7 +67,22 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     print("done!")
 
 
+if __name__ == '__main__':
+    full_start = time.time()
+    # run only on ideal observer, account for varying sample sizes in calculation
+    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/multiple_locations/multiple_locations_experiment_ideal_observer_adjusted_oo') if p.is_dir()]
+    fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
+    for fpath in fpaths:
+        run_on_folder(fpath, svm=False, train_nn=False)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
+
+
+
+
+r"""
+PAST RUNS
+################################################################
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation
@@ -115,12 +130,8 @@ if __name__ == '__main__':
         else:
             run_on_folder(fpath, train_nn=False, svm=False)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
+#################################################################
 
-
-
-r"""
-PAST RUNS
-################################################################
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation

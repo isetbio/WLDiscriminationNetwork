@@ -57,9 +57,9 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
     # plt.grid(which='both')
     plt.xscale('log')
     if shift:
-        plt.xlabel('Shift in \u03C0')
+        plt.xlabel('Shift in radians')
     elif angle:
-        plt.xlabel('Angle in \u03C0')
+        plt.xlabel('Angle in radians')
     else:
         plt.xlabel('Contrast')
     plt.ylabel('d-prime')
@@ -74,12 +74,14 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
             appendix = f' {num} random pixels were shuffled'
             include_oo = False
         csv1 = os.path.join(folder, 'results.csv')
-        csv_svm = os.path.join(folder, 'svm_results.csv')
+        csv_svm = os.path.join(folder, 'svm_results_seeded.csv')
         oo = get_csv_column(csv1, 'optimal_observer_d_index', sort_by=metric)
         nn = get_csv_column(csv1, 'nn_dprime', sort_by=metric)
         contrasts = get_csv_column(csv1, metric, sort_by=metric)
         if shift:
-            contrasts /= np.pi
+            contrasts /= (np.pi*2)
+        if angle:
+            contrasts /= 2
         if isinstance(line_style, types.GeneratorType):
             if include_oo:
                 plt.plot(contrasts, oo, label='Ideal Observer'+appendix, linestyle=next(line_style))
@@ -239,10 +241,10 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
             svm_freqs.append(freq)
             try:
                 svm_dprimes.append(
-                    get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by=metric))
+                    get_csv_column(os.path.join(p, 'svm_results_seeded.csv'), 'dprime_accuracy', sort_by=metric))
             except:
                 svm_dprimes.append(
-                    get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by=metric))
+                    get_csv_column(os.path.join(p, 'svm_results_seeded.csv'), 'dprime_accuracy', sort_by=metric))
         svm_dprimes, svm_freqs = np.array(svm_dprimes), np.array(svm_freqs)
         sort_idxs = np.argsort(svm_freqs)
         svm_dprimes = svm_dprimes[sort_idxs]
@@ -305,7 +307,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
     # for bf in block_folders:
     #     block_sizes.append(int(bf.split('_')[-1]))
     #     bf_csv  = os.path.join(bf, 'results.csv')
-    #     bf_svm_csv = os.path.join(bf, 'svm_results.csv')
+    #     bf_svm_csv = os.path.join(bf, 'svm_results_seeded.csv')
     #     c_vals = get_csv_column(bf_csv, metric, sort_by=metric)
     #     nn_vals = get_csv_column(bf_csv, 'nn_dprime', sort_by=metric)
     #     svm_col_vals = get_csv_column(bf_svm_csv, 'dprime_accuracy', sort_by=metric)
@@ -338,14 +340,18 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
     # print('done!')
 
 if __name__ == "__main__":
-    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]
-    mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment_modified_updated') if f.is_dir()]
+    mtf_p = r'C:\Users\Fabian\Documents\data\rsync\more_nn\vgg16_done_s'
+    mtf_p = r'C:\Users\Fabian\Documents\data\rsync\oo\more_nn_2_nicer\vgg16'
+    mtf_paths = [f.path for f in os.scandir(mtf_p) if f.is_dir()]
+    shift = False
     for scope_folder in mtf_paths:
-        visualize_pixel_blocks(scope_folder, angle=True, plot_style='-', use_legend=False)
-    mtf_calc(mtf_paths, target_d=1.5, angle=True, plot_style='-')
-    mtf_calc(mtf_paths, target_d=2, angle=True, plot_style='-')
-    # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
-    mtf_calc(mtf_paths, target_d=3, angle=True, plot_style='-')
+        visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True, angle=False)
+    mtf_calc(mtf_paths, target_d=1.5, plot_style='-', shift=shift)
+    mtf_calc(mtf_paths, target_d=2, plot_style='-', shift=shift)
+    # mtf_calc(mtf_paths, target_d=1, plot_style='-')
+    mtf_calc(mtf_paths, target_d=3, plot_style='-', shift=shift)
 
 
 # if __name__ == "__main__":

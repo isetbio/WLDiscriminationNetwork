@@ -46,7 +46,8 @@ all_h5 = glob(f'{exp_path}\\mtf*\\**\\**.h5', recursive=True)
 shift_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq'
 shift_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment'
 shift_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\redo_automaton\plain_automata'
-shift_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks_csv'
+shift_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\more_nn'
+
 all_h5 = glob(f'{shift_path}\\**\\**.h5', recursive=True)
 
 unique_h5 = []

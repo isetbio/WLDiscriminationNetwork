@@ -75,11 +75,11 @@ if __name__ == '__main__':
     for fpath in fpaths:
         num = fpath.split('_')[-1]
         if num == '2':
-            run_on_folder(fpath, shuffled_pixels=1, train_nn=False, svm=False)
+            run_on_folder(fpath, shuffled_pixels=1)
         elif num == '3':
-            run_on_folder(fpath, include_shift=True, train_nn=False, svm=False)
+            run_on_folder(fpath, include_shift=True)
         else:
-            run_on_folder(fpath, train_nn=False, svm=False)
+            run_on_folder(fpath)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 
@@ -92,11 +92,11 @@ if __name__ == '__main__':
     for fpath in fpaths:
         num = fpath.split('_')[-1]
         if num == '2':
-            run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001, train_nn=False, svm=False)
+            run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001)
         elif num == '3':
-            run_on_folder(fpath, include_shift=True, NetClass=net_class, initial_lr=0.00001, train_nn=False, svm=False)
+            run_on_folder(fpath, include_shift=True, NetClass=net_class, initial_lr=0.00001)
         else:
-            run_on_folder(fpath, NetClass=net_class, initial_lr=0.00001, train_nn=False, svm=False)
+            run_on_folder(fpath, NetClass=net_class, initial_lr=0.00001)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 if __name__ == '__main__':
@@ -108,11 +108,11 @@ if __name__ == '__main__':
     for fpath in fpaths:
         num = fpath.split('_')[-1]
         if num == '2':
-            run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001, train_nn=False, svm=False)
+            run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001)
         elif num == '3':
-            run_on_folder(fpath, include_shift=True, NetClass=net_class, initial_lr=0.00001, train_nn=False, svm=False)
+            run_on_folder(fpath, include_shift=True, NetClass=net_class, initial_lr=0.00001)
         else:
-            run_on_folder(fpath, NetClass=net_class, initial_lr=0.00001, train_nn=False, svm=False)
+            run_on_folder(fpath, NetClass=net_class, initial_lr=0.00001)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 

@@ -72,7 +72,6 @@ if __name__ == '__main__':
     # run only on ideal observer, account for varying sample sizes in calculation
     fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/more_nn/resnet') if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
-    net_class = vgg16
     for fpath in fpaths:
         num = fpath.split('_')[-1]
         if num == '2':

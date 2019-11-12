@@ -27,7 +27,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     kword_args = {'train_nn': True, 'include_shift': False, 'NetClass': NetClass, 'deeper_pls': deeper_pls,
                   'NetClass_param': NetClass_param, 'include_angle': False, 'svm': True, 'force_balance': True}
     deviceIDs = GPUtil.getAvailable(order='first', limit=6, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
-    deviceIDs = [1,2,3,4,5,6]
+    # deviceIDs = [1,2,3,4,5,6]
     print(deviceIDs)
     function_start = time.time()
     pathGen = matfile_gen(dirname)
@@ -45,6 +45,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
                     currP.start()
             for device, proc in Procs.items():
                 if not proc.is_alive():
+                    time.sleep(30)
                     pathMat = next(pathGen)
                     print(f"Running {pathMat} on GPU {device}")
                     currP = mp.Process(target=autoTrain_Resnet_optimalObserver, args=[pathMat],
@@ -54,7 +55,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
         except StopIteration:
             break
 
-        time.sleep(5)
+        time.sleep(30)
 
     for proc in Procs.values():
         proc.join()
@@ -63,7 +64,7 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     with open(os.path.join(dirname, 'time.txt'), 'w') as txt:
         txt.write(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=function_end-function_start))} hours:min:seconds")
-    time.sleep(60)
+    time.sleep(120)
     print("done!")
 
 

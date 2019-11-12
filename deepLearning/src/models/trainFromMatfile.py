@@ -208,8 +208,8 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
             learning_rate = learning_rate*lr_deviation
 
         # bestTestAcc = max(bestTestAcc, bestTestAccStep)
-        torch.save(Net.state_dict(), os.path.join(outPath, f"resNet_weights_{fileName}.torch"))
-        print("saved resNet weights to", f"resNet_weights_{fileName}.torch")
+        # torch.save(Net.state_dict(), os.path.join(outPath, f"resNet_weights_{fileName}.torch"))
+        # print("saved resNet weights to", f"resNet_weights_{fileName}.torch")
         testLabelsFull = torch.from_numpy(testLabelsFull.astype(np.long))
         testDataFull = torch.from_numpy(testDataFull).type(torch.float32)
         testDataFull -= mean_norm

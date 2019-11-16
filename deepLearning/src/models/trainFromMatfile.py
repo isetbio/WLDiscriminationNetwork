@@ -16,6 +16,8 @@ import datetime
 import pickle
 from scipy.stats import norm
 import multiprocessing as mp
+from deepLearning.src.models.new_vgg import vgg16, vgg16bn
+
 
 
 def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=True, include_shift=False,
@@ -41,7 +43,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
     if device is not None:
         os.environ["CUDA_VISIBLE_DEVICES"] = str(device)
     test_interval = 1
-    batchSize = 32
+    batchSize = 16
     numSamplesEpoch = 10000
     outPath = os.path.dirname(pathMat)
     fileName = os.path.basename(pathMat).split('.')[0]
@@ -296,7 +298,8 @@ if __name__ == '__main__':
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_templates\harmonic_frequency_of_1_loc_1_signalGridSize_3\1_samplesPerClass_freq_1_contrast_0_798104925988_loc_1_signalGrid_3.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_templates\harmonic_frequency_of_1_loc_1_signalGridSize_2\1_samplesPerClass_freq_1_contrast_0_798104925988_loc_1_signalGrid_2.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_templates\harmonic_frequency_of_1_loc_1_signalGridSize_1\1_samplesPerClass_freq_1_contrast_0_798104925988_loc_1_signalGrid_1.h5'
-    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=False, test_size=400, train_nn=True, oo=True)
+    mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\more_nn_backup\vgg\class_2_rule_3_5\2_samplesPerClass_freq_1_contrast_0_002511886432_image_automata_rule_3_class2.h5'
+    autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=False, test_size=400,  train_nn=True, oo=False, svm=False, NetClass=vgg16)
     # autoTrain_Resnet_optimalObserver(mat_path, force_balance=True, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=True, shuffle_scope=100, train_set_size=150, oo=False, svm=False, test_size=60, train_nn=True, shuffle_portion=2000)

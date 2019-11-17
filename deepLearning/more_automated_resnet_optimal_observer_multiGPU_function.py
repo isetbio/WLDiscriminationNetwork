@@ -81,7 +81,7 @@ if __name__ == '__main__':
         if float(num) < 5:
             continue
         else:
-            run_on_folder(fpath, NetClass=None, initial_lr=0.00001)
+            run_on_folder(fpath, NetClass=vgg16, initial_lr=0.00001)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 if __name__ == '__main__':

@@ -210,7 +210,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         for i in range(lr_epoch_reps):
             print(f"Trainig for {num_epochs/lr_epoch_reps} epochs with a learning rate of {learning_rate}..")
             optimizer = optim.Adam(Net.parameters(), lr=learning_rate)
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             Net, testAcc = train_poisson(round(num_epochs/lr_epoch_reps), numSamplesEpoch, batchSize, meanData, testData,
                                          testLabels, Net, test_interval, optimizer, criterion, dimIn, mean_norm, std_norm,
                                          train_test_log, test_eval, PoissonDataObject)

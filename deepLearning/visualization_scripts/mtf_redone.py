@@ -22,8 +22,12 @@ def line_styler(offset_default=2, style=(2, 2)):
 
 
 def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
-    df = pd.read_csv(csv_path, delimiter=';')
-    col = df[col_name].tolist()
+    try:
+        df = pd.read_csv(csv_path, delimiter=';')
+        col = df[col_name].tolist()
+    except:
+        df = pd.read_csv(csv_path, delimiter=',')
+        col = df[col_name].tolist()
     col = np.array(col)
     if sort_by is not None:
         sort_val = get_csv_column(csv_path, sort_by)
@@ -86,10 +90,14 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
             if include_oo:
                 plt.plot(contrasts, oo, label='Ideal Observer'+appendix, linestyle=next(line_style))
             if include_nn:
-                plt.plot(contrasts, nn, label='ResNet18'+appendix, linestyle=next(line_style))
+                plt.plot(contrasts, nn, label='ResNet-18'+appendix, linestyle=next(line_style))
             epsilon = 0.001
             if include_svm:
-                svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
+                try:
+                    svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
+                except:
+                    csv_svm = os.path.join(folder, 'svm_results.csv')
+                    svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
                 if (svm>oo.max()-epsilon).any():
                     svm[svm >= (svm.max()-epsilon)] = oo.max()
                 plt.plot(contrasts, svm, label='Support Vector Machine'+appendix, linestyle=line_style)
@@ -97,10 +105,14 @@ def visualize_pixel_blocks(block_folder, shift=False, angle=False, include_oo=Tr
             if include_oo:
                 plt.plot(contrasts, oo, label='Ideal Observer'+appendix, linestyle=line_style)
             if include_nn:
-                plt.plot(contrasts, nn, label='ResNet18'+appendix, linestyle=line_style)
+                plt.plot(contrasts, nn, label='ResNet-18'+appendix, linestyle=line_style)
             epsilon = 0.001
             if include_svm:
-                svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
+                try:
+                    svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
+                except:
+                    csv_svm = os.path.join(folder, 'svm_results.csv')
+                    svm = get_csv_column(csv_svm, 'dprime_accuracy', sort_by=metric)
                 if (svm>oo.max()-epsilon).any():
                     svm[svm >= (svm.max()-epsilon)] = oo.max()
                 plt.plot(contrasts, svm, label='Support Vector Machine'+appendix, linestyle=line_style)
@@ -219,10 +231,10 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
     plt.title(f'Modulation Transfer Function - target dprime is {target_d}')
     if isinstance(line_style, types.GeneratorType):
         plt.plot(oo_freqs, 1 / oo_bilinear_targets, label='Optimal Observer', linestyle=next(line_style))
-        plt.plot(nn_freqs, 1 / nn_bilinear_targets, label='ResNet', linestyle=next(line_style))
+        plt.plot(nn_freqs, 1 / nn_bilinear_targets, label='ResNet-18', linestyle=next(line_style))
     else:
         plt.plot(oo_freqs, 1 / oo_bilinear_targets, label='Optimal Observer', linestyle=line_style)
-        plt.plot(nn_freqs, 1 / nn_bilinear_targets, label='ResNet', linestyle=line_style)
+        plt.plot(nn_freqs, 1 / nn_bilinear_targets, label='ResNet-18', linestyle=line_style)
     ############SVM SUPPORT#######################################
     if include_svm:
         svm_bilinear_targets = []
@@ -237,14 +249,17 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
             elif calc_random:
                 freq = int(p.split('x')[-1])
             else:
-                freq = int(p.split('_')[-1])
+                try:
+                    freq = int(p.split('_')[-1])
+                except:
+                    freq = int(p.split('x')[-1])
             svm_freqs.append(freq)
             try:
                 svm_dprimes.append(
                     get_csv_column(os.path.join(p, 'svm_results_seeded.csv'), 'dprime_accuracy', sort_by=metric))
             except:
                 svm_dprimes.append(
-                    get_csv_column(os.path.join(p, 'svm_results_seeded.csv'), 'dprime_accuracy', sort_by=metric))
+                    get_csv_column(os.path.join(p, 'svm_results.csv'), 'dprime_accuracy', sort_by=metric))
         svm_dprimes, svm_freqs = np.array(svm_dprimes), np.array(svm_freqs)
         sort_idxs = np.argsort(svm_freqs)
         svm_dprimes = svm_dprimes[sort_idxs]
@@ -329,7 +344,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
     # if include_oo:
     #     plt.plot(block_sizes, oo_vals, label='Ideal Observer', linestyle=next(line_style))
     # if include_nn:
-    #     plt.plot(block_sizes, resnet_vals, label='ResNet18', linestyle=next(line_style))
+    #     plt.plot(block_sizes, resnet_vals, label='ResNet-18', linestyle=next(line_style))
     # if include_svm:
     #     plt.plot(block_sizes, svm_vals, label='Support Vector Machine', linestyle=next(line_style))
     #
@@ -339,19 +354,41 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
     # # fig.show()
     # print('done!')
 
+
 if __name__ == "__main__":
-    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq') if f.is_dir()]
-    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment_modified_updated') if f.is_dir()]
-    mtf_p = r'C:\Users\Fabian\Documents\data\rsync\more_nn\vgg16_done_s'
-    mtf_p = r'C:\Users\Fabian\Documents\data\rsync\oo\more_nn_2_nicer\vgg16'
-    mtf_paths = [f.path for f in os.scandir(mtf_p) if f.is_dir()]
-    shift = False
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_shift_new_freq') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment\single_faces') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\redo_automaton\matlab_contrasts\class3') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment_equal_class_dprime_adjusted') if f.is_dir()]
+    # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment') if f.is_dir()]
+    mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq_less_contrast'
+    mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq_better_csv'
+    mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined_better_csv'
+    # mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment_reanalyze\single_faces'
+    # mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks_csv'
+    mtf_paths = [f.path for f in os.scandir(mtf_file_path) if f.is_dir()]
     for scope_folder in mtf_paths:
         visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True, angle=False)
-    mtf_calc(mtf_paths, target_d=1.5, plot_style='-', shift=shift)
-    mtf_calc(mtf_paths, target_d=2, plot_style='-', shift=shift)
-    # mtf_calc(mtf_paths, target_d=1, plot_style='-')
-    mtf_calc(mtf_paths, target_d=3, plot_style='-', shift=shift)
+    mtf_calc(mtf_paths, target_d=1.5, plot_style='-', include_svm=True, angle=False, calc_random=False)
+    mtf_calc(mtf_paths, target_d=2, plot_style='-', include_svm=True, angle=False, calc_random=False)
+    # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
+    mtf_calc(mtf_paths, target_d=3, plot_style='-', include_svm=True, angle=False, calc_random=False)
+
+# if __name__ == "__main__":
+#     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq') if f.is_dir()]
+#     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\multiple_locations\multiple_locations_experiment_modified_updated') if f.is_dir()]
+#     mtf_p = r'C:\Users\Fabian\Documents\data\rsync\more_nn\vgg16_done_s'
+#     mtf_p = r'C:\Users\Fabian\Documents\data\rsync\oo\more_nn_2_nicer\vgg16'
+#     mtf_paths = [f.path for f in os.scandir(mtf_p) if f.is_dir()]
+#     shift = False
+#     for scope_folder in mtf_paths:
+#         visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True, angle=False)
+#     mtf_calc(mtf_paths, target_d=1.5, plot_style='-', shift=shift)
+#     mtf_calc(mtf_paths, target_d=2, plot_style='-', shift=shift)
+#     # mtf_calc(mtf_paths, target_d=1, plot_style='-')
+#     mtf_calc(mtf_paths, target_d=3, plot_style='-', shift=shift)
 
 
 # if __name__ == "__main__":

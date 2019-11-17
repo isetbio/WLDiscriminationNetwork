@@ -34,8 +34,8 @@ def test(batchSize, testData, testLabels, Net, dimIn, includePredictionLabels=Fa
             print(target.cpu().numpy()[testAcc==0])
         allAccuracy.extend(testAcc)
         allWrongs.extend(wrongs)
-        predictions.extend(prediction)
-        labels.extend(target)
+        predictions.extend(prediction.cpu().numpy())
+        labels.extend(target.cpu().numpy())
     if test_eval:
         Net.train()
     print(f"Test accuracy is {np.mean(allAccuracy)}")
@@ -116,8 +116,8 @@ def train_poisson(epochs, numSamplesEpoch, batchSize, meanData, testData, testLa
             currAcc = (prediction == target).cpu().numpy()
             epochAcc.extend(list(currAcc))
             lossArr.append(loss.data.item())
-            predictions.extend(prediction)
-            labels.extend(target)
+            predictions.extend(prediction.cpu().numpy())
+            labels.extend(target.cpu().numpy())
             if logCount % 10 == 0:
                 print(f"Train epoch: {epoch} and batch number {logCount}, loss is {np.mean(lossArr)}, accuracy is {np.mean(epochAcc)}")
             logCount += 1

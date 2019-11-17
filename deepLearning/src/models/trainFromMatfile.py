@@ -1,3 +1,10 @@
+if __name__ == '__main__':
+    import os, sys, inspect
+
+    current_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
+    parent_dir = os.path.dirname(current_dir)
+    sys.path.insert(0, parent_dir)
+
 from deepLearning.src.models.resnet_train_test import train_poisson, test
 from deepLearning.src.models.GrayResNet import GrayResnet18, GrayResnet101
 from deepLearning.src.models.optimal_observer import get_optimal_observer_acc, calculate_discriminability_index, get_optimal_observer_hit_false_alarm, get_optimal_observer_acc_parallel, calculate_dprime
@@ -278,11 +285,6 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
 
 
 if __name__ == '__main__':
-    import os, sys, inspect
-
-    current_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
-    parent_dir = os.path.dirname(current_dir)
-    sys.path.insert(0, parent_dir)
     # mat_path = r'C:\Users\Fabian\Documents\data\svm_test\1_samplesPerClass_freq_1_contrast_oo_0_019952623150.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq\harmonic_frequency_of_14\1_samplesPerClass_freq_14_contrast_0_019952623150.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\faces\multi_face_result\2_samplesPerClass_freq_1_contrast_0_019952623150_image_multi_face_result.h5'

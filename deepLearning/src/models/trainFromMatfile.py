@@ -50,7 +50,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
     if device is not None:
         os.environ["CUDA_VISIBLE_DEVICES"] = str(device)
     test_interval = 1
-    batchSize = 16
+    batchSize = 32
     numSamplesEpoch = 10000
     outPath = os.path.dirname(pathMat)
     fileName = os.path.basename(pathMat).split('.')[0]

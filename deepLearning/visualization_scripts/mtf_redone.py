@@ -143,6 +143,7 @@ def mtf_calc(mtf_paths, target_d=2., shift=False, angle=False, disks=False, incl
     else:
         metric = 'contrast'
 
+
     fname = f'Modulation_transfer_function_{metric}_values_frequencies_target_d_{target_d}_new'
     if weibull_interpol:
         fname += '_weibull'
@@ -366,15 +367,22 @@ if __name__ == "__main__":
     mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_contrast_new_freq_less_contrast'
     mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq_better_csv'
     mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\disks_mtf_experiment\disk_experiment_combined_better_csv'
+    mtf_file_super_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\more_nn'
     # mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment_reanalyze\single_faces'
     # mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks_csv'
-    mtf_paths = [f.path for f in os.scandir(mtf_file_path) if f.is_dir()]
-    for scope_folder in mtf_paths:
-        visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True, angle=False)
-    mtf_calc(mtf_paths, target_d=1.5, plot_style='-', include_svm=True, angle=False, calc_random=False)
-    mtf_calc(mtf_paths, target_d=2, plot_style='-', include_svm=True, angle=False, calc_random=False)
-    # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
-    mtf_calc(mtf_paths, target_d=3, plot_style='-', include_svm=True, angle=False, calc_random=False)
+    mtf_file_paths = [f.path for f in os.scandir(mtf_file_super_path) if f.is_dir()]
+    mtf_file_paths = [r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_columns']
+    for mtf_file_path in mtf_file_paths:
+        do_shift=False
+        if mtf_file_path == r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\more_nn\shift_land':
+            do_shift=True
+        mtf_paths = [f.path for f in os.scandir(mtf_file_path) if f.is_dir()]
+        for scope_folder in mtf_paths:
+            visualize_pixel_blocks(scope_folder, plot_style='-', use_legend=True, shift=do_shift)
+        mtf_calc(mtf_paths, target_d=1.5, plot_style='-', include_svm=True, angle=False, calc_random=False, shift=do_shift)
+        mtf_calc(mtf_paths, target_d=2, plot_style='-', include_svm=True, angle=False, calc_random=False, shift=do_shift)
+        # mtf_calc(mtf_paths, target_d=1, angle=True, plot_style='-')
+        mtf_calc(mtf_paths, target_d=3, plot_style='-', include_svm=True, angle=False, calc_random=False, shift=do_shift)
 
 # if __name__ == "__main__":
 #     # mtf_paths = [f.path for f in os.scandir(r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\mtf_experiments\mtf_angle_new_freq') if f.is_dir()]

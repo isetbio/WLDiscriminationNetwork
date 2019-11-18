@@ -67,7 +67,16 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     time.sleep(120)
     print("done!")
 
-
+if __name__ == '__main__':
+    full_start = time.time()
+    # run only on ideal observer, account for varying sample sizes in calculation
+    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/more_nn/resnet') if p.is_dir()]
+    fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
+    for fpath in fpaths:
+        num = fpath.split('_')[-1]
+        if num == '2':
+            run_on_folder(fpath, shuffled_pixels=1)
+    print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 
 if __name__ == '__main__':
@@ -78,10 +87,10 @@ if __name__ == '__main__':
     net_class = vgg16
     for fpath in fpaths:
         num = fpath.split('_')[-1]
-        if float(num) < 5:
+        if num != '2':
             continue
         else:
-            run_on_folder(fpath, NetClass=vgg16, initial_lr=0.00001)
+            run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 if __name__ == '__main__':
@@ -92,10 +101,10 @@ if __name__ == '__main__':
     net_class = alexnet
     for fpath in fpaths:
         num = fpath.split('_')[-1]
-        if float(num) < 5:
+        if num != '2':
             continue
         else:
-            run_on_folder(fpath, NetClass=net_class, initial_lr=0.00001)
+            run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 

@@ -32,7 +32,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
                                      include_angle=False, training_csv=True, num_epochs=30, initial_lr=0.001, lr_deviation=0.1,
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,
                                      shuffled_pixels=0, shuffle_scope=-1, test_eval=True, random_seed_nn=True, train_set_size=-1,
-                                     test_size=5000, shuffle_portion=-1, ca_rule=-1, force_balance=True,
+                                     test_size=5000, shuffle_portion=-1, ca_rule=-1, force_balance=False,
                                      same_test_data_shuff_pixels=True, class_balance='class_based'):
 
 
@@ -102,7 +102,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
     if same_test_data_shuff_pixels and shuffled_pixels_backup != 0:
         testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=42,
                                                             force_balance=force_balance, signal_no_signal=signal_no_signal)
-        if shuffled_pixels_backup > 1:
+        if shuffled_pixels_backup > 0:
             testDataFull = shuffle_pixels_func(testDataFull, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
             meanData = shuffle_pixels_func(meanData, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
             shuffled_pixels = shuffled_pixels_backup

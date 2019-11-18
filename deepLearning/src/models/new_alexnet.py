@@ -29,7 +29,7 @@ class alexnet(nn.Module):
 
 if __name__ == '__main__':
     net = alexnet(2)
-    input = np.random.rand(1, 3, 224, 224)
+    input = np.random.rand(1, 3, 256, 256)
     input = torch.autograd.Variable(torch.tensor(input))
     input = input.type(torch.float32)
     text = net(input)

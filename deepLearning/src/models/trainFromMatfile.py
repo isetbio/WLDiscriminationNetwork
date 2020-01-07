@@ -33,7 +33,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
                                      lr_epoch_reps=3, them_cones=False, separate_rgb=False, meanData_rounding=None,
                                      shuffled_pixels=0, shuffle_scope=-1, test_eval=True, random_seed_nn=True, train_set_size=-1,
                                      test_size=5000, shuffle_portion=-1, ca_rule=-1, force_balance=False,
-                                     same_test_data_shuff_pixels=True, class_balance='class_based'):
+                                     same_test_data_shuff_pixels=True, class_balance='class_based', random_seed=42):
 
 
     # relevant variables
@@ -100,7 +100,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
     else:
         train_test_log = None
     if same_test_data_shuff_pixels and shuffled_pixels_backup != 0:
-        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=42,
+        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=random_seed,
                                                             force_balance=force_balance, signal_no_signal=signal_no_signal)
         if shuffled_pixels_backup > 0:
             testDataFull = shuffle_pixels_func(testDataFull, shuffled_pixels_backup, shuffle_scope, shuffle_portion)
@@ -112,7 +112,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
             shuffled_pixels = shuffled_pixels_backup
         # also shuffle mean data. As the shuffle mask is seeded, we simply call the shuffle function again..
     else:
-        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=42,
+        testDataFull, testLabelsFull = poisson_noise_loader(meanData, size=test_size, numpyData=True, seed=random_seed,
                                                             force_balance=force_balance, signal_no_signal=signal_no_signal)
 
     # normalization values
@@ -173,12 +173,12 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         svm_process = mp.Process(target=score_svm, args=[pathMat, lock, testDataFull, testLabelsFull],
                                  kwargs={'them_cones': them_cones, 'includeContrast': include_contrast_svm, 'separate_rgb': separate_rgb, 'metric': metric_svm,
                                          'meanData_rounding': meanData_rounding, 'shuffled_pixels': shuffled_pixels, 'includeAngle': include_angle,
-                                         'includeShift': include_shift, 'signal_no_signal': signal_no_signal})
+                                         'includeShift': include_shift, 'signal_no_signal': signal_no_signal, 'random_seed': random_seed})
         svm_process.start()
 
     if train_nn:
         if random_seed_nn:
-            torch.random.manual_seed(22)
+            torch.random.manual_seed(random_seed)
         if NetClass is None:
             if deeper_pls:
                 Net = GrayResnet101(dimOut)
@@ -205,7 +205,7 @@ def autoTrain_Resnet_optimalObserver(pathMat, device=None, lock=None, train_nn=T
         testData = torch.from_numpy(testData).type(torch.float32)
         testData -= mean_norm
         testData /= std_norm
-        PoissonDataObject = PoissonNoiseLoaderClass(meanData, batchSize, train_set_size=train_set_size, data_seed=123,
+        PoissonDataObject = PoissonNoiseLoaderClass(meanData, batchSize, train_set_size=train_set_size, data_seed=random_seed,
                                                     use_data_seed=True, signal_no_signal=signal_no_signal)
         for i in range(lr_epoch_reps):
             print(f"Trainig for {num_epochs/lr_epoch_reps} epochs with a learning rate of {learning_rate}..")
@@ -308,6 +308,7 @@ if __name__ == '__main__':
     # mat_path = r'C:\Users\Fabian\Documents\data\windows2rsync\windows_data\multiple_locations_templates\harmonic_frequency_of_1_loc_1_signalGridSize_1\1_samplesPerClass_freq_1_contrast_0_798104925988_loc_1_signalGrid_1.h5'
     # mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\more_nn_backup\vgg\class_2_rule_3_5\2_samplesPerClass_freq_1_contrast_0_002511886432_image_automata_rule_3_class2.h5'
     mat_path = '/share/wandell/data/reith/redo_experiments/more_nn/vgg/class_2_rule_3_5/2_samplesPerClass_freq_1_contrast_0_001258925412_image_automata_rule_3_class2.h5'
+    mat_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\redo_automaton\matlab_contrasts\automata_rule_22_class3\2_samplesPerClass_freq_1_contrast_0_019952623150_image_automata_rule_22_class3.h5'
     autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=False, test_size=400,  train_nn=True, oo=False, svm=False, NetClass=vgg16)
     # autoTrain_Resnet_optimalObserver(mat_path, force_balance=True, shuffled_pixels=-2)
     # autoTrain_Resnet_optimalObserver(mat_path, shuffled_pixels=-2)

@@ -371,7 +371,7 @@ if __name__ == "__main__":
     # mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\face_experiment_reanalyze\single_faces'
     # mtf_file_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_shuffle_blocks_csv'
     mtf_file_paths = [f.path for f in os.scandir(mtf_file_super_path) if f.is_dir()]
-    mtf_file_paths = [r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_columns']
+    # mtf_file_paths = [r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\shuffled_pixels\redo_columns']
     for mtf_file_path in mtf_file_paths:
         do_shift=False
         if mtf_file_path == r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\more_nn\shift_land':

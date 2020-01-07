@@ -11,6 +11,8 @@ import multiprocessing as mp
 import time
 import datetime
 import os
+import fnmatch
+
 from deepLearning.src.models.new_inception import inceptionv3
 from deepLearning.src.models.new_vgg import vgg16, vgg16bn
 from deepLearning.src.models.new_alexnet import alexnet
@@ -25,7 +27,7 @@ def matfile_gen(pathMatDir):
 
 def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None, **kwargs):
     kword_args = {'train_nn': True, 'include_shift': False, 'NetClass': NetClass, 'deeper_pls': deeper_pls,
-                  'NetClass_param': NetClass_param, 'include_angle': False, 'svm': True, 'force_balance': True}
+                  'NetClass_param': NetClass_param, 'include_angle': False, 'svm': True, 'force_balance': False}
     deviceIDs = GPUtil.getAvailable(order='first', limit=6, maxLoad=0.1, maxMemory=0.1, excludeID=[], excludeUUID=[])
     # deviceIDs = [1,2,3,4,5,6]
     print(deviceIDs)
@@ -69,16 +71,28 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
 if __name__ == '__main__':
     full_start = time.time()
-    # run only on ideal observer, account for varying sample sizes in calculation
-    fpaths = [p.path for p in os.scandir('/share/wandell/data/reith/redo_experiments/more_nn/resnet') if p.is_dir()]
+    folder_path = '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_42'
+    fpaths = [p.path for p in os.scandir(folder_path) if p.is_dir()]
     fpaths.sort(key=lambda x: int(x.split('_')[-1]), reverse=False)
+    seed = folder_path.split('_')[-1]
     for fpath in fpaths:
-        num = fpath.split('_')[-1]
-        if num == '2':
-            run_on_folder(fpath, shuffled_pixels=1)
+        if '1dshuff' in fpath:
+            run_on_folder(fpath, shuffled_pixels=-2, random_seed=seed)
+        elif '2dshuff' in fpath:
+            run_on_folder(fpath, shuffled_pixels=1, random_seed=seed)
+        elif 'multiloc' in fpath:
+            run_on_folder(fpath, random_seed=seed)
+        else:
+            run_on_folder(fpath, random_seed=seed)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 
+
+
+
+r"""
+PAST RUNS
+########################################################################################################
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation
@@ -106,13 +120,7 @@ if __name__ == '__main__':
         else:
             run_on_folder(fpath, shuffled_pixels=1, NetClass=net_class, initial_lr=0.00001)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
-
-
-
-
-r"""
-PAST RUNS
-############################################################################################33
+#####################################################################################################
 if __name__ == '__main__':
     full_start = time.time()
     # run only on ideal observer, account for varying sample sizes in calculation

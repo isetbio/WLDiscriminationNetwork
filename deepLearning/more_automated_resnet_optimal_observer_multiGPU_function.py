@@ -73,7 +73,7 @@ if __name__ == '__main__':
     full_start = time.time()
     folder_path = '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_42'
     fpaths = [p.path for p in os.scandir(folder_path) if p.is_dir()]
-    seed = folder_path.split('_')[-1]
+    seed = int(folder_path.split('_')[-1])
     for fpath in fpaths:
         if '1dshuff' in fpath:
             run_on_folder(fpath, shuffled_pixels=-2, random_seed=seed)

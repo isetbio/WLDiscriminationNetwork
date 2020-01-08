@@ -59,8 +59,16 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 
         time.sleep(30)
 
-    for proc in Procs.values():
-        proc.join()
+    # this might be faster than proc.join() for all processes
+    # (should exclude subprocesses (svm) which can continue running)
+    one_proc_alive = True
+    while one_proc_alive:
+        alive_procs = []
+        for proc in Procs.values():
+            alive_procs.append(proc.is_alive())
+        one_proc_alive = max(alive_procs)
+        time.sleep(20)
+
 
     function_end = time.time()
     with open(os.path.join(dirname, 'time.txt'), 'w') as txt:
@@ -69,20 +77,27 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
     time.sleep(120)
     print("done!")
 
+
 if __name__ == '__main__':
+    # run a select group of experiments for various seeds.
     full_start = time.time()
-    folder_path = '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_42'
-    fpaths = [p.path for p in os.scandir(folder_path) if p.is_dir()]
-    seed = int(folder_path.split('_')[-1])
-    for fpath in fpaths:
-        if '1dshuff' in fpath:
-            run_on_folder(fpath, shuffled_pixels=-2, random_seed=seed)
-        elif '2dshuff' in fpath:
-            run_on_folder(fpath, shuffled_pixels=1, random_seed=seed)
-        elif 'multiloc' in fpath:
-            run_on_folder(fpath, random_seed=seed)
-        else:
-            run_on_folder(fpath, random_seed=seed)
+    folder_paths = ['/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_43',
+                    '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_44',
+                    '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_45',
+                    '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_46']
+    # folder_path = '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_42'
+    for folder_path in folder_paths:
+        fpaths = [p.path for p in os.scandir(folder_path) if p.is_dir()]
+        seed = int(folder_path.split('_')[-1])
+        for fpath in fpaths:
+            if '1dshuff' in fpath:
+                run_on_folder(fpath, shuffled_pixels=-2, random_seed=seed)
+            elif '2dshuff' in fpath:
+                run_on_folder(fpath, shuffled_pixels=1, random_seed=seed)
+            elif 'multiloc' in fpath:
+                run_on_folder(fpath, random_seed=seed)
+            else:
+                run_on_folder(fpath, random_seed=seed)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")
 
 

@@ -22,6 +22,7 @@ def get_csv_column(csv_path, col_name, sort_by=None, exclude_from=None):
 
 
 def get_contrast_sensitivity(experiment, target_d=1.5, shift=False, angle=False, disks=False, calc_faces=False, calc_automata=False, calc_random=False):
+    # functionality for other metrics (contrast is standard)
     if shift:
         metric = 'shift'
     elif angle:
@@ -29,6 +30,7 @@ def get_contrast_sensitivity(experiment, target_d=1.5, shift=False, angle=False,
     else:
         metric = 'contrast'
 
+    # load values from csv
     nn_dprimes = get_csv_column(os.path.join(experiment, 'results.csv'), 'nn_dprime', sort_by=metric)
     oo_dprimes = get_csv_column(os.path.join(experiment, 'results.csv'), 'optimal_observer_d_index', sort_by=metric)
     try:
@@ -62,15 +64,17 @@ def get_contrast_sensitivity(experiment, target_d=1.5, shift=False, angle=False,
     interpolated_val = (1 - p_val) * metric_values[left_target] + p_val * metric_values[right_target]
     svm_bilinear_target = interpolated_val
 
+    # return one over target contrast
     return 1/nn_bilinear_target, 1/oo_bilinear_target, 1/svm_bilinear_target
 
 
 if __name__ == "__main__":
     folder_path = r'C:\Users\Fabian\Documents\data\rsync\redo_experiments\sd_experiment\sd_seed_42'
     output = os.path.join(folder_path, f'{os.path.basename(folder_path)}_contrast_sensitivity.csv')
-    # delete csv file if it already exists
+    # delete csv file, if it already exists
     if os.path.exists(output):
         os.remove(output)
+
     experiment_paths = [f.path for f in os.scandir(folder_path) if f.is_dir()]
     experiment_paths.sort()
     experiments = []
@@ -86,8 +90,9 @@ if __name__ == "__main__":
         nns.append(nn)
         oos.append(oo)
         svms.append(svm)
-    df = pd.DataFrame({'experiment': experiments, 'nn': nns, 'oo': oos, 'svm': svms})
-    output = os.path.join(folder_path, f'{os.path.basename(folder_path)}_contrast_sensitivity.csv')
+
+    # write to csv file
+    df = pd.DataFrame({'experiment': experiments, 'oo': oos, 'nn': nns, 'svm': svms})
     df.to_csv(output)
     print('done')
 

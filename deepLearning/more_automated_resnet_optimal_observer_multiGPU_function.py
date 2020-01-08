@@ -81,15 +81,19 @@ def run_on_folder(dirname, deeper_pls=False, NetClass=None, NetClass_param=None,
 if __name__ == '__main__':
     # run a select group of experiments for various seeds.
     full_start = time.time()
-    folder_paths = ['/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_43',
-                    '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_44',
-                    '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_45',
-                    '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_46']
-    # folder_path = '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_42'
+    # folder_paths = ['/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_43',
+    #                 '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_44',
+    #                 '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_45',
+    #                 '/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_46']
+    # rerun this first, as error in automaton..
+    folder_paths = ['/share/wandell/data/reith/redo_experiments/sd_experiment/sd_seed_42']
     for folder_path in folder_paths:
         fpaths = [p.path for p in os.scandir(folder_path) if p.is_dir()]
         seed = int(folder_path.split('_')[-1])
         for fpath in fpaths:
+            # only run for rule_3
+            if 'rule_3' not in fpath:
+                continue
             if '1dshuff' in fpath:
                 run_on_folder(fpath, shuffled_pixels=-2, random_seed=seed)
             elif '2dshuff' in fpath:

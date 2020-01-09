@@ -91,15 +91,15 @@ if __name__ == '__main__':
         fpaths = [p.path for p in os.scandir(folder_path) if p.is_dir()]
         seed = int(folder_path.split('_')[-1])
         for fpath in fpaths:
-            # only run for rule_3
-            if 'rule_3' not in fpath:
+            # only run for multiloc
+            if 'multiloc' not in fpath:
                 continue
             if '1dshuff' in fpath:
                 run_on_folder(fpath, shuffled_pixels=-2, random_seed=seed)
             elif '2dshuff' in fpath:
                 run_on_folder(fpath, shuffled_pixels=1, random_seed=seed)
             elif 'multiloc' in fpath:
-                run_on_folder(fpath, random_seed=seed)
+                run_on_folder(fpath, class_balance='signal_based', random_seed=seed)
             else:
                 run_on_folder(fpath, random_seed=seed)
     print(f"Whole program finished! It took {str(datetime.timedelta(seconds=time.time()-full_start))} hours:min:seconds")

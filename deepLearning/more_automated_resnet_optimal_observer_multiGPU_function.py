@@ -91,9 +91,12 @@ if __name__ == '__main__':
         fpaths = [p.path for p in os.scandir(folder_path) if p.is_dir()]
         seed = int(folder_path.split('_')[-1])
         for fpath in fpaths:
-            # only run for multiloc
+            # only run for multiloc (without the ones that already worked
             if 'multiloc' not in fpath:
                 continue
+            if 'multiloc_1' in fpath or 'multiloc_4' in fpath:
+                continue
+
             if '1dshuff' in fpath:
                 run_on_folder(fpath, shuffled_pixels=-2, random_seed=seed)
             elif '2dshuff' in fpath:
